@@ -60,5 +60,7 @@ Also
 - [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
 - [x] Write Bots as Classes to be easier implemented
 - [x] Create extra Class for the filter
+- [ ] Put as much as possible into ticketfrei.cfg
+- [ ] Make both bots run on their own *and* next to each other
 
 

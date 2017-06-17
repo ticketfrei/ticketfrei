@@ -1,12 +1,3 @@
-##
-# Twitter bot configuration
-#
-
-# TODO
-
-##
-# Mastodon bot configuration
-#
 
 [mapp]
 app_name = 'yourcity_ticketfrei'
