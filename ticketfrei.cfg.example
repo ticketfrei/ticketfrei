@@ -22,4 +22,13 @@ consumer_secret = "09muvs098u08m9vsum098mu"
 access_token_key = "u098umgfres09ug-f7n60cwhxm12"
 access_token_secret = "8708mj9ßc298m343333333tex"
 
+[goodlist]
+asdf
+oigna
+bahn
+zu spät
+
+[blacklist]
+insult
+slur
 

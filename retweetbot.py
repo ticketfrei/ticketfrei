@@ -1,10 +1,12 @@
 #!/usr/bin/env python
-__encoding__ = "utf-8"
 
 import twitter
 import requests
+import pytoml as toml
 import trigger
 from time import sleep
+
+__encoding__ = "utf-8"
 
 
 class RetweetBot(object):
@@ -18,7 +20,7 @@ class RetweetBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, trigger=trigger.Trigger(),
+    def __init__(self, trigger,
                  keypath="appkeys/ticketfrei@twitter.com",
                  historypath="last_mention",
                  triggerpath="goodlist",
@@ -182,9 +184,15 @@ class RetweetBot(object):
 
 if __name__ == "__main__":
     # create an Api object
-    bot = RetweetBot()
+    with open('ticketfrei.cfg') as configfile:
+        config = toml.load(configfile)
+
+    trigger = trigger.Trigger(config)
+
+    bot = RetweetBot(trigger=trigger)
     while True:
-        bot.flow()
-        sleep(10)
-    #except:
-    #    bot.shutdown()
+        try:
+            bot.flow()
+        except:
+            bot.shutdown()
+        sleep(1)

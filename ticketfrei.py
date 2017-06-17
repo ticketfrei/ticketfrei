@@ -11,7 +11,7 @@ if __name__ == '__main__':
     with open('ticketfrei.cfg') as configfile:
         config = toml.load(configfile)
 
-    trigger = Trigger()
+    trigger = Trigger(config)
 
     mbot = RetootBot(config)
     tbot = RetweetBot(config, trigger=trigger)
