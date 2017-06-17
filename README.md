@@ -29,7 +29,11 @@ $ vim ticketfrei.cfg
 ```
 Edit the account credentials, so your bot can use your accounts.
 
-Also 
+Also add the words to the goodlist, which you want to require. A tweet is only retweeted, if it contains at least one of them. If you want to RT everything, just add your account name.
+
+There is also a blacklist, which you can use to automatically sort out malicious tweets. Be careful though, our filter can't read the intention with which a word was used. Maybe you wanted it there.
+
+Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in separate files. we will repare this soon.
 
 ## ideas
 
