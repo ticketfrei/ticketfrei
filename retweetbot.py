@@ -6,7 +6,7 @@ import trigger
 from time import sleep
 
 
-class Retweetbot(object):
+class RetweetBot(object):
     """
     This bot retweets all tweets which
     1) mention him,
@@ -155,15 +155,14 @@ class Retweetbot(object):
 
         for status in mentions:
             # Is the Text of the Tweet in the triggerlist?
-            should_retweet = self.trigger.check_string(status.text)
-
-            # Retweet status
-            if should_retweet:
+            if self.trigger.check_string(status.text):
+                # Retweet status
                 mastodon.append(self.retweet(status))
 
             # save the id so it doesn't get crawled again
             self.last_mention = status.id
             print self.last_mention
+        # Return Retweets for tooting on mastodon
         return mastodon
 
     def shutdown(self):
@@ -176,7 +175,7 @@ class Retweetbot(object):
 
 if __name__ == "main":
     # create an Api object
-    bot = Retweetbot()
+    bot = RetweetBot()
     try:
         while True:
             bot.flow()

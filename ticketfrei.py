@@ -3,6 +3,7 @@ import time
 
 from retootbot import RetootBot
 from retweetbot import RetweetBot
+from trigger import Trigger
 
 
 if __name__ == '__main__':
@@ -10,8 +11,10 @@ if __name__ == '__main__':
     with open('ticketfrei.cfg') as configfile:
         config = toml.load(configfile)
 
+    trigger = Trigger()
+
     mbot = RetootBot(config)
-    tbot = RetweetBot()
+    tbot = RetweetBot(config, trigger=trigger)
 
     try:
         statuses = []
