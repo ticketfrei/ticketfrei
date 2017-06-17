@@ -16,7 +16,9 @@ class Retweetbot(object):
 
     def __init__(self, keypath="appkeys/ticketfrei@twitter.com",
                  historypath="last_mention",
-                 triggerpath="triggerwords"):
+                 triggerpath="triggerwords",
+                 user_id="801098086005243904",
+                 screen_name="links_tech"):
         """
         Initializes the bot and loads all the necessary data.
 
@@ -31,6 +33,8 @@ class Retweetbot(object):
                                access_token_secret=keys[3].strip())
         self.historypath = historypath
         self.triggerpath = triggerpath
+        self.user_id = user_id
+        self.screen_name = screen_name
         self.last_mention = bot.get_history(self.historypath)
         self.triggers = bot.get_trigger(self.triggerpath)
 
@@ -71,61 +75,69 @@ class Retweetbot(object):
         toot = status.user.name + ": " + status.text
         return toot
 
+    def crawl_mentions(self):
+        done = False
+        mentions = []
+        while not done:
+            try:
+                mentions = self.api.GetMentions(since_id=self.last_mention)
+                done = True
+            except requests.exceptions.ConnectionError:
+                print("[ERROR] Bad Connection.")
+                sleep(10)
+        return mentions
+
+    def trigger_rt(self, status):
+        for triggerword in self.triggers:
+            if status.text.lower().find(triggerword):
+                return True
+        return False
+
+    def retweet(self, status):
+        done = False
+        while not done:
+            try:
+                self.api.PostRetweet(status.id)
+                self.bridge_mastodon(status)
+                done = True
+
+            # Hopefully we got rid of this error. If not, try to uncomment these lines.
+            # except twitter.error.TwitterError:
+            #    print("[ERROR] probably you already retweeted this tweet.")
+            #    done = True
+            except requests.exceptions.ConnectionError:
+                print("[ERROR] Bad Connection.")
+                sleep(10)
+
     def flow(self):
-        """
+        """ The flow of crawling mentions and retweeting them."""
 
-        """
-        try:
-            while 1:
-                sleep(1)
+        # Store all mentions in a list of Status Objects
+        mentions = self.crawl_mentions()
 
-                # Store all mentions in a list of Status Objects
-                done = False
-                while not done:
-                    try:
-                        mentions = self.api.GetMentions(since_id=self.last_mention)
-                        done = True
-                    except requests.exceptions.ConnectionError:
-                        print("[ERROR] Bad Connection.")
-                        sleep(10)
+        for status in mentions:
+            # Is the Text of the Tweet in the triggerlist?
+            should_retweet = self.trigger_rt(status)
 
-                print mentions  # debug
-                for status in mentions:
+            # Retweet status
+            if should_retweet:
+                self.retweet(status)
 
-                    # Is the Text of the Tweet in the triggerlist?
-                    should_retweet = False
-                    for triggerword in self.triggers:
-                        if status.text.lower().find(triggerword):
-                            should_retweet = True
-                            break
+            # save the id so it doesn't get crawled again
+            self.last_mention = status.id
+            print self.last_mention
 
-                    # Retweet status
-                    if should_retweet:
-                        done = False
-                        while not done:
-                            try:
-                                self.api.PostRetweet(status.id)
-                                self.bridge_mastodon(status)
-                                done = True
-
-                            # Hopefully we got rid of this error. If not, try to uncomment these lines.
-                            # except twitter.error.TwitterError:
-                            #    print("[ERROR] probably you already retweeted this tweet.")
-                            #    done = True
-                            except requests.exceptions.ConnectionError:
-                                print("[ERROR] Bad Connection.")
-                                sleep(10)
-
-                    # save the id so it doesn't get crawled again
-                    self.last_mention = status.id
-                    print self.last_mention
-        except:
-            print "[ERROR] Shit went wrong, closing down."
-            with open(self.historypath, "w") as f:
-                f.write(str(self.last_mention))
-            self.api.PostDirectMessage("Help! I broke down. restart me pls :$", "801098086005243904", "links_tech")
+    def shutdown(self):
+        print "[ERROR] Shit went wrong, closing down."
+        with open(self.historypath, "w") as f:
+            f.write(str(self.last_mention))
+        self.api.PostDirectMessage("Help! I broke down. restart me pls :$", self.user_id, self.screen_name)
 
 
 if __name__ == "main":
     # create an Api object
     bot = Retweetbot()
+    try:
+        bot.flow()
+    except:
+        bot.shutdown()
