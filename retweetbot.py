@@ -2,6 +2,7 @@
 
 import twitter
 import requests
+import trigger
 from time import sleep
 
 
@@ -16,9 +17,10 @@ class Retweetbot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, keypath="appkeys/ticketfrei@twitter.com",
+    def __init__(self, trigger=trigger.Trigger(),
+                 keypath="appkeys/ticketfrei@twitter.com",
                  historypath="last_mention",
-                 triggerpath="triggerwords",
+                 triggerpath="goodlist",
                  user_id="801098086005243904",
                  screen_name="links_tech"):
         """
@@ -39,6 +41,7 @@ class Retweetbot(object):
         self.screen_name = screen_name
         self.last_mention = bot.get_history(self.historypath)
         self.triggers = bot.get_trigger(self.triggerpath)
+        self.trigger = trigger
 
     def get_api_keys(self, path):
         """
@@ -52,8 +55,13 @@ class Retweetbot(object):
 
         :return: keys: list of these 4 strings.
         """
-        with open(path, "r") as f:
-            keys = [s.strip() for s in f.readlines()]
+        keys = []
+        try:
+            with open(path, "r") as f:
+                keys = [s.strip() for s in f.readlines()]
+        except IOError:
+            print "[ERROR] You didn't specify Twitter API oAuth keys. Look into the documentation."
+            exit(-1)
         return keys
 
     def get_history(self, path):
@@ -72,7 +80,7 @@ class Retweetbot(object):
             triggers = [s.strip() for s in f.readlines()]
         return triggers
 
-    def bridge_mastodon(self, status):
+    def format_mastodon(self, status):
         """
         Bridge your Retweets to mastodon.
         :todo vmann: add all the mastodon API magic.
@@ -89,42 +97,25 @@ class Retweetbot(object):
 
         :return: list of Status objects
         """
-        done = False
-        mentions = []
-        while not done:
+        while 1:
             try:
                 mentions = self.api.GetMentions(since_id=self.last_mention)
-                done = True
+                return mentions
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
                 sleep(10)
-        return mentions
-
-    def trigger_rt(self, status):
-        """
-        Checks if the text of a tweet matches the relevant trigger words.
-
-        :param status: A given tweet
-        :return: if it should be retweeted
-        """
-        for triggerword in self.triggers:
-            if status.text.lower().find(triggerword):
-                return True
-        return False
 
     def retweet(self, status):
         """
         Retweets a given tweet.
 
         :param status: A tweet object.
+        :return: toot: string of the tweet, to toot on mastodon.
         """
-        done = False
-        while not done:
+        while 1:
             try:
                 self.api.PostRetweet(status.id)
-                self.bridge_mastodon(status)
-                done = True
-
+                return self.format_mastodon(status)
             # Hopefully we got rid of this error. If not, try to uncomment these lines.
             # except twitter.error.TwitterError:
             #    print("[ERROR] probably you already retweeted this tweet.")
@@ -133,23 +124,47 @@ class Retweetbot(object):
                 print("[ERROR] Bad Connection.")
                 sleep(10)
 
-    def flow(self):
-        """ The flow of crawling mentions and retweeting them."""
+    def tweet(self, post):
+        """
+        Tweet a post.
+
+        :param post: String with the text to tweet.
+        """
+        while 1:
+            try:
+                self.api.PostUpdate(status=post)
+                return
+            except requests.exceptions.ConnectionError:
+                print("[ERROR] Bad Connection.")
+                sleep(10)
+
+    def flow(self, to_tweet=()):
+        """ The flow of crawling mentions and retweeting them.
+
+        :param to_tweet: list of strings to tweet
+        :return list of retweeted tweets, to toot on mastodon
+        """
+
+        # Tweet the toots the Retootbot gives to us
+        for post in to_tweet:
+            self.tweet(post)
 
         # Store all mentions in a list of Status Objects
         mentions = self.crawl_mentions()
+        mastodon = []
 
         for status in mentions:
             # Is the Text of the Tweet in the triggerlist?
-            should_retweet = self.trigger_rt(status)
+            should_retweet = self.trigger.check_string(status.text)
 
             # Retweet status
             if should_retweet:
-                self.retweet(status)
+                mastodon.append(self.retweet(status))
 
             # save the id so it doesn't get crawled again
             self.last_mention = status.id
             print self.last_mention
+        return mastodon
 
     def shutdown(self):
         """ If something breaks, it shuts down the bot and messages the owner. """
