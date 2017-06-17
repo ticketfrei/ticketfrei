@@ -41,13 +41,15 @@ $ pip3 install Mastodon.py pytoml
 ## to do
 
 - [x] Twitter: Crawl mentions
-- [ ] Mastodon: Crawl mentions
+- [x] Mastodon: Crawl mentions
 - [ ] Write toots/tweets to database
 - [x] Twitter: retweet people
-- [ ] Mastodon: boost people
+- [x] Mastodon: boost people
 - [ ] Mastodon: toot who has been retweeted on twitter
 - [ ] Twitter: tweet who has been boosted on mastodon
 - [x] Twitter: access the API
 - [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
+- [x] Write Bots as Classes to be easier implemented
+- [ ] Create extra Class for the filter
 
 
