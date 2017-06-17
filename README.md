@@ -47,7 +47,7 @@ $ pip3 install Mastodon.py
 - [ ] Mastodon: boost people
 - [ ] Mastodon: toot who has been retweeted on twitter
 - [ ] Twitter: tweet who has been boosted on mastodon
-- [ ] Twitter: access the API
+- [x] Twitter: access the API
 - [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
 
 
