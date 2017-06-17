@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+__encoding__ = "utf-8"
 
 
 class Trigger(object):
@@ -21,10 +22,11 @@ class Trigger(object):
         :param string: A given string. Tweet or Toot, cleaned from html.
         :return: If the string passes the test
         """
+        string = unicode.decode(string)
         for triggerword in self.goodlist:
-            if string.lower().find(triggerword):
+            if string.lower().find(triggerword) != -1:
                 for triggerword in self.badlist:
-                    if string.lower().find(triggerword):
+                    if string.lower().find(triggerword) != -1:
                         return False
                 return True
         return False

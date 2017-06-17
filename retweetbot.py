@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+__encoding__ = "utf-8"
 
 import twitter
 import requests
@@ -105,6 +106,9 @@ class RetweetBot(object):
             try:
                 mentions = self.api.GetMentions(since_id=self.last_mention)
                 return mentions
+            except twitter.TwitterError:
+                print("[ERROR] Rate Limit exceeded, trying again once a minute")
+                sleep(60)
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
                 sleep(10)
@@ -118,7 +122,7 @@ class RetweetBot(object):
         """
         while 1:
             try:
-                self.api.PostRetweet(status.id)
+                print self.api.PostRetweet(status.id)
                 return self.format_mastodon(status)
             # Hopefully we got rid of this error. If not, try to uncomment these lines.
             # except twitter.error.TwitterError:
@@ -181,7 +185,7 @@ if __name__ == "__main__":
     # create an Api object
     bot = RetweetBot()
     while True:
-        sleep(1)
+        sleep(10)
         bot.flow()
     #except:
     #    bot.shutdown()

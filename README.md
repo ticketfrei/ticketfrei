@@ -22,6 +22,14 @@ Install dependencies
 $ pip3 install Mastodon.py pytoml pickle
 $ pip install python-twitter pytoml requests
 ```
+Configure
+```shell
+$ cp ticketfrei.cfg.example ticketfrei.cfg
+$ vim ticketfrei.cfg
+```
+Edit the account credentials, so your bot can use your accounts.
+
+Also 
 
 ## ideas
 

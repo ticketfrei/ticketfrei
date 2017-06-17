@@ -45,7 +45,7 @@ class RetootBot(object):
                 self.config['muser']['password']
             )
 
-    def retoot(self, toots=[]):
+    def retoot(self, toots=()):
         # toot external provided messages
         for toot in toots:
             self.m.toot(toot)
