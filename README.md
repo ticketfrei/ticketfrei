@@ -35,15 +35,15 @@ $ pip3 install Mastodon.py pytoml
 - [x] How to crawl mentions with the mastodon API
 - [x] How to boost people with the mastodon API
 - [x] How to access the twitter API
-- [ ] How to crawl mentions with the twitter API
-- [ ] How to retweet people with the twitter API
+- [x] How to crawl mentions with the twitter API
+- [x] How to retweet people with the twitter API
 
 ## to do
 
-- [ ] Twitter: Crawl mentions
+- [x] Twitter: Crawl mentions
 - [ ] Mastodon: Crawl mentions
 - [ ] Write toots/tweets to database
-- [ ] Twitter: retweet people
+- [x] Twitter: retweet people
 - [ ] Mastodon: boost people
 - [ ] Mastodon: toot who has been retweeted on twitter
 - [ ] Twitter: tweet who has been boosted on mastodon
