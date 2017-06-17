@@ -1,3 +1,7 @@
+*.swp
+ticketfrei.cfg
+seen_toots.pickle
+seen_toots.pickle.part
 pip-selfcheck.json
 bin/
 include/

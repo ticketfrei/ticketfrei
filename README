@@ -9,5 +9,5 @@ $ . bin/activate
 ```
 Install dependencies
 ```shell
-$ pip3 install Mastodon.py
+$ pip3 install Mastodon.py pytoml
 ```

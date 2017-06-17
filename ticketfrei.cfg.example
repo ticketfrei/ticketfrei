@@ -1,0 +1,7 @@
+[app]
+app_name = 'yourcity_ticketfrei'
+
+[user]
+email = 'youremail@server.tld'
+password = 'yourpassword'
+server = 'yourmastodoninstance'
