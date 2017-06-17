@@ -122,12 +122,12 @@ class RetweetBot(object):
         """
         while 1:
             try:
-                print self.api.PostRetweet(status.id)
+                self.api.PostRetweet(status.id)
                 return self.format_mastodon(status)
-            # Hopefully we got rid of this error. If not, try to uncomment these lines.
-            # except twitter.error.TwitterError:
-            #    print("[ERROR] probably you already retweeted this tweet.")
-            #    done = True
+            # maybe one day we get rid of this error. If not, try to uncomment these lines.
+            except twitter.error.TwitterError:
+                print("[ERROR] probably you already retweeted this tweet.")
+                return None
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
                 sleep(10)
@@ -169,7 +169,6 @@ class RetweetBot(object):
 
             # save the id so it doesn't get crawled again
             self.last_mention = status.id
-            print self.last_mention  # debug
         # Return Retweets for tooting on mastodon
         return mastodon
 
@@ -185,7 +184,7 @@ if __name__ == "__main__":
     # create an Api object
     bot = RetweetBot()
     while True:
-        sleep(10)
         bot.flow()
+        sleep(10)
     #except:
     #    bot.shutdown()
