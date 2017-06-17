@@ -10,10 +10,23 @@ class Trigger(object):
         self.goodlistpath = goodlistpath
         with open(goodlistpath, "r+") as f:
             self.goodlist = [s.strip() for s in f.readlines()]
+        self.goodlist = self.strings_ok(self.goodlist)
 
         self.badlistpath = badlistpath
         with open(badlistpath, "r+") as f:
             self.badlist = [s.strip() for s in f.readlines()]
+        self.badlist = self.strings_ok(self.badlist)
+
+    def strings_ok(self, filterlist):
+        """
+        Checks if an empty line is in a list and removes it.
+        :param filterlist: a good- or badlist.
+        :return: filterlist: a corrected list.
+        """
+        for word in filterlist:
+            if word == "\n":
+                del word
+        return filterlist
 
     def check_string(self, string):
         """
