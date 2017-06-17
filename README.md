@@ -39,14 +39,6 @@ Also
 * Build a tool that deletes wrong toots/tweets on both platforms, would work nicely with a web UI.
 * write the muted people to the db, to easily undo the mutes if necessary.
 
-## research
-
-- [x] How to crawl mentions with the mastodon API
-- [x] How to boost people with the mastodon API
-- [x] How to access the twitter API
-- [x] How to crawl mentions with the twitter API
-- [x] How to retweet people with the twitter API
-
 ## to do
 
 - [x] Twitter: Crawl mentions
