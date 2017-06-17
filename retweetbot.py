@@ -7,7 +7,9 @@ from time import sleep
 
 class Retweetbot(object):
     """
-    :todo description
+    This bot retweets all tweets which
+    1) mention him,
+    2) contain at least one of the triggerwords provided.
 
     api: The api object, generated with your oAuth keys, responsible for communication with twitter rest API
     triggers: a list of words, one of them has to be in a tweet for it to be retweeted
@@ -27,10 +29,10 @@ class Retweetbot(object):
         :param triggerpath: Path to the file of the triggerwords
         """
         keys = self.get_api_keys(keypath)
-        self.api = twitter.Api(consumer_key=keys[0].strip(),
-                               consumer_secret=keys[1].strip(),
-                               access_token_key=keys[2].strip(),
-                               access_token_secret=keys[3].strip())
+        self.api = twitter.Api(consumer_key=keys[0],
+                               consumer_secret=keys[1],
+                               access_token_key=keys[2],
+                               access_token_secret=keys[3])
         self.historypath = historypath
         self.triggerpath = triggerpath
         self.user_id = user_id
@@ -47,13 +49,19 @@ class Retweetbot(object):
         consumer_secret
         access_token_key
         access_token_secret
+
+        :return: keys: list of these 4 strings.
         """
         with open(path, "r") as f:
-            keys = f.readlines()
+            keys = [s.strip() for s in f.readlines()]
         return keys
 
     def get_history(self, path):
-        """ This counter is needed to keep track of your mentions, so you don't double RT them """
+        """ This counter is needed to keep track of your mentions, so you don't double RT them
+
+        :param path: string: contains path to the file where the ID of the last_mention is stored.
+        :return: last_mention: ID of the last tweet which mentioned the bot
+        """
         with open(path, "r+") as f:
             last_mention = f.read()
         return last_mention
@@ -76,6 +84,11 @@ class Retweetbot(object):
         return toot
 
     def crawl_mentions(self):
+        """
+        crawls all Tweets which mention the bot from the twitter rest API.
+
+        :return: list of Status objects
+        """
         done = False
         mentions = []
         while not done:
@@ -88,12 +101,23 @@ class Retweetbot(object):
         return mentions
 
     def trigger_rt(self, status):
+        """
+        Checks if the text of a tweet matches the relevant trigger words.
+
+        :param status: A given tweet
+        :return: if it should be retweeted
+        """
         for triggerword in self.triggers:
             if status.text.lower().find(triggerword):
                 return True
         return False
 
     def retweet(self, status):
+        """
+        Retweets a given tweet.
+
+        :param status: A tweet object.
+        """
         done = False
         while not done:
             try:
@@ -128,6 +152,7 @@ class Retweetbot(object):
             print self.last_mention
 
     def shutdown(self):
+        """ If something breaks, it shuts down the bot and messages the owner. """
         print "[ERROR] Shit went wrong, closing down."
         with open(self.historypath, "w") as f:
             f.write(str(self.last_mention))
@@ -138,6 +163,7 @@ if __name__ == "main":
     # create an Api object
     bot = Retweetbot()
     try:
-        bot.flow()
+        while True:
+            bot.flow()
     except:
         bot.shutdown()
