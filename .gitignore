@@ -1,4 +1,6 @@
 *.swp
+.idea/
+last_rt
 ticketfrei.cfg
 seen_toots.pickle
 seen_toots.pickle.part
