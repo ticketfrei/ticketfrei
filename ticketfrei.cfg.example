@@ -1,7 +1,17 @@
-[app]
+##
+# Twitter bot configuration
+#
+
+# TODO
+
+##
+# Mastodon bot configuration
+#
+
+[mapp]
 app_name = 'yourcity_ticketfrei'
 
-[user]
+[muser]
 email = 'youremail@server.tld'
 password = 'yourpassword'
 server = 'yourmastodoninstance'
