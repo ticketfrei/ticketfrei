@@ -39,8 +39,8 @@ class RetweetBot(object):
         self.triggerpath = triggerpath
         self.user_id = user_id
         self.screen_name = screen_name
-        self.last_mention = bot.get_history(self.historypath)
-        self.triggers = bot.get_trigger(self.triggerpath)
+        self.last_mention = self.get_history(self.historypath)
+        self.triggers = self.get_trigger(self.triggerpath)
         self.trigger = trigger
 
     def get_api_keys(self, path):
@@ -70,8 +70,12 @@ class RetweetBot(object):
         :param path: string: contains path to the file where the ID of the last_mention is stored.
         :return: last_mention: ID of the last tweet which mentioned the bot
         """
-        with open(path, "r+") as f:
-            last_mention = f.read()
+        try:
+            with open(path, "r+") as f:
+                last_mention = f.read()
+        except IOError:
+            with open(path, "w+"):
+                last_mention = ""
         return last_mention
 
     def get_trigger(self, path):
@@ -161,7 +165,7 @@ class RetweetBot(object):
 
             # save the id so it doesn't get crawled again
             self.last_mention = status.id
-            print self.last_mention
+            print self.last_mention  # debug
         # Return Retweets for tooting on mastodon
         return mastodon
 
@@ -173,11 +177,11 @@ class RetweetBot(object):
         self.api.PostDirectMessage("Help! I broke down. restart me pls :$", self.user_id, self.screen_name)
 
 
-if __name__ == "main":
+if __name__ == "__main__":
     # create an Api object
     bot = RetweetBot()
-    try:
-        while True:
-            bot.flow()
-    except:
-        bot.shutdown()
+    while True:
+        sleep(1)
+        bot.flow()
+    #except:
+    #    bot.shutdown()

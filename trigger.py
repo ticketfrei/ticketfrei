@@ -44,5 +44,5 @@ class Trigger(object):
             old.append(word)
             f.writelines(old)
 
-if __name__ == "main":
+if __name__ == "__main__":
     pass
