@@ -1,6 +1,7 @@
 *.swp
+*.pyc
 .idea/
-last_rt
+last_mention
 ticketfrei.cfg
 seen_toots.pickle
 seen_toots.pickle.part

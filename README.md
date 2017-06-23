@@ -47,16 +47,18 @@ Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in sepa
 
 - [x] Twitter: Crawl mentions
 - [x] Mastodon: Crawl mentions
-- [ ] Write toots/tweets to database
+- [ ] Write toots/tweets to database/log
 - [x] Twitter: retweet people
 - [x] Mastodon: boost people
+<!--
 - [ ] Mastodon: toot who has been retweeted on twitter
 - [ ] Twitter: tweet who has been boosted on mastodon
+-->
 - [x] Twitter: access the API
 - [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
 - [x] Write Bots as Classes to be easier implemented
 - [x] Create extra Class for the filter
 - [ ] Put as much as possible into ticketfrei.cfg
 - [ ] Make both bots run on their own *and* next to each other
-
-
+  - [ ] implement trigger class in retootbot
+  - [ ] read config in retweetbot

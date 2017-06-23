@@ -14,7 +14,7 @@ if __name__ == '__main__':
     trigger = Trigger(config)
 
     mbot = RetootBot(config)
-    tbot = RetweetBot(config, trigger=trigger)
+    tbot = RetweetBot(trigger)
 
     try:
         statuses = []
