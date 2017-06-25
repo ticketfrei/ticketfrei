@@ -23,7 +23,7 @@ class Trigger(object):
                 for pattern in listfile:
                     pattern = pattern.strip()
                     if pattern:
-                        self.goodlist.append(re.compile(pattern))
+                        self.goodlist.append(re.compile(pattern, re.IGNORECASE))
 
         try:
             blacklistpath = config['trigger']['blacklist_path']
@@ -47,12 +47,11 @@ class Trigger(object):
         :return: If the string passes the test
         """
         for pattern in self.goodlist:
-            if pattern.match(message):
+            if pattern.search(message) is not None:
                 break
         else:
             # no pattern matched
             return False
-
         for word in message.lower().split():
             if word in self.blacklist:
                 return False

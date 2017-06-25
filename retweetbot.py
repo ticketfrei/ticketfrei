@@ -194,6 +194,6 @@ if __name__ == "__main__":
     try:
         while True:
             bot.flow()
-            sleep(3)
+            sleep(6)
     except:
         bot.shutdown()
