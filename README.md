@@ -62,3 +62,4 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [ ] Make both bots run on their own *and* next to each other
   - [ ] implement trigger class in retootbot
   - [ ] read config in retweetbot
+- [ ] put shutdown contact in ticketfrei.cfg
