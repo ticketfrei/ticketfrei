@@ -191,10 +191,9 @@ if __name__ == "__main__":
     trigger = trigger.Trigger(config)
 
     bot = RetweetBot(trigger, config)
-    while True:
-        bot.flow()
-        try:
-            pass
-        except:
-            bot.shutdown()
-        sleep(3)
+    try:
+        while True:
+            bot.flow()
+            sleep(3)
+    except:
+        bot.shutdown()

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
-import os
 import pytoml as toml
+import os
+import re
 
 
 class Trigger(object):
@@ -11,33 +12,32 @@ class Trigger(object):
         self.config = config
 
         try:
-            self.goodlistpath = config['trigger']['goodlist_path']
+            goodlistpath = config['trigger']['goodlist_path']
         except KeyError:
-            self.goodlistpath = 'goodlists'
-        self.goodlist = self.get_lists(self.goodlistpath)
+            goodlistpath = 'goodlists'
+
+        # load goodlists
+        self.goodlist = []
+        for filename in os.listdir(goodlistpath):
+            with open(os.path.join(goodlistpath, filename), "r+") as listfile:
+                for pattern in listfile:
+                    pattern = pattern.strip()
+                    if pattern:
+                        self.goodlist.append(re.compile(pattern))
 
         try:
-            self.blacklistpath = config['trigger']['blacklist_path']
+            blacklistpath = config['trigger']['blacklist_path']
         except KeyError:
-            self.blacklistpath = 'blacklists'
-        self.blacklist = self.get_lists(self.blacklistpath)
+            blacklistpath = 'blacklists'
 
-    def get_lists(self, path):
-        """
-        pass a folder with text files in it. each line in the files becomes a
-        filter word.
-
-        :param path: path to folder whose files shall be added to the set
-        :return: set of trigger words.
-        """
-        trigger_words = set()
-        for filename in os.listdir(path):
-            with open(os.path.join(path, filename), "r+") as listfile:
+        # load blacklists
+        self.blacklist = set()
+        for filename in os.listdir(blacklistpath):
+            with open(os.path.join(blacklistpath, filename), "r+") as listfile:
                 for word in listfile:
                     word = word.strip()
                     if word:
-                        trigger_words.add(word)
-        return trigger_words
+                        self.blacklist.add(word)
 
     def is_ok(self, message):
         """
@@ -46,13 +46,17 @@ class Trigger(object):
         :param message: A given string. Tweet or Toot, cleaned from html.
         :return: If the string passes the test
         """
-        ret = False
+        for pattern in self.goodlist:
+            if pattern.match(message):
+                break
+        else:
+            # no pattern matched
+            return False
+
         for word in message.lower().split():
-            if word in self.goodlist:
-                ret = True
             if word in self.blacklist:
                 return False
-        return ret
+        return True
 
 
 if __name__ == "__main__":
