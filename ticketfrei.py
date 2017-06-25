@@ -13,7 +13,7 @@ if __name__ == '__main__':
 
     trigger = Trigger(config)
 
-    mbot = RetootBot(config)
+    mbot = RetootBot(config, trigger)
     tbot = RetweetBot(trigger)
 
     try:

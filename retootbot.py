@@ -9,8 +9,9 @@ import time
 
 
 class RetootBot(object):
-    def __init__(self, config):
+    def __init__(self, config, filter):
         self.config = config
+        self.filter = filter
         self.register()
         self.login()
 
@@ -54,7 +55,8 @@ class RetootBot(object):
         retoots = []
         for notification in self.m.notifications():
             if (notification['type'] == 'mention'
-                    and notification['status']['id'] not in self.seen_toots):
+                    and notification['status']['id'] not in self.seen_toots
+                    and self.filter.check_string(notification['status']['content'])):
                 print('Boosting toot %d from %s: %s' % (
                     notification['status']['id'],
                     notification['status']['account']['acct'],
