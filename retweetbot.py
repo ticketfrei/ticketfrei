@@ -22,14 +22,12 @@ class RetweetBot(object):
 
     def __init__(self, trigger, config,
                  historypath="last_mention",
-                 triggerpath="goodlist",
                  user_id="801098086005243904",
                  screen_name="links_tech"):
         """
         Initializes the bot and loads all the necessary data.
 
         :param historypath: Path to the file with ID of the last retweeted Tweet
-        :param triggerpath: Path to the file of the triggerwords
         """
         self.config = config
         keys = self.get_api_keys()
@@ -38,11 +36,9 @@ class RetweetBot(object):
                                access_token_key=keys[2],
                                access_token_secret=keys[3])
         self.historypath = historypath
-        self.triggerpath = triggerpath
         self.user_id = user_id
         self.screen_name = screen_name
         self.last_mention = self.get_history(self.historypath)
-        self.triggers = self.get_trigger(self.triggerpath)
         self.trigger = trigger
 
     def get_api_keys(self):
@@ -80,12 +76,6 @@ class RetweetBot(object):
             with open(path, "w+"):
                 last_mention = ""
         return last_mention
-
-    def get_trigger(self, path):
-        """ Words which have to be included into the tweets for the tweet to get retweeted """
-        with open(path, "r") as f:
-            triggers = [s.strip() for s in f.readlines()]
-        return triggers
 
     def format_mastodon(self, status):
         """
@@ -189,10 +179,11 @@ if __name__ == "__main__":
 
     trigger = trigger.Trigger(config)
 
-    bot = RetweetBot(trigger=trigger)
+    bot = RetweetBot(trigger, config)
     while True:
+        bot.flow()
         try:
-            bot.flow()
+            pass
         except:
             bot.shutdown()
         sleep(1)
