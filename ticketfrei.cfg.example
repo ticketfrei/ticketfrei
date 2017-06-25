@@ -10,12 +10,12 @@ server = 'yourmastodoninstance'
 consumer_key = "yourconsumerkey"
 consumer_secret = yourconsumersecret"
 
+# shutdown_contact_userid = 012345
+# shutdown_contact_screen_name = 'yourscreenname'
+
 [tuser]
 access_token_key = "youraccesstokenkey"
 access_token_secret = "youraccesstokensecret"
-
-# shutdown_contact_userid = 012345
-# shutdown_contact_screen_name = 'yourscreenname'
 
 # [trigger]
 # goodlist_path = 'goodlists'
