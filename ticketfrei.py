@@ -20,7 +20,7 @@ if __name__ == '__main__':
         statuses = []
         while True:
             statuses = mbot.retoot(statuses)
-            statuses = tbot.flow(statuses)  # XXX not implemented in RetweetBot
+            statuses = tbot.flow(statuses)
             time.sleep(1)
     except:
         tbot.shutdown()
