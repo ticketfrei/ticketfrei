@@ -165,7 +165,7 @@ class RetweetBot(object):
 
         for status in mentions:
             # Is the Text of the Tweet in the triggerlist?
-            if self.trigger.check_string(status.text):
+            if self.trigger.is_ok(status.text):
                 # Retweet status
                 mastodon.append(self.retweet(status))
 
@@ -176,7 +176,7 @@ class RetweetBot(object):
 
     def shutdown(self):
         """ If something breaks, it shuts down the bot and messages the owner. """
-        print "[ERROR] Shit went wrong, closing down."
+        print("[ERROR] Shit went wrong, closing down.")
         with open(self.historypath, "w") as f:
             f.write(str(self.last_mention))
         self.api.PostDirectMessage("Help! I broke down. restart me pls :$", self.user_id, self.screen_name)

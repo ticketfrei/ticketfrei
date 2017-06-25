@@ -7,6 +7,8 @@ import pickle
 import re
 import time
 
+import trigger
+
 
 class RetootBot(object):
     def __init__(self, config, filter):
@@ -55,16 +57,18 @@ class RetootBot(object):
         retoots = []
         for notification in self.m.notifications():
             if (notification['type'] == 'mention'
-                    and notification['status']['id'] not in self.seen_toots
-                    and self.filter.check_string(notification['status']['content'])):
+                    and notification['status']['id'] not in self.seen_toots):
+                self.seen_toots.add(notification['status']['id'])
+                text_content = re.sub('<[^>]*>', '',
+                                      notification['status']['content'])
+                if not self.filter.is_ok(text_content):
+                    continue
                 print('Boosting toot %d from %s: %s' % (
                     notification['status']['id'],
                     notification['status']['account']['acct'],
                     notification['status']['content']))
                 self.m.status_reblog(notification['status']['id'])
-                retoots.append(re.sub('<[^>]*>', '',
-                                      notification['status']['content']))
-                self.seen_toots.add(notification['status']['id'])
+                retoots.append(text_content)
 
         # save state
         with open('seen_toots.pickle.part', 'xb') as f:
@@ -78,7 +82,10 @@ class RetootBot(object):
 if __name__ == '__main__':
     # read config in TOML format (https://github.com/toml-lang/toml#toml)
     with open('ticketfrei.cfg') as configfile:
-        bot = RetootBot(toml.load(configfile))
+        config = toml.load(configfile)
+
+    filter = trigger.Trigger(config)
+    bot = RetootBot(config, filter)
 
     while True:
         bot.retoot()
