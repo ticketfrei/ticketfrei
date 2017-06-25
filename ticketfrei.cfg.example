@@ -14,7 +14,9 @@ consumer_secret = yourconsumersecret"
 access_token_key = "youraccesstokenkey"
 access_token_secret = "youraccesstokensecret"
 
-[trigger]
-goodlist_path = "goodlists"
-blacklist_path = "blacklists"
+# shutdown_contact_userid = 012345
+# shutdown_contact_screen_name = 'yourscreenname'
 
+# [trigger]
+# goodlist_path = 'goodlists'
+# blacklist_path = 'blacklists'
