@@ -6,8 +6,6 @@ import pytoml as toml
 import trigger
 from time import sleep
 
-__encoding__ = "utf-8"
-
 
 class RetweetBot(object):
     """
@@ -15,19 +13,20 @@ class RetweetBot(object):
     1) mention him,
     2) contain at least one of the triggerwords provided.
 
-    api: The api object, generated with your oAuth keys, responsible for communication with twitter rest API
-    triggers: a list of words, one of them has to be in a tweet for it to be retweeted
+    api: The api object, generated with your oAuth keys, responsible for
+        communication with twitter rest API
+    triggers: a list of words, one of them has to be in a tweet for it to be
+        retweeted
     last_mention: the ID of the last tweet which mentioned you
     """
 
     def __init__(self, trigger, config,
-                 historypath="last_mention",
-                 user_id="801098086005243904",
-                 screen_name="links_tech"):
+                 historypath="last_mention"):
         """
         Initializes the bot and loads all the necessary data.
 
-        :param historypath: Path to the file with ID of the last retweeted Tweet
+        :param historypath: Path to the file with ID of the last retweeted
+            Tweet
         """
         self.config = config
         keys = self.get_api_keys()
@@ -36,8 +35,12 @@ class RetweetBot(object):
                                access_token_key=keys[2],
                                access_token_secret=keys[3])
         self.historypath = historypath
-        self.user_id = user_id
-        self.screen_name = screen_name
+        try:
+            self.user_id = self.config['tapp']['shutdown_contact_userid']
+            self.screen_name = \
+                self.config['tapp']['shutdown_contact_screen_name']
+        except KeyError:
+            self.no_shutdown_contact = True
         self.last_mention = self.get_history(self.historypath)
         self.trigger = trigger
 
@@ -64,9 +67,11 @@ class RetweetBot(object):
         return keys
 
     def get_history(self, path):
-        """ This counter is needed to keep track of your mentions, so you don't double RT them
+        """ This counter is needed to keep track of your mentions, so you
+        don't double RT them
 
-        :param path: string: contains path to the file where the ID of the last_mention is stored.
+        :param path: string: contains path to the file where the ID of the
+            last_mention is stored.
         :return: last_mention: ID of the last tweet which mentioned the bot
         """
         try:
@@ -83,7 +88,8 @@ class RetweetBot(object):
         :todo vmann: add all the mastodon API magic.
 
         :param status: Object of a tweet.
-        :return: toot: text tooted on mastodon, e.g. "_b3yond: There are uniformed controllers in the U2 at Opernhaus."
+        :return: toot: text tooted on mastodon, e.g. "_b3yond: There are
+            uniformed controllers in the U2 at Opernhaus."
         """
         toot = status.user.name + ": " + status.text
         return toot
@@ -99,7 +105,7 @@ class RetweetBot(object):
                 mentions = self.api.GetMentions(since_id=self.last_mention)
                 return mentions
             except twitter.TwitterError:
-                print("[ERROR] Rate Limit exceeded, trying again once a minute")
+                print("[ERROR] Rate Limit exceeded, trying again in a minute")
                 sleep(60)
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
@@ -116,7 +122,8 @@ class RetweetBot(object):
             try:
                 self.api.PostRetweet(status.id)
                 return self.format_mastodon(status)
-            # maybe one day we get rid of this error. If not, try to uncomment these lines.
+            # maybe one day we get rid of this error. If not, try to uncomment
+            # these lines.
             except twitter.error.TwitterError:
                 print("[ERROR] probably you already retweeted this tweet.")
                 return None
@@ -165,11 +172,15 @@ class RetweetBot(object):
         return mastodon
 
     def shutdown(self):
-        """ If something breaks, it shuts down the bot and messages the owner. """
+        """ If something breaks, it shuts down the bot and messages the owner.
+        """
         print("[ERROR] Shit went wrong, closing down.")
+        if self.no_shutdown_contact:
+            return
         with open(self.historypath, "w") as f:
             f.write(str(self.last_mention))
-        self.api.PostDirectMessage("Help! I broke down. restart me pls :$", self.user_id, self.screen_name)
+        self.api.PostDirectMessage("Help! I broke down. restart me pls :$",
+                                   self.user_id, self.screen_name)
 
 
 if __name__ == "__main__":

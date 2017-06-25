@@ -7,14 +7,15 @@ password = 'yourpassword'
 server = 'yourmastodoninstance'
 
 [tapp]
-consumer_key = "709823example98n4cnc098rnnsc98nec"
-consumer_secret = "09muvs098u08m9examplevsum098mu"
+consumer_key = 'yourtwitterconsumerkey'
+consumer_secret = 'yourtwitterconsumersecret'
+# shutdown_contact_userid = 012345
+# shutdown_contact_screen_name = 'yourscreenname'
 
 [tuser]
-access_token_key = "u098umgfres09ugexa-mplef7n60cwhxm12"
-access_token_secret = "8708mj9ßc298m34333example3333tex"
+access_token_key = 'youraccesstokenkey'
+access_token_secret = 'youraccesstokensecret'
 
-[trigger]
-goodlist_path = "goodlist/"
-blacklist_path = "blacklist/"
-
+# [trigger]
+# goodlist_path = 'goodlists'
+# blacklist_path = 'blacklists'
