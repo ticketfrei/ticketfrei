@@ -30,7 +30,8 @@ class Trigger(object):
         trigger_words = set()
         for filename in os.listdir(path):
             with open(path + filename, "r+") as f:
-                [trigger_words.add(s.strip()) for s in f.readlines()]
+                for s in f.readlines():
+                    trigger_words.add(s.strip())
         return trigger_words
 
     def strings_ok(self, filterlist):
