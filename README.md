@@ -44,7 +44,7 @@ Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in sepa
 * write the muted people to the db, to easily undo the mutes if necessary.
 
 ## to do
-
+Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [x] Twitter: Crawl mentions
 - [x] Mastodon: Crawl mentions
 - [ ] Write toots/tweets to database/log

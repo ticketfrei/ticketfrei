@@ -7,19 +7,15 @@ email = 'youremail@server.tld'
 password = 'yourpassword'
 server = 'yourmastodoninstance'
 
+[tapp]
+consumer_key = "709823example98n4cnc098rnnsc98nec"
+consumer_secret = "09muvs098u08m9examplevsum098mu"
+
 [tuser]
-consumer_key = "70982398n4cnc098rnnsc98nec"
-consumer_secret = "09muvs098u08m9vsum098mu"
-access_token_key = "u098umgfres09ug-f7n60cwhxm12"
-access_token_secret = "8708mj9ßc298m343333333tex"
+access_token_key = "u098umgfres09ugexa-mplef7n60cwhxm12"
+access_token_secret = "8708mj9ßc298m34333example3333tex"
 
-[goodlist]
-asdf
-oigna
-bahn
-zu spät
-
-[blacklist]
-insult
-slur
+[trigger]
+goodlist_path = "goodlist/"
+blacklist_path = "blacklist/"
 

@@ -20,8 +20,7 @@ class RetweetBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, trigger,
-                 keypath="appkeys/ticketfrei@twitter.com",
+    def __init__(self, trigger, config,
                  historypath="last_mention",
                  triggerpath="goodlist",
                  user_id="801098086005243904",
@@ -29,11 +28,11 @@ class RetweetBot(object):
         """
         Initializes the bot and loads all the necessary data.
 
-        :param keypath: Path to the file with API keys
         :param historypath: Path to the file with ID of the last retweeted Tweet
         :param triggerpath: Path to the file of the triggerwords
         """
-        keys = self.get_api_keys(keypath)
+        self.config = config
+        keys = self.get_api_keys()
         self.api = twitter.Api(consumer_key=keys[0],
                                consumer_secret=keys[1],
                                access_token_key=keys[2],
@@ -46,25 +45,26 @@ class RetweetBot(object):
         self.triggers = self.get_trigger(self.triggerpath)
         self.trigger = trigger
 
-    def get_api_keys(self, path):
+    def get_api_keys(self):
         """
         How to get these keys is described in doc/twitter_api.md
 
-        After you received keys, store them in ../appkeys/appname@service.tld, one at a line:
-        consumer_key
-        consumer_secret
-        access_token_key
-        access_token_secret
+        After you received keys, store them in your ticketfrei.cfg like this:
+        [tapp]
+        consumer_key = "..."
+        consumer_secret = "..."
+
+        [tuser]
+        access_token_key = "..."
+        access_token_secret = "..."
 
         :return: keys: list of these 4 strings.
         """
         keys = []
-        try:
-            with open(path, "r") as f:
-                keys = [s.strip() for s in f.readlines()]
-        except IOError:
-            print "[ERROR] You didn't specify Twitter API oAuth keys. Look into the documentation."
-            exit(-1)
+        keys.append(self.config['tapp']['consumer_key'])
+        keys.append(self.config['tapp']['consumer_secret'])
+        keys.append(self.config['tuser']['access_token_key'])
+        keys.append(self.config['tuser']['access_token_secret'])
         return keys
 
     def get_history(self, path):
