@@ -7,14 +7,15 @@ password = 'yourpassword'
 server = 'yourmastodoninstance'
 
 [tapp]
-consumer_key = 'yourtwitterconsumerkey'
-consumer_secret = 'yourtwitterconsumersecret'
-# shutdown_contact_userid = 012345
-# shutdown_contact_screen_name = 'yourscreenname'
+consumer_key = "yourconsumerkey"
+consumer_secret = yourconsumersecret"
 
 [tuser]
-access_token_key = 'youraccesstokenkey'
-access_token_secret = 'youraccesstokensecret'
+access_token_key = "youraccesstokenkey"
+access_token_secret = "youraccesstokensecret"
+
+# shutdown_contact_userid = 012345
+# shutdown_contact_screen_name = 'yourscreenname'
 
 # [trigger]
 # goodlist_path = 'goodlists'
