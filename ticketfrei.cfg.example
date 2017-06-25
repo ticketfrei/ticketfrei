@@ -1,4 +1,3 @@
-
 [mapp]
 app_name = 'yourcity_ticketfrei'
 
@@ -22,4 +21,3 @@ zu spät
 [blacklist]
 insult
 slur
-
