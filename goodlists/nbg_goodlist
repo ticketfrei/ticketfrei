@@ -1,6 +1,4 @@
-kontrolle
-fahrscheinkontrolle
-kontrolleur
+kontroll?e
 konti
 db
 vgn
@@ -15,12 +13,5 @@ tram
 linie
 nuernberg
 nürnberg
-s1
-s2
-s3
-s4
-u1
-u2
-u3
-u21
-u11
+s\d
+u\d\d?
