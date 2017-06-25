@@ -1,4 +1,3 @@
-
 [mapp]
 app_name = 'yourcity_ticketfrei'
 
@@ -14,8 +13,3 @@ consumer_secret = "09muvs098u08m9examplevsum098mu"
 [tuser]
 access_token_key = "u098umgfres09ugexa-mplef7n60cwhxm12"
 access_token_secret = "8708mj9ßc298m34333example3333tex"
-
-[trigger]
-goodlist_path = "goodlist/"
-blacklist_path = "blacklist/"
-
