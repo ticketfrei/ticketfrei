@@ -197,4 +197,4 @@ if __name__ == "__main__":
             pass
         except:
             bot.shutdown()
-        sleep(1)
+        sleep(3)
