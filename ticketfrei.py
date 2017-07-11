@@ -1,5 +1,6 @@
 import pytoml as toml
 import time
+import traceback
 
 from retootbot import RetootBot
 from retweetbot import RetweetBot
@@ -22,6 +23,6 @@ if __name__ == '__main__':
             statuses = mbot.retoot(statuses)
             statuses = tbot.flow(statuses)
             time.sleep(1)
-    except Exception as e:
-        print e
+    except:
+        traceback.print_exc()
         tbot.shutdown()

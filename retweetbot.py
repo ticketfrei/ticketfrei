@@ -5,6 +5,7 @@ import requests
 import pytoml as toml
 import trigger
 from time import sleep
+import traceback
 
 
 class RetweetBot(object):
@@ -195,6 +196,6 @@ if __name__ == "__main__":
         while True:
             bot.flow()
             sleep(6)
-    except Exception as e:
-	print(e)
+    except:
+	traceback.print_exc()
         bot.shutdown()
