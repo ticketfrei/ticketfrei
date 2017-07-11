@@ -127,7 +127,7 @@ class RetweetBot(object):
             # these lines.
             except twitter.error.TwitterError:
                 print("[ERROR] probably you already retweeted this tweet.")
-                return ()
+                return None
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
                 sleep(10)
@@ -165,7 +165,9 @@ class RetweetBot(object):
             # Is the Text of the Tweet in the triggerlist?
             if self.trigger.is_ok(status.text):
                 # Retweet status
-                mastodon.append(self.retweet(status))
+                toot = self.retweet(status)
+                if toot:
+                    mastodon.append(toot)
 
             # save the id so it doesn't get crawled again
             self.last_mention = status.id
