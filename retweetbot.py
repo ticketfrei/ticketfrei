@@ -199,7 +199,7 @@ if __name__ == "__main__":
     try:
         while True:
             bot.flow()
-            sleep(6)
+            sleep(10)
     except:
 	traceback.print_exc()
         bot.shutdown()

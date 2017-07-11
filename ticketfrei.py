@@ -22,7 +22,7 @@ if __name__ == '__main__':
         while True:
             statuses = mbot.retoot(statuses)
             statuses = tbot.flow(statuses)
-            time.sleep(6)
+            time.sleep(10)
     except:
         traceback.print_exc()
         tbot.shutdown()
