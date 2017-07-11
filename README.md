@@ -19,7 +19,7 @@ $ . bin/activate
 ```
 Install dependencies
 ```shell
-$ pip3 install Mastodon.py pytoml pickle
+$ pip3 install Mastodon.py pytoml
 $ pip install python-twitter pytoml requests
 ```
 Configure

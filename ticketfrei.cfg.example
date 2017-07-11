@@ -1,5 +1,5 @@
 [mapp]
-app_name = 'yourcity_ticketfrei'
+name = 'yourcity_ticketfrei'
 
 [muser]
 email = 'youremail@server.tld'
