@@ -127,7 +127,7 @@ class RetweetBot(object):
             # these lines.
             except twitter.error.TwitterError:
                 print("[ERROR] probably you already retweeted this tweet.")
-                return None
+                return ()
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
                 sleep(10)
