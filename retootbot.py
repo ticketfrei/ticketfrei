@@ -71,7 +71,7 @@ class RetootBot(object):
                 retoots.append(text_content)
 
         # save state
-        with open('seen_toots.pickle.part', 'xb') as f:
+        with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'w') as f:
             pickle.dump(self.seen_toots, f)
         os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
 
