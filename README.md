@@ -11,16 +11,16 @@ There is one security hole: people could start mentioning the bot with useless i
 
 # Install
 
-Install python3 with your favourite package manager.
+Install python and virtualenv with your favourite package manager.
 Create and activate virtualenv
+
 ```shell
-$ virtualenv -p python3 .
+$ virtualenv -p python2 .
 $ . bin/activate
 ```
 Install dependencies
 ```shell
-$ pip3 install Mastodon.py pytoml
-$ pip install python-twitter pytoml requests
+$ pip install python-twitter pytoml requests Mastodon.py
 ```
 Configure
 ```shell

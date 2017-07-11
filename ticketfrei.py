@@ -22,5 +22,6 @@ if __name__ == '__main__':
             statuses = mbot.retoot(statuses)
             statuses = tbot.flow(statuses)
             time.sleep(1)
-    except:
+    except Exception as e:
+        print e
         tbot.shutdown()
