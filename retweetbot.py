@@ -138,6 +138,8 @@ class RetweetBot(object):
 
         :param post: String with the text to tweet.
         """
+        if len(post) > 140:
+            post = post[:140 - 4] + u' ...'
         while 1:
             try:
                 self.api.PostUpdate(status=post)
