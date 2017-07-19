@@ -83,6 +83,11 @@ class RetweetBot(object):
                 last_mention = ""
         return last_mention
 
+    def save_last_mention(self):
+        """ Saves the last retweeted tweet in last_mention. """
+        with open(self.historypath, "w") as f:
+            f.write(str(self.last_mention))
+
     def format_mastodon(self, status):
         """
         Bridge your Retweets to mastodon.
@@ -106,7 +111,7 @@ class RetweetBot(object):
                 mentions = self.api.GetMentions(since_id=self.last_mention)
                 return mentions
             except twitter.TwitterError:
-                print("[ERROR] Rate Limit exceeded, trying again in a minute")
+                traceback.print_exc()
                 sleep(60)
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
@@ -122,11 +127,15 @@ class RetweetBot(object):
         while 1:
             try:
                 self.api.PostRetweet(status.id)
+                if status.id > self.last_mention:
+                    self.last_mention = status.id
                 return self.format_mastodon(status)
             # maybe one day we get rid of this error. If not, try to uncomment
             # these lines.
             except twitter.error.TwitterError:
                 print("[ERROR] probably you already retweeted this tweet.")
+                if status.id > self.last_mention:
+                    self.last_mention = status.id
                 return None
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
@@ -172,7 +181,8 @@ class RetweetBot(object):
                     mastodon.append(toot)
 
             # save the id so it doesn't get crawled again
-            self.last_mention = status.id
+            print status.id, self.last_mention # debug
+            self.save_last_mention()
         # Return Retweets for tooting on mastodon
         return mastodon
 
@@ -182,8 +192,7 @@ class RetweetBot(object):
         print("[ERROR] Shit went wrong, closing down.")
         if self.no_shutdown_contact:
             return
-        with open(self.historypath, "w") as f:
-            f.write(str(self.last_mention))
+        self.save_last_mention()
         self.api.PostDirectMessage("Help! I broke down. restart me pls :$",
                                    self.user_id, self.screen_name)
 
@@ -201,5 +210,5 @@ if __name__ == "__main__":
             bot.flow()
             sleep(10)
     except:
-	traceback.print_exc()
+        traceback.print_exc()
         bot.shutdown()
