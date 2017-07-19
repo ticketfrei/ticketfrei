@@ -39,8 +39,6 @@ Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in sepa
 ## ideas
 
 * You can only use the twitter API if you have confirmed a phone number and sacrificed a penguin in a blood ritual. So we should build it in a way that it uses the twitter web GUI. It's difficult, but maybe it works. We had another twitter bot that worked similarly, years ago: https://github.com/b3yond/twitter-bot
-* Make it for mastodon instead of twitter. Mastodon has an open API, that's way more fun. Also mastodon may profit from the network effects though it may be hard to reach the critical mass if you can only use mastodon users. 
-* Bridge to mastodon, so people can use both platforms. Easier to reach the critical mass. But could be hard to do without the twitter API.
 * Build a tool that deletes wrong toots/tweets on both platforms, would work nicely with a web UI.
 * write the muted people to the db, to easily undo the mutes if necessary.
 
