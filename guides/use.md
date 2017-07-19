@@ -1,6 +1,6 @@
 # How to use Ticketfrei
 
-How can you help sousveilling ticket controllers?
+Do you want to help sousveilling ticket controllers?
 
 ## Do you want to know if it's safe to ride without a ticket at the moment?
 
@@ -35,7 +35,9 @@ Just write a toot or a tweet, mentioning the bot, and tell it
 For example like this:
 
 ![Screenshot of tooting](tooting_screenshot.png)
+
 ![A toot ready to be boosted](toot_screenshot.png)
 
 The bot will soon boost your toot, so other people will be able to look at it and be safe.
+
 Thanks for helping to provide public transport for everyone!
