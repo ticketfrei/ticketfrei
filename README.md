@@ -8,6 +8,7 @@ This leads to a community which evolves around it; if you see ticket controllers
 
 There is one security hole: people could start mentioning the bot with useless information, turning it into a spammer. That's why it has to be maintained; if someone spams the bot, mute them and undo the retweet. So it won't retweet their future tweets and the useless retweet is deleted if someone tries to check if something was retweeted in the last hour or something.
 
+Website: https://wiki.links-it.de/IT/Ticketfrei
 
 # Install
 
@@ -50,16 +51,12 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [ ] Write toots/tweets to database/log
 - [x] Twitter: retweet people
 - [x] Mastodon: boost people
-<!--
-- [ ] Mastodon: toot who has been retweeted on twitter
-- [ ] Twitter: tweet who has been boosted on mastodon
--->
 - [x] Twitter: access the API
 - [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
 - [x] Write Bots as Classes to be easier implemented
 - [x] Create extra Class for the filter
-- [ ] Put as much as possible into ticketfrei.cfg
-- [ ] Make both bots run on their own *and* next to each other
-  - [ ] implement trigger class in retootbot
-  - [ ] read config in retweetbot
-- [ ] put shutdown contact in ticketfrei.cfg
+- [x] Put as much as possible into ticketfrei.cfg
+- [x] Make both bots run on their own *and* next to each other
+  - [x] implement trigger class in retootbot
+  - [x] read config in retweetbot
+- [x] put shutdown contact in ticketfrei.cfg
