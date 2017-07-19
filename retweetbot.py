@@ -79,9 +79,10 @@ class RetweetBot(object):
             with open(path, "r+") as f:
                 last_mention = f.read()
         except IOError:
-            with open(path, "w+"):
-                last_mention = ""
-        return last_mention
+            with open(path, "w+") as f:
+                last_mention = "0"
+                f.write(last_mention)
+        return int(last_mention)
 
     def save_last_mention(self):
         """ Saves the last retweeted tweet in last_mention. """
@@ -133,11 +134,13 @@ class RetweetBot(object):
             # maybe one day we get rid of this error. If not, try to uncomment
             # these lines.
             except twitter.error.TwitterError:
-                print("[ERROR] probably you already retweeted this tweet.")
+                traceback.print_exc()
+                print("[ERROR] probably you already retweeted this tweet: " + status.text)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return None
             except requests.exceptions.ConnectionError:
+                traceback.print_exc()
                 print("[ERROR] Bad Connection.")
                 sleep(10)
 
@@ -154,6 +157,7 @@ class RetweetBot(object):
                 self.api.PostUpdate(status=post)
                 return
             except requests.exceptions.ConnectionError:
+                traceback.print_exc()
                 print("[ERROR] Bad Connection.")
                 sleep(10)
 
@@ -181,7 +185,8 @@ class RetweetBot(object):
                     mastodon.append(toot)
 
             # save the id so it doesn't get crawled again
-            print status.id, self.last_mention # debug
+            if status.id > self.last_mention:
+                self.last_mention = status.id
             self.save_last_mention()
         # Return Retweets for tooting on mastodon
         return mastodon
