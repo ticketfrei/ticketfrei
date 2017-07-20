@@ -27,7 +27,7 @@ class RetootBot(object):
         if logpath:
             self.logpath = logpath
         else:
-            self.logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+            self.logpath = os.path.join("logs", str(datetime.datetime.now()))
 
     def log(self, message, tb=False):
         """
@@ -36,7 +36,7 @@ class RetootBot(object):
         :param message(string): Log message to be displayed
         :param tb: String of the Traceback
         """
-        time = "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now())
+        time = str(datetime.datetime.now())
         if tb:
             message = message + " The traceback is located at " + os.path.join("logs" + time)
             with open(os.path.join("logs", time), 'w+') as f:

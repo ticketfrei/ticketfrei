@@ -18,7 +18,7 @@ if __name__ == '__main__':
 
     trigger = Trigger(config)
 
-    logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+    logpath = os.path.join("logs", str(datetime.datetime.now()))
 
     mbot = RetootBot(config, trigger, logpath=logpath)
     tbot = RetweetBot(trigger, config, logpath=logpath)

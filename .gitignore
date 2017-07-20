@@ -9,4 +9,3 @@ pip-selfcheck.json
 bin/
 include/
 lib/
-logs/*
