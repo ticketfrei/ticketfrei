@@ -6,12 +6,12 @@ import os
 import pickle
 import re
 import time
-
+import datetime
 import trigger
 
 
 class RetootBot(object):
-    def __init__(self, config, filter):
+    def __init__(self, config, filter, logpath=None):
         self.config = config
         self.filter = filter
         self.register()
@@ -23,6 +23,28 @@ class RetootBot(object):
                 self.seen_toots = pickle.load(f)
         except IOError:
             self.seen_toots = set()
+
+        if logpath:
+            self.logpath = logpath
+        else:
+            self.logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+
+    def log(self, message, tb=False):
+        """
+        Writing an error message to a logfile in logs/ and prints it.
+
+        :param message(string): Log message to be displayed
+        :param tb: String of the Traceback
+        """
+        time = "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now())
+        if tb:
+            message = message + " The traceback is located at " + os.path.join("logs" + time)
+            with open(os.path.join("logs", time), 'w+') as f:
+                f.write(tb)
+        line = "[" + time + "] "+ message
+        with open(self.logpath, 'a') as f:
+            f.write(line)
+        print line
 
     def register(self):
         self.client_id = os.path.join(
@@ -63,7 +85,7 @@ class RetootBot(object):
                                       notification['status']['content'])
                 if not self.filter.is_ok(text_content):
                     continue
-                print('Boosting toot %d from %s: %s' % (
+                self.log('Boosting toot %d from %s: %s' % (
                     notification['status']['id'],
                     notification['status']['account']['acct'],
                     notification['status']['content']))

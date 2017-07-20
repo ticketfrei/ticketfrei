@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import twitter
+import os
 import datetime
 import requests
 import pytoml as toml
@@ -22,8 +23,7 @@ class RetweetBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, trigger, config,
-                 historypath="last_mention"):
+    def __init__(self, trigger, config, historypath="last_mention", logpath=None):
         """
         Initializes the bot and loads all the necessary data.
 
@@ -45,6 +45,11 @@ class RetweetBot(object):
             self.no_shutdown_contact = True
         self.last_mention = self.get_history(self.historypath)
         self.trigger = trigger
+        if logpath:
+            self.logpath = logpath
+        else:
+            self.logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+        print "Path of logfile: " + self.logpath
 
     def get_api_keys(self):
         """
@@ -67,6 +72,23 @@ class RetweetBot(object):
         keys.append(self.config['tuser']['access_token_key'])
         keys.append(self.config['tuser']['access_token_secret'])
         return keys
+
+    def log(self, message, tb=False):
+        """
+        Writing an error message to a logfile in logs/ and prints it.
+
+        :param message(string): Log message to be displayed
+        :param tb: String of the Traceback
+        """
+        time = "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now())
+        if tb:
+            message = message + " The traceback is located at " + os.path.join("logs" + time)
+            with open(os.path.join("logs", time), 'w+') as f:
+                f.write(tb)
+        line = "[" + time + "] "+ message
+        with open(self.logpath, 'a') as f:
+            f.write(line)
+        print line
 
     def get_history(self, path):
         """ This counter is needed to keep track of your mentions, so you
@@ -113,11 +135,10 @@ class RetweetBot(object):
                 mentions = self.api.GetMentions(since_id=self.last_mention)
                 return mentions
             except twitter.TwitterError:
-                traceback.print_exc()
-                print "[ERROR] Rate Limit Exceeded at {:%d.%m.%Y %H:%M:%S}".format(datetime.datetime.now())  # debug
+                self.log("Twitter API Error: Rate Limit Exceeded.")
                 sleep(60)
             except requests.exceptions.ConnectionError:
-                print("[ERROR] Bad Connection.")
+                self.log("Twitter API Error: Bad Connection.")
                 sleep(10)
 
     def retweet(self, status):
@@ -130,21 +151,19 @@ class RetweetBot(object):
         while 1:
             try:
                 self.api.PostRetweet(status.id)
-                print("Tweeted: " + self.format_mastodon(status))  # debug
+                self.log("Retweeted: " + self.format_mastodon(status))
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return self.format_mastodon(status)
             # maybe one day we get rid of this error. If not, try to uncomment
             # these lines.
             except twitter.error.TwitterError:
-                traceback.print_exc()
-                print("[ERROR] probably you already retweeted this tweet: " + status.text)
+                self.log("Twitter API Error: You probably already retweeted this tweet: " + status.text)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return None
             except requests.exceptions.ConnectionError:
-                traceback.print_exc()
-                print("[ERROR] Bad Connection.")
+                self.log("Twitter API Error: Bad Connection.")
                 sleep(10)
 
     def tweet(self, post):
@@ -160,8 +179,7 @@ class RetweetBot(object):
                 self.api.PostUpdate(status=post)
                 return
             except requests.exceptions.ConnectionError:
-                traceback.print_exc()
-                print("[ERROR] Bad Connection.")
+                self.log("Twitter API Error: Bad Connection.")
                 sleep(10)
 
     def flow(self, to_tweet=()):
@@ -197,12 +215,19 @@ class RetweetBot(object):
     def shutdown(self):
         """ If something breaks, it shuts down the bot and messages the owner.
         """
-        print("[ERROR] Shit went wrong, closing down.")
+        logmessage = "Shit went wrong, closing down."
+        if self.screen_name:
+            logmessage = logmessage + " Sending message to " + self.screen_name
+        self.log(logmessage)
         if self.no_shutdown_contact:
             return
         self.save_last_mention()
-        self.api.PostDirectMessage("Help! I broke down. restart me pls :$",
+        try:
+            self.api.PostDirectMessage("Help! I broke down. restart me pls :$",
                                    self.user_id, self.screen_name)
+        except:
+            traceback.print_exc()
+            print
 
 
 if __name__ == "__main__":
@@ -219,4 +244,5 @@ if __name__ == "__main__":
             sleep(10)
     except:
         traceback.print_exc()
+        print
         bot.shutdown()

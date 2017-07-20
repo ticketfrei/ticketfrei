@@ -1,6 +1,10 @@
+#!/usr/bin/env python
+
 import pytoml as toml
 import time
 import traceback
+import os
+import datetime
 
 from retootbot import RetootBot
 from retweetbot import RetweetBot
@@ -14,8 +18,10 @@ if __name__ == '__main__':
 
     trigger = Trigger(config)
 
-    mbot = RetootBot(config, trigger)
-    tbot = RetweetBot(trigger, config)
+    logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+
+    mbot = RetootBot(config, trigger, logpath=logpath)
+    tbot = RetweetBot(trigger, config, logpath=logpath)
 
     try:
         statuses = []
