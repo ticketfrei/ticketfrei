@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import twitter
+import datetime
 import requests
 import pytoml as toml
 import trigger
@@ -113,6 +114,7 @@ class RetweetBot(object):
                 return mentions
             except twitter.TwitterError:
                 traceback.print_exc()
+                print 'Timestamp: {:%d.%m.%Y %H:%M:%S}'.format(datetime.datetime.now())
                 sleep(60)
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
