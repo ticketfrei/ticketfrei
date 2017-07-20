@@ -114,7 +114,7 @@ class RetweetBot(object):
                 return mentions
             except twitter.TwitterError:
                 traceback.print_exc()
-                print 'Timestamp: {:%d.%m.%Y %H:%M:%S}'.format(datetime.datetime.now())
+                print "[ERROR] Rate Limit Exceeded at {:%d.%m.%Y %H:%M:%S}".format(datetime.datetime.now())  # debug
                 sleep(60)
             except requests.exceptions.ConnectionError:
                 print("[ERROR] Bad Connection.")
@@ -130,6 +130,7 @@ class RetweetBot(object):
         while 1:
             try:
                 self.api.PostRetweet(status.id)
+                print("Tweeted: " + self.format_mastodon(status))  # debug
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return self.format_mastodon(status)
