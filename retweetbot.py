@@ -38,6 +38,7 @@ class RetweetBot(object):
                                access_token_secret=keys[3])
         self.historypath = historypath
         try:
+            self.no_shutdown_contact = False
             self.user_id = self.config['tapp']['shutdown_contact_userid']
             self.screen_name = \
                 self.config['tapp']['shutdown_contact_screen_name']
