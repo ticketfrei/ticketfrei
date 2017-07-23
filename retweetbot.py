@@ -48,7 +48,7 @@ class RetweetBot(object):
         if logpath:
             self.logpath = logpath
         else:
-            self.logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+            self.logpath = os.path.join("logs", str(datetime.datetime.now()))
         print "Path of logfile: " + self.logpath
 
     def get_api_keys(self):
