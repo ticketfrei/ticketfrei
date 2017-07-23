@@ -41,7 +41,7 @@ class RetootBot(object):
             message = message + " The traceback is located at " + os.path.join("logs" + time)
             with open(os.path.join("logs", time), 'w+') as f:
                 f.write(tb)
-        line = "[" + time + "] "+ message
+        line = "[" + time + "] "+ message + "\n"
         with open(self.logpath, 'a') as f:
             f.write(line)
         print line
