@@ -44,7 +44,7 @@ class RetootBot(object):
         line = "[" + time + "] "+ message + "\n"
         with open(self.logpath, 'a') as f:
             f.write(line)
-        print line
+        print line,
 
     def register(self):
         self.client_id = os.path.join(

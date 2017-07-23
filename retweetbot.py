@@ -88,7 +88,7 @@ class RetweetBot(object):
         line = "[" + time + "] "+ message + "\n"
         with open(self.logpath, 'a') as f:
             f.write(line)
-        print line
+        print line,
 
     def get_history(self, path):
         """ This counter is needed to keep track of your mentions, so you
