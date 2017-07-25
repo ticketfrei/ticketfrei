@@ -85,11 +85,15 @@ class RetweetBot(object):
         time = str(datetime.datetime.now())
         if tb:
             message = message + " The traceback is located at " + os.path.join("logs" + time)
-            with open(os.path.join("logs", time, encoding='utf-8'), 'w+') as f:
+            with open(os.path.join("logs", time), 'w+') as f:
                 f.write(tb)
         line = "[" + time + "] "+ message + "\n"
-        with open(self.logpath, 'a', encoding='utf-8') as f:
-            f.write(line)
+        with open(self.logpath, 'a') as f:
+            try:
+                f.write(line)
+            except UnicodeEncodeError:
+                self.log("Failed to save log message due to UTF-8 error. ")
+                traceback.print_exc()
         print line,
 
     def get_history(self, path):
