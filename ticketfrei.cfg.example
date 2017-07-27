@@ -21,6 +21,7 @@ access_token_secret = "youraccesstokensecret"
 # goodlists are one regex per line.
 # badlists are one badword per line.
 # a message musst match at least one regex in goodlist and contain none of the badwords.
+# the variables mention the directory where the lists are located, not the filenames.
 
 # goodlist_path = 'goodlists'
 # blacklist_path = 'blacklists'

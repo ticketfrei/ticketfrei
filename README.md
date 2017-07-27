@@ -36,6 +36,14 @@ There is also a blacklist, which you can use to automatically sort out malicious
 
 Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in separate files. we will repare this soon.
 
+To keep the bots running when you are logged out of the shell, you can use screen:
+
+```shell
+sudo apt-get install screen 
+screen
+python ticketfrei.py
+```
+
 ## ideas
 
 * You can only use the twitter API if you have confirmed a phone number and sacrificed a penguin in a blood ritual. So we should build it in a way that it uses the twitter web GUI. It's difficult, but maybe it works. We had another twitter bot that worked similarly, years ago: https://github.com/b3yond/twitter-bot

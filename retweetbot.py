@@ -29,6 +29,7 @@ class RetweetBot(object):
 
         :param historypath: Path to the file with ID of the last retweeted
             Tweet
+        :param logpath: Path to the file where the log is stored
         """
         self.config = config
         keys = self.get_api_keys()
@@ -38,6 +39,7 @@ class RetweetBot(object):
                                access_token_secret=keys[3])
         self.historypath = historypath
         try:
+            self.no_shutdown_contact = False
             self.user_id = self.config['tapp']['shutdown_contact_userid']
             self.screen_name = \
                 self.config['tapp']['shutdown_contact_screen_name']
@@ -48,7 +50,7 @@ class RetweetBot(object):
         if logpath:
             self.logpath = logpath
         else:
-            self.logpath = os.path.join("logs", "{%Y-%m-%d_%H:%M:%S}".format(datetime.datetime.now()))
+            self.logpath = os.path.join("logs", str(datetime.datetime.now()))
         print "Path of logfile: " + self.logpath
 
     def get_api_keys(self):
@@ -85,10 +87,14 @@ class RetweetBot(object):
             message = message + " The traceback is located at " + os.path.join("logs" + time)
             with open(os.path.join("logs", time), 'w+') as f:
                 f.write(tb)
-        line = "[" + time + "] "+ message
+        line = "[" + time + "] "+ message + "\n"
         with open(self.logpath, 'a') as f:
-            f.write(line)
-        print line
+            try:
+                f.write(line)
+            except UnicodeEncodeError:
+                self.log("Failed to save log message due to UTF-8 error. ")
+                traceback.print_exc()
+        print line,
 
     def get_history(self, path):
         """ This counter is needed to keep track of your mentions, so you
@@ -136,7 +142,7 @@ class RetweetBot(object):
                 return mentions
             except twitter.TwitterError:
                 self.log("Twitter API Error: Rate Limit Exceeded.")
-                sleep(60)
+                sleep(120)
             except requests.exceptions.ConnectionError:
                 self.log("Twitter API Error: Bad Connection.")
                 sleep(10)

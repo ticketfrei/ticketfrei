@@ -42,10 +42,14 @@ class RetootBot(object):
             message = message + " The traceback is located at " + os.path.join("logs" + time)
             with open(os.path.join("logs", time), 'w+') as f:
                 f.write(tb)
-        line = "[" + time + "] "+ message
+        line = "[" + time + "] "+ message + "\n"
         with open(self.logpath, 'a') as f:
-            f.write(line)
-        print line
+            try:
+                f.write(line)
+            except UnicodeEncodeError:
+                self.log("Failed to save log message due to UTF-8 error. ")
+                traceback.print_exc()
+        print line,
 
     def register(self):
         self.client_id = os.path.join(
