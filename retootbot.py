@@ -8,6 +8,7 @@ import re
 import time
 import datetime
 import trigger
+import traceback
 
 
 class RetootBot(object):
