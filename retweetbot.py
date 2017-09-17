@@ -47,6 +47,7 @@ class RetweetBot(object):
             self.no_shutdown_contact = True
         self.last_mention = self.get_history(self.historypath)
         self.trigger = trigger
+        self.waitcounter = 0
         if logpath:
             self.logpath = logpath
         else:
@@ -118,6 +119,17 @@ class RetweetBot(object):
         with open(self.historypath, "w") as f:
             f.write(str(self.last_mention))
 
+    def waiting(self):
+        """
+        If the counter is not 0, you should be waiting instead.
+
+        :return: self.waitcounter(int): if 0, do smth.
+        """
+        if self.waitcounter > 0:
+            sleep(1)
+            self.waitcounter -= 1
+        return self.waitcounter
+
     def format_mastodon(self, status):
         """
         Bridge your Retweets to mastodon.
@@ -136,16 +148,17 @@ class RetweetBot(object):
 
         :return: list of Status objects
         """
-        while 1:
-            try:
+        try:
+            if not self.waiting():
                 mentions = self.api.GetMentions(since_id=self.last_mention)
                 return mentions
-            except twitter.TwitterError:
-                self.log("Twitter API Error: Rate Limit Exceeded.")
-                sleep(120)
-            except requests.exceptions.ConnectionError:
-                self.log("Twitter API Error: Bad Connection.")
-                sleep(10)
+        except twitter.TwitterError:
+            self.log("Twitter API Error: Rate Limit Exceeded.")
+            self.waitcounter += 60*15
+        except requests.exceptions.ConnectionError:
+            self.log("Twitter API Error: Bad Connection.")
+            self.waitcounter += 10
+        return None
 
     def retweet(self, status):
         """
@@ -203,18 +216,19 @@ class RetweetBot(object):
         mentions = self.crawl_mentions()
         mastodon = []
 
-        for status in mentions:
-            # Is the Text of the Tweet in the triggerlist?
-            if self.trigger.is_ok(status.text):
-                # Retweet status
-                toot = self.retweet(status)
-                if toot:
-                    mastodon.append(toot)
+        if mentions is not None:
+            for status in mentions:
+                # Is the Text of the Tweet in the triggerlist?
+                if self.trigger.is_ok(status.text):
+                    # Retweet status
+                    toot = self.retweet(status)
+                    if toot:
+                        mastodon.append(toot)
 
-            # save the id so it doesn't get crawled again
-            if status.id > self.last_mention:
-                self.last_mention = status.id
-            self.save_last_mention()
+                # save the id so it doesn't get crawled again
+                if status.id > self.last_mention:
+                    self.last_mention = status.id
+                self.save_last_mention()
         # Return Retweets for tooting on mastodon
         return mastodon
 
