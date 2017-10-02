@@ -82,22 +82,28 @@ class RetootBot(object):
 
         # boost mentions
         retoots = []
-        for notification in self.m.notifications():
-            if (notification['type'] == 'mention'
-                    and notification['status']['id'] not in self.seen_toots):
-                self.seen_toots.add(notification['status']['id'])
-                text_content = re.sub(r'<[^>]*>', '',
-                                      notification['status']['content'])
-                if not self.filter.is_ok(text_content):
-                    continue
-                self.log('Boosting toot %d from %s: %s' % (
-                    notification['status']['id'],
-                    notification['status']['account']['acct'],
-                    notification['status']['content']))
-                self.m.status_reblog(notification['status']['id'])
-                retoots.append('%s: %s' % (
-                    notification['status']['account']['acct'],
-                    re.sub(r'@\S*', '', text_content)))
+        try:
+            for notification in self.m.notifications():
+                if (notification['type'] == 'mention'
+                        and notification['status']['id'] not in self.seen_toots):
+                    self.seen_toots.add(notification['status']['id'])
+                    text_content = re.sub(r'<[^>]*>', '',
+                                          notification['status']['content'])
+                    if not self.filter.is_ok(text_content):
+                        continue
+                    self.log('Boosting toot %d from %s: %s' % (
+                        notification['status']['id'],
+                        notification['status']['account']['acct'],
+                        notification['status']['content']))
+                    self.m.status_reblog(notification['status']['id'])
+                    retoots.append('%s: %s' % (
+                        notification['status']['account']['acct'],
+                        re.sub(r'@\S*', '', text_content)))
+        # If the Mastodon instance returns interesting Errors, add them here:
+        except mastodon.MastodonAPIError:
+            self.log("There was a Mastodon API Error, probably the API is not available.")
+        except mastodon.MastodonNetworkError:
+            self.log("There was a Mastodon Network Error, could not reach the server.")
 
         # save state
         with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'w') as f:
