@@ -8,7 +8,7 @@ server = 'yourmastodoninstance'
 
 [tapp]
 consumer_key = "yourconsumerkey"
-consumer_secret = yourconsumersecret"
+consumer_secret = "yourconsumersecret"
 
 # shutdown_contact_userid = 012345
 # shutdown_contact_screen_name = 'yourscreenname'
