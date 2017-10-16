@@ -66,3 +66,5 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
   - [x] implement trigger class in retootbot
   - [x] read config in retweetbot
 - [x] put shutdown contact in ticketfrei.cfg
+- [ ] document what you have to configure if you setup the bot in another city
+- [ ] write a script to setup the bot easily. ask the admin for the necessary information
