@@ -68,3 +68,4 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [x] put shutdown contact in ticketfrei.cfg
 - [ ] document what you have to configure if you setup the bot in another city
 - [ ] write a script to setup the bot easily. ask the admin for the necessary information
+- [ ] write a web interface, so we can host the bot for other cities - ppl don't have to know the command line
