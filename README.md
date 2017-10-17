@@ -65,7 +65,7 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [x] Twitter: retweet people
 - [x] Mastodon: boost people
 - [x] Twitter: access the API
-- [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
+- [ ] Web UI that lets you easily delete toots/tweets per db id and/or mute the tweet author
 - [x] Write Bots as Classes to be easier implemented
 - [x] Create extra Class for the filter
 - [x] Put as much as possible into ticketfrei.cfg
