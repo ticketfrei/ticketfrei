@@ -30,19 +30,26 @@ $ vim ticketfrei.cfg
 ```
 Edit the account credentials, so your bot can use your accounts.
 
+### blacklisting
+
 Also add the words to the goodlist, which you want to require. A tweet is only retweeted, if it contains at least one of them. If you want to RT everything, just add your account name.
 
 There is also a blacklist, which you can use to automatically sort out malicious tweets. Be careful though, our filter can't read the intention with which a word was used. Maybe you wanted it there.
 
 Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in separate files. we will repare this soon.
 
+### screen
+
 To keep the bots running when you are logged out of the shell, you can use screen:
 
 ```shell
 sudo apt-get install screen 
+echo "if [ -z "$STY" ]; then screen -RR; fi" >> ~/.bash_login
 screen
 python ticketfrei.py
 ```
+
+To log out of the screen session, press "ctrl+a", and then "d".
 
 ## ideas
 
