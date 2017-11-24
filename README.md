@@ -30,19 +30,26 @@ $ vim ticketfrei.cfg
 ```
 Edit the account credentials, so your bot can use your accounts.
 
+### blacklisting
+
 Also add the words to the goodlist, which you want to require. A tweet is only retweeted, if it contains at least one of them. If you want to RT everything, just add your account name.
 
 There is also a blacklist, which you can use to automatically sort out malicious tweets. Be careful though, our filter can't read the intention with which a word was used. Maybe you wanted it there.
 
 Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in separate files. we will repare this soon.
 
+### screen
+
 To keep the bots running when you are logged out of the shell, you can use screen:
 
 ```shell
 sudo apt-get install screen 
+echo "if [ -z "$STY" ]; then screen -RR; fi" >> ~/.bash_login
 screen
 python ticketfrei.py
 ```
+
+To log out of the screen session, press "ctrl+a", and then "d".
 
 ## ideas
 
@@ -58,7 +65,7 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [x] Twitter: retweet people
 - [x] Mastodon: boost people
 - [x] Twitter: access the API
-- [ ] Web UI that lets you easily delete toots/tweets per db id and mute the tweet author
+- [ ] Web UI that lets you easily delete toots/tweets per db id and/or mute the tweet author
 - [x] Write Bots as Classes to be easier implemented
 - [x] Create extra Class for the filter
 - [x] Put as much as possible into ticketfrei.cfg
@@ -66,3 +73,6 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
   - [x] implement trigger class in retootbot
   - [x] read config in retweetbot
 - [x] put shutdown contact in ticketfrei.cfg
+- [ ] document what you have to configure if you setup the bot in another city
+- [ ] write a script to setup the bot easily. ask the admin for the necessary information
+- [ ] write a web interface, so we can host the bot for other cities - ppl don't have to know the command line
