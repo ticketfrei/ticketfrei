@@ -154,7 +154,7 @@ class RetweetBot(object):
                 return mentions
         except twitter.TwitterError:
             self.log("Twitter API Error: Rate Limit Exceeded.")
-            self.waitcounter += 60*15
+            self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
             self.log("Twitter API Error: Bad Connection.")
             self.waitcounter += 10
@@ -191,8 +191,8 @@ class RetweetBot(object):
 
         :param post: String with the text to tweet.
         """
-        if len(post) > 140:
-            post = post[:140 - 4] + u' ...'
+        if len(post) > 280:
+            post = post[:280 - 4] + u' ...'
         while 1:
             try:
                 self.api.PostUpdate(status=post)
@@ -261,7 +261,9 @@ if __name__ == "__main__":
     try:
         while True:
             bot.flow()
-            sleep(10)
+            sleep(60)
+    except KeyboardInterrupt:
+        print "Good bye! Remember to restart the bot."
     except:
         traceback.print_exc()
         print

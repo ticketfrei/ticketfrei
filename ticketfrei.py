@@ -28,7 +28,9 @@ if __name__ == '__main__':
         while True:
             statuses = mbot.retoot(statuses)
             statuses = tbot.flow(statuses)
-            time.sleep(10)
+            time.sleep(60)
+    except KeyboardInterrupt:
+        print "Good bye. Remember to restart the bot!"
     except:
         traceback.print_exc()
         tbot.shutdown()
