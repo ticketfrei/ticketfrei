@@ -7,23 +7,29 @@ The functionality is simple: it retweets every tweet where it is mentioned.
 This leads to a community which evolves around it; if you see ticket controllers, you tweet their location and mention the bot. The bot then retweets your tweet and others can read the info and think twice if they want to buy a ticket. If enough people, a critical mass, participate for the bot to become reliable, you have positive self-reinforcing dynamics.
 
 There is one security hole: people could start mentioning the bot with useless information, turning it into a spammer. That's why it has to be maintained; if someone spams the bot, mute them and undo the retweet. So it won't retweet their future tweets and the useless retweet is deleted if someone tries to check if something was retweeted in the last hour or something.
+To this date, we have never heard of this happening though.
 
 Website: https://wiki.links-it.de/IT/Ticketfrei
 
 # Install
 
-Install python and virtualenv with your favourite package manager.
-Create and activate virtualenv
+Setting up a ticketfrei bot for your city is quite easy. Here are the few steps:
+
+First you need to install python and virtualenv with your favourite package manager.
+Create and activate virtualenv:
 
 ```shell
+$ sudo apt install python virtualenv
 $ virtualenv -p python2 .
 $ . bin/activate
 ```
-Install dependencies
+
+Install the dependencies:
 ```shell
 $ pip install python-twitter pytoml requests Mastodon.py
 ```
-Configure
+
+Configure the bot:
 ```shell
 $ cp ticketfrei.cfg.example ticketfrei.cfg
 $ vim ticketfrei.cfg
@@ -73,6 +79,6 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
   - [x] implement trigger class in retootbot
   - [x] read config in retweetbot
 - [x] put shutdown contact in ticketfrei.cfg
-- [ ] document what you have to configure if you setup the bot in another city
+- [x] document what you have to configure if you setup the bot in another city
 - [ ] write a script to setup the bot easily. ask the admin for the necessary information
-- [ ] write a web interface, so we can host the bot for other cities - ppl don't have to know the command line
+- [ ] write a web interface, so we can host the bot for other cities - ppl don't have to know the command line or own a server
