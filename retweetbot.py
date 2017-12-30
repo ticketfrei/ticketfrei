@@ -54,7 +54,7 @@ class RetweetBot(object):
         self.trigger = trigger
         self.waitcounter = 0
         
-        self.log = log.log.log(logpath)
+        self.log = log.Log(logpath)
 
 
     def get_api_keys(self):
