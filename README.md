@@ -20,7 +20,7 @@ Create and activate virtualenv:
 
 ```shell
 $ sudo apt install python virtualenv
-$ virtualenv -p python2 .
+$ virtualenv -p python3 .
 $ . bin/activate
 ```
 
@@ -52,7 +52,7 @@ To keep the bots running when you are logged out of the shell, you can use scree
 sudo apt-get install screen 
 echo "if [ -z "$STY" ]; then screen -RR; fi" >> ~/.bash_login
 screen
-python ticketfrei.py
+python3 ticketfrei.py
 ```
 
 To log out of the screen session, press "ctrl+a", and then "d".
