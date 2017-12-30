@@ -19,20 +19,20 @@ First you need to install python and virtualenv with your favourite package mana
 Create and activate virtualenv:
 
 ```shell
-$ sudo apt install python virtualenv
-$ virtualenv -p python3 .
-$ . bin/activate
+sudo apt install python virtualenv
+virtualenv -p python3 .
+. bin/activate
 ```
 
 Install the dependencies:
 ```shell
-$ pip install python-twitter pytoml requests Mastodon.py
+pip install tweepy pytoml requests Mastodon.py
 ```
 
 Configure the bot:
 ```shell
-$ cp ticketfrei.cfg.example ticketfrei.cfg
-$ vim ticketfrei.cfg
+cp ticketfrei.cfg.example ticketfrei.cfg
+vim ticketfrei.cfg
 ```
 Edit the account credentials, so your bot can use your accounts.
 
