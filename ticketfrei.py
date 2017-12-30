@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import pytoml as toml
 import time
 import traceback
 import os
+import sys
 import datetime
 
 from retootbot import RetootBot
@@ -30,7 +31,7 @@ if __name__ == '__main__':
             statuses = tbot.flow(statuses)
             time.sleep(60)
     except KeyboardInterrupt:
-        print "Good bye. Remember to restart the bot!"
+        print("Good bye. Remember to restart the bot!")
     except:
-        traceback.print_exc()
+        tbot.log(traceback.extract_tb(sys.exc_info()[2]))
         tbot.shutdown()
