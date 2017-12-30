@@ -34,22 +34,22 @@ class RetootBot(object):
         """
         Writing an error message to a logfile in logs/ and prints it.
 
-        :param message(string): Log message to be displayed
+        :param message: (string) Log message to be displayed
         :param tb: String of the Traceback
         """
-        time = str(datetime.datetime.now())
+        timenow = str(datetime.datetime.now())
         if tb:
-            message = message + " The traceback is located at " + os.path.join("logs" + time)
-            with open(os.path.join("logs", time), 'w+') as f:
+            message = message + " The traceback is located at " + os.path.join("logs" + timenow)
+            with open(os.path.join("logs", timenow), 'w+') as f:
                 f.write(tb)
-        line = "[" + time + "] "+ message + "\n"
+        line = "[" + timenow + "] " + message + "\n"
         with open(self.logpath, 'a') as f:
             try:
                 f.write(line)
             except UnicodeEncodeError:
                 self.log("Failed to save log message due to UTF-8 error. ")
                 traceback.print_exc()
-        print line,
+        print(line, end="")
 
     def register(self):
         self.client_id = os.path.join(

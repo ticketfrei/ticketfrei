@@ -11,7 +11,7 @@ To this date, we have never heard of this happening though.
 
 Website: https://wiki.links-it.de/IT/Ticketfrei
 
-# Install
+## Install
 
 Setting up a ticketfrei bot for your city is quite easy. Here are the few steps:
 
@@ -81,4 +81,4 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [x] put shutdown contact in ticketfrei.cfg
 - [x] document what you have to configure if you setup the bot in another city
 - [ ] write a script to setup the bot easily. ask the admin for the necessary information
-- [ ] write a web interface, so we can host the bot for other cities - ppl don't have to know the command line or own a server
+- [ ] ongoing: solve issues

@@ -1,7 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
-import twitter
+import tweepy
 import os
+import sys
 import datetime
 import requests
 import pytoml as toml
@@ -32,27 +33,34 @@ class RetweetBot(object):
         :param logpath: Path to the file where the log is stored
         """
         self.config = config
+
+        # initialize API access
         keys = self.get_api_keys()
-        self.api = twitter.Api(consumer_key=keys[0],
-                               consumer_secret=keys[1],
-                               access_token_key=keys[2],
-                               access_token_secret=keys[3])
-        self.historypath = historypath
+        auth = tweepy.OAuthHandler(consumer_key=keys[0],
+                                   consumer_secret=keys[1])
+        auth.set_access_token(keys[2],  # access_token_key
+                              keys[3])  # access_token_secret
+        self.api = tweepy.API(auth)
+
+        # intialize shutdown contact
         try:
             self.no_shutdown_contact = False
-            self.user_id = self.config['tapp']['shutdown_contact_userid']
             self.screen_name = \
                 self.config['tapp']['shutdown_contact_screen_name']
         except KeyError:
             self.no_shutdown_contact = True
+
+        self.historypath = historypath
         self.last_mention = self.get_history(self.historypath)
         self.trigger = trigger
         self.waitcounter = 0
+
+        # initialize logging
         if logpath:
             self.logpath = logpath
         else:
             self.logpath = os.path.join("logs", str(datetime.datetime.now()))
-        print "Path of logfile: " + self.logpath
+        print("Path of logfile: " + self.logpath)
 
     def get_api_keys(self):
         """
@@ -69,18 +77,15 @@ class RetweetBot(object):
 
         :return: keys: list of these 4 strings.
         """
-        keys = []
-        keys.append(self.config['tapp']['consumer_key'])
-        keys.append(self.config['tapp']['consumer_secret'])
-        keys.append(self.config['tuser']['access_token_key'])
-        keys.append(self.config['tuser']['access_token_secret'])
+        keys = [self.config['tapp']['consumer_key'], self.config['tapp']['consumer_secret'],
+                self.config['tuser']['access_token_key'], self.config['tuser']['access_token_secret']]
         return keys
 
     def log(self, message, tb=False):
         """
         Writing an error message to a logfile in logs/ and prints it.
 
-        :param message(string): Log message to be displayed
+        :param message: (string) Log message to be displayed
         :param tb: String of the Traceback
         """
         time = str(datetime.datetime.now())
@@ -88,14 +93,14 @@ class RetweetBot(object):
             message = message + " The traceback is located at " + os.path.join("logs" + time)
             with open(os.path.join("logs", time), 'w+') as f:
                 f.write(tb)
-        line = "[" + time + "] "+ message + "\n"
+        line = "[" + time + "] " + message + "\n"
         with open(self.logpath, 'a') as f:
             try:
                 f.write(line)
             except UnicodeEncodeError:
                 self.log("Failed to save log message due to UTF-8 error. ")
                 traceback.print_exc()
-        print line,
+        print(line, end="")
 
     def get_history(self, path):
         """ This counter is needed to keep track of your mentions, so you
@@ -133,8 +138,8 @@ class RetweetBot(object):
     def format_mastodon(self, status):
         """
         Bridge your Retweets to mastodon.
-        :todo vmann: add all the mastodon API magic.
 
+        :rtype: string
         :param status: Object of a tweet.
         :return: toot: text tooted on mastodon, e.g. "_b3yond: There are
             uniformed controllers in the U2 at Opernhaus."
@@ -150,9 +155,12 @@ class RetweetBot(object):
         """
         try:
             if not self.waiting():
-                mentions = self.api.GetMentions(since_id=self.last_mention)
+                if self.last_mention == 0:
+                    mentions = self.api.mentions_timeline()
+                else:
+                    mentions = self.api.mentions_timeline(since_id=self.last_mention)
                 return mentions
-        except twitter.TwitterError:
+        except tweepy.RateLimitError:
             self.log("Twitter API Error: Rate Limit Exceeded.")
             self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
@@ -169,21 +177,22 @@ class RetweetBot(object):
         """
         while 1:
             try:
-                self.api.PostRetweet(status.id)
+                self.api.retweet(status.id)
                 self.log("Retweeted: " + self.format_mastodon(status))
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return self.format_mastodon(status)
             # maybe one day we get rid of this error. If not, try to uncomment
             # these lines.
-            except twitter.error.TwitterError:
-                self.log("Twitter API Error: You probably already retweeted this tweet: " + status.text)
-                if status.id > self.last_mention:
-                    self.last_mention = status.id
-                return None
             except requests.exceptions.ConnectionError:
                 self.log("Twitter API Error: Bad Connection.")
                 sleep(10)
+            except tweepy.TweepError as error:
+                self.log("Twitter Error " + error.api_code + ": " + error.reason + error.response)
+                # self.log("Twitter API Error: You probably already retweeted this tweet: " + status.text)
+                if status.id > self.last_mention:
+                    self.last_mention = status.id
+                return None
 
     def tweet(self, post):
         """
@@ -195,7 +204,7 @@ class RetweetBot(object):
             post = post[:280 - 4] + u' ...'
         while 1:
             try:
-                self.api.PostUpdate(status=post)
+                self.api.update_status(status=post)
                 return
             except requests.exceptions.ConnectionError:
                 self.log("Twitter API Error: Bad Connection.")
@@ -243,11 +252,11 @@ class RetweetBot(object):
             return
         self.save_last_mention()
         try:
-            self.api.PostDirectMessage("Help! I broke down. restart me pls :$",
-                                   self.user_id, self.screen_name)
+            self.api.send_direct_message(self.screen_name, "Help! I broke down. restart me pls :$")
         except:
-            traceback.print_exc()
-            print
+            # traceback.print_exc()
+            bot.log(traceback.extract_tb(sys.exc_info()[2]))
+            print()
 
 
 if __name__ == "__main__":
@@ -263,8 +272,8 @@ if __name__ == "__main__":
             bot.flow()
             sleep(60)
     except KeyboardInterrupt:
-        print "Good bye! Remember to restart the bot."
+        print("Good bye! Remember to restart the bot.")
     except:
-        traceback.print_exc()
-        print
+        bot.log(traceback.extract_tb(sys.exc_info()[2]))
+        print()
         bot.shutdown()
