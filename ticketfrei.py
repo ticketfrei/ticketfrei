@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import pytoml as toml
+import logger
 import time
 import traceback
 import os
@@ -20,9 +21,10 @@ if __name__ == '__main__':
     trigger = Trigger(config)
 
     logpath = os.path.join("logs", str(datetime.datetime.now()))
+    logger = logger.Logger(logpath)
 
-    mbot = RetootBot(config, trigger, logpath=logpath)
-    tbot = RetweetBot(trigger, config, logpath=logpath)
+    mbot = RetootBot(config, trigger, logger)
+    tbot = RetweetBot(trigger, config, logger)
 
     try:
         statuses = []
@@ -33,5 +35,5 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        tbot.log(traceback.extract_tb(sys.exc_info()[2]))
+        tbot.logger(traceback.extract_tb(sys.exc_info()[2]))
         tbot.shutdown()

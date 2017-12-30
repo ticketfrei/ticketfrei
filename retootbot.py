@@ -7,10 +7,11 @@ import pickle
 import re
 import time
 import trigger
-import log
+import logger
+
 
 class RetootBot(object):
-    def __init__(self, config, filter, logpath=None):
+    def __init__(self, config, filter, logger):
         self.config = config
         self.filter = filter
         self.register()
@@ -23,31 +24,31 @@ class RetootBot(object):
         except IOError:
             self.seen_toots = set()
 
-        self.log = log.Log(logpath)
+        self.logger = logger
 
     def register(self):
         self.client_id = os.path.join(
-                'appkeys',
-                self.config['mapp']['name'] +
-                '@' + self.config['muser']['server']
-            )
+            'appkeys',
+            self.config['mapp']['name'] +
+            '@' + self.config['muser']['server']
+        )
 
         if not os.path.isfile(self.client_id):
             mastodon.Mastodon.create_app(
-                    self.config['mapp']['name'],
-                    api_base_url=self.config['muser']['server'],
-                    to_file=self.client_id
-                )
+                self.config['mapp']['name'],
+                api_base_url=self.config['muser']['server'],
+                to_file=self.client_id
+            )
 
     def login(self):
         self.m = mastodon.Mastodon(
-                client_id=self.client_id,
-                api_base_url=self.config['muser']['server']
-            )
+            client_id=self.client_id,
+            api_base_url=self.config['muser']['server']
+        )
         self.m.log_in(
-                self.config['muser']['email'],
-                self.config['muser']['password']
-            )
+            self.config['muser']['email'],
+            self.config['muser']['password']
+        )
 
     def retoot(self, toots=()):
         # toot external provided messages
@@ -64,8 +65,8 @@ class RetootBot(object):
                                       notification['status']['content'])
                 if not self.filter.is_ok(text_content):
                     continue
-                self.log.log('Boosting toot from %s: %s' % (
-                    #notification['status']['id'],
+                self.logger.log('Boosting toot from %s: %s' % (
+                    # notification['status']['id'],
                     notification['status']['account']['acct'],
                     notification['status']['content']))
                 self.m.status_reblog(notification['status']['id'])
@@ -89,7 +90,9 @@ if __name__ == '__main__':
         config = toml.load(configfile)
 
     filter = trigger.Trigger(config)
-    bot = RetootBot(config, filter)
+    logger = logger.Logger()
+
+    bot = RetootBot(config, filter, logger)
 
     while True:
         bot.retoot()

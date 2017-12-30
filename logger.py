@@ -3,9 +3,9 @@
 import os
 import datetime
 
-class Log(object):
+class Logger(object):
 
-    def __init__(self, logpath):
+    def __init__(self, logpath=None):
 
         # initialize logging
         if logpath:
@@ -19,7 +19,7 @@ class Log(object):
         Writing an error message & sometimes a traceback to a logfile in logs/
         and prints it.
 
-        :param message: (string) Log message to be displayed
+        :param message: (string) Logger message to be displayed
         """
         time = str(datetime.datetime.now())
         line = "[" + time + "] " + message + "\n"
