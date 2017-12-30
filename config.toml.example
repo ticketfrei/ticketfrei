@@ -1,0 +1,27 @@
+[mapp]
+name = 'yourcity_ticketfrei'    # :todo: where do you receive the app name?
+
+[muser]
+email = 'youremail@server.tld'  # E-mail address of your Mastodon account
+password = 'yourpassword'       # Password of your Mastodon account
+server = 'yourmastodoninstance' # Instance where you have your Mastodon account
+
+[tapp] 
+consumer_key = "OD0CLn6twBxHjN2DqMkKuSvli" 
+consumer_secret = "XkvbViwjBWoWoJzIlseJLXmg2fqluq4HYqvwOwoSHGwxdTNi4l" 
+ 
+shutdown_contact_userid = 801098086005243904 
+shutdown_contact_screen_name = 'links_tech' 
+  
+[tuser] 
+access_token_key = "876046057721008128-J35moxFXUvLb24MnaMVbVpqiEtxBlcc" 
+access_token_secret = "I7PQZMHuJDS5WslgUhqEeZbEWGhwLhmOetvwFoTn8YDKW" 
+
+# [trigger]
+# goodlists are one regex per line.
+# badlists are one badword per line.
+# a message musst match at least one regex in goodlist and contain none of the badwords.
+# the variables mention the directory where the lists are located, not the filenames.
+
+# goodlist_path = 'goodlists'
+# blacklist_path = 'blacklists'

@@ -66,7 +66,7 @@ class RetweetBot(object):
         """
         How to get these keys is described in doc/twitter_api.md
 
-        After you received keys, store them in your ticketfrei.cfg like this:
+        After you received keys, store them in your config.toml like this:
         [tapp]
         consumer_key = "..."
         consumer_secret = "..."
@@ -261,7 +261,7 @@ class RetweetBot(object):
 
 if __name__ == "__main__":
     # create an Api object
-    with open('ticketfrei.cfg') as configfile:
+    with open('config.toml') as configfile:
         config = toml.load(configfile)
 
     trigger = trigger.Trigger(config)

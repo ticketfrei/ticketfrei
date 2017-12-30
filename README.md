@@ -31,8 +31,8 @@ pip install tweepy pytoml requests Mastodon.py
 
 Configure the bot:
 ```shell
-cp ticketfrei.cfg.example ticketfrei.cfg
-vim ticketfrei.cfg
+cp config.toml.example config.toml
+vim config.toml
 ```
 Edit the account credentials, so your bot can use your accounts.
 
@@ -42,7 +42,7 @@ Also add the words to the goodlist, which you want to require. A tweet is only r
 
 There is also a blacklist, which you can use to automatically sort out malicious tweets. Be careful though, our filter can't read the intention with which a word was used. Maybe you wanted it there.
 
-Note that atm the good- & blacklist are still outside of ticketfrei.cfg, in separate files. we will repare this soon.
+Note that atm the good- & blacklist are still outside of config.toml, in separate files. we will repare this soon.
 
 ### screen
 
@@ -74,11 +74,11 @@ Desktop/pycharm-community-2017.1.4/bin/pycharm.sh
 - [ ] Web UI that lets you easily delete toots/tweets per db id and/or mute the tweet author
 - [x] Write Bots as Classes to be easier implemented
 - [x] Create extra Class for the filter
-- [x] Put as much as possible into ticketfrei.cfg
+- [x] Put as much as possible into config.toml
 - [x] Make both bots run on their own *and* next to each other
   - [x] implement trigger class in retootbot
   - [x] read config in retweetbot
-- [x] put shutdown contact in ticketfrei.cfg
+- [x] put shutdown contact in config.toml
 - [x] document what you have to configure if you setup the bot in another city
 - [ ] write a script to setup the bot easily. ask the admin for the necessary information
 - [ ] ongoing: solve issues

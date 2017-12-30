@@ -59,7 +59,7 @@ class Trigger(object):
 
 
 if __name__ == "__main__":
-    with open("ticketfrei.cfg", "r") as configfile:
+    with open("config.toml", "r") as configfile:
         config = toml.load(configfile)
 
     print("testing the trigger")
