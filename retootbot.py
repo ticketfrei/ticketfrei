@@ -6,10 +6,8 @@ import os
 import pickle
 import re
 import time
-import datetime
 import trigger
-import traceback
-
+import log
 
 class RetootBot(object):
     def __init__(self, config, filter, logpath=None):
@@ -25,31 +23,7 @@ class RetootBot(object):
         except IOError:
             self.seen_toots = set()
 
-        if logpath:
-            self.logpath = logpath
-        else:
-            self.logpath = os.path.join("logs", str(datetime.datetime.now()))
-
-    def log(self, message, tb=False):
-        """
-        Writing an error message to a logfile in logs/ and prints it.
-
-        :param message: (string) Log message to be displayed
-        :param tb: String of the Traceback
-        """
-        timenow = str(datetime.datetime.now())
-        if tb:
-            message = message + " The traceback is located at " + os.path.join("logs" + timenow)
-            with open(os.path.join("logs", timenow), 'w+') as f:
-                f.write(tb)
-        line = "[" + timenow + "] " + message + "\n"
-        with open(self.logpath, 'a') as f:
-            try:
-                f.write(line)
-            except UnicodeEncodeError:
-                self.log("Failed to save log message due to UTF-8 error. ")
-                traceback.print_exc()
-        print(line, end="")
+        self.log = log.Log(logpath)
 
     def register(self):
         self.client_id = os.path.join(
@@ -90,7 +64,7 @@ class RetootBot(object):
                                       notification['status']['content'])
                 if not self.filter.is_ok(text_content):
                     continue
-                self.log('Boosting toot from %s: %s' % (
+                self.log.log('Boosting toot from %s: %s' % (
                     #notification['status']['id'],
                     notification['status']['account']['acct'],
                     notification['status']['content']))

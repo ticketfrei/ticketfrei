@@ -2,11 +2,11 @@
 *.pyc
 .idea/
 last_mention
-config.toml
 ticketfrei.cfg
 seen_toots.pickle
 seen_toots.pickle.part
 pip-selfcheck.json
+config.toml
 bin/
 include/
 lib/
