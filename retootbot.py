@@ -101,7 +101,7 @@ class RetootBot(object):
         # If the Mastodon instance returns interesting Errors, add them here:
 
         # save state
-        with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'w') as f:
+        with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
             pickle.dump(self.seen_toots, f)
         os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
 
