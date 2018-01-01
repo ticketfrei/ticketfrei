@@ -17,6 +17,14 @@ shutdown_contact_screen_name = 'links_tech'
 access_token_key = "876046057721008128-J35moxFXUvLb24MnaMVbVpqiEtxBlcc" 
 access_token_secret = "I7PQZMHuJDS5WslgUhqEeZbEWGhwLhmOetvwFoTn8YDKW" 
 
+[mail]
+mailserver = "smtp.riseup.net"
+port = 587
+user = "ticketfrei"
+passphrase = "sup3rs3cur3"
+
+
+
 # [trigger]
 # goodlists are one regex per line.
 # badlists are one badword per line.
