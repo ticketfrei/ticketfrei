@@ -225,7 +225,7 @@ class RetweetBot(object):
         if self.no_shutdown_contact:
             self.logger.log(logmessage)
             return
-        logmessage = logmessage + " Sending message to " + self.contact
+        logmessage = logmessage + "Sending message to " + self.contact
         self.logger.log(logmessage)
         self.save_last_mention()
         try:

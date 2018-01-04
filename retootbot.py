@@ -102,7 +102,7 @@ class RetootBot(object):
         if self.no_shutdown_contact:
             self.logger.log(logmessage)
             return
-        logmessage = logmessage + " Sending message to " + self.contact
+        logmessage = logmessage + "Sending message to " + self.contact
         self.logger.log(logmessage)
         # feature yet only in RetweetBot:
         # self.save_last_mention()
