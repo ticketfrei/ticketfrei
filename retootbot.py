@@ -49,7 +49,7 @@ class RetootBot(object):
                 api_base_url=self.config['muser']['server'],
                 to_file=client_id
             )
-        return self.client_id
+        return client_id
 
     def login(self):
         m = mastodon.Mastodon(
