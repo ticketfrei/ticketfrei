@@ -35,6 +35,12 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        tb = traceback.extract_tb(sys.exc_info()[2])
-        tbot.logger.log(tb)
-        tbot.shutdown(tb)
+        exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
+        tb = traceback.extract_tb(exc[2])  # returns StackSummary object
+        tb = "\n".join(tb.format())  # string of the actual traceback
+        message = ("Traceback (most recent call last):\n",
+                   tb,
+                   exc[0].__name__)  # the type of the Exception
+        message = "".join(message)  # concatenate to full traceback message
+        tbot.logger.log(message)
+        tbot.shutdown(message)
