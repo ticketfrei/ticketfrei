@@ -8,6 +8,7 @@ import trigger
 from time import sleep
 import traceback
 import logger
+import sendmail
 
 
 class RetweetBot(object):
@@ -46,8 +47,7 @@ class RetweetBot(object):
         # intialize shutdown contact
         try:
             self.no_shutdown_contact = False
-            self.screen_name = \
-                self.config['tapp']['shutdown_contact_screen_name']
+            self.contact = self.config['mail']['contact']
         except KeyError:
             self.no_shutdown_contact = True
 
@@ -55,9 +55,8 @@ class RetweetBot(object):
         self.last_mention = self.get_history(self.historypath)
         self.trigger = trigger
         self.waitcounter = 0
-        
-        self.logger = logger
 
+        self.logger = logger
 
     def get_api_keys(self):
         """
@@ -217,18 +216,21 @@ class RetweetBot(object):
         # Return Retweets for tooting on mastodon
         return mastodon
 
-    def shutdown(self):
+    def shutdown(self, tb):
         """ If something breaks, it shuts down the bot and messages the owner.
+
+        :param tb: (string) traceback
         """
-        logmessage = "Shit went wrong, closing down."
-        if self.screen_name:
-            logmessage = logmessage + " Sending message to " + self.screen_name
-        self.logger.log(logmessage)
+        logmessage = "Shit went wrong, closing down.\n" + tb + "\n\n"
         if self.no_shutdown_contact:
+            self.logger.log(logmessage)
             return
+        logmessage = logmessage + " Sending message to " + self.contact
+        self.logger.log(logmessage)
         self.save_last_mention()
         try:
-            self.api.send_direct_message(self.screen_name, "Help! I broke down. restart me pls :$")
+            mailer = sendmail.Mailer(self.config)
+            mailer.send(tb, self.contact, "Ticketfrei Crash Report")
         except:
             # traceback.print_exc()
             self.logger.log(traceback.extract_tb(sys.exc_info()[2]))
@@ -251,6 +253,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Good bye! Remember to restart the bot.")
     except:
-        bot.logger.log(traceback.extract_tb(sys.exc_info()[2]))
+        tb = traceback.extract_tb(sys.exc_info()[2])
+        bot.logger.log(tb)
         print()
-        bot.shutdown()
+        bot.shutdown(tb)

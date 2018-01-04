@@ -35,5 +35,6 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        tbot.logger(traceback.extract_tb(sys.exc_info()[2]))
-        tbot.shutdown()
+        tb = traceback.extract_tb(sys.exc_info()[2])
+        tbot.logger.log(tb)
+        tbot.shutdown(tb)
