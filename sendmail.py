@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import smtplib
+import ssl
 import pytoml as toml
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
@@ -27,7 +28,8 @@ class Mailer(object):
 
         # starts a client session with the SMTP server
         self.s = smtplib.SMTP(config["mail"]["mailserver"])
-        self.s.starttls()
+        context = ssl.create_default_context()
+        self.s.starttls(context=context)
         self.s.login(config["mail"]["user"], config["mail"]["passphrase"])
 
     def send(self, text, recipient, subject, attachment=None):

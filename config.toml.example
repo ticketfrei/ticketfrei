@@ -27,6 +27,8 @@ passphrase = "sup3rs3cur3"
 # If you want to receive crash reports (so you can restart the bot
 # when it breaks down), you should specify a contact email address:
 #contact = "your_mail@riseup.net"
+# Mailing list where you want to send warnings to
+#list = "nbg_ticketfrei@lists.links-tech.org"
 
 [logging]
 # The directory where logs should be stored.

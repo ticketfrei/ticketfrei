@@ -27,7 +27,7 @@ class RetweetBot(object):
         Initializes the bot and loads all the necessary data.
 
         :param trigger: object of the trigger
-        :param config: object of the config
+        :param config: (dictionary) config.toml as a dictionary of dictionaries
         :param logger: object of the logger
         :param historypath: Path to the file with ID of the last retweeted
             Tweet
