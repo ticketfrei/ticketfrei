@@ -49,7 +49,9 @@ class Logger(object):
             try:
                 f.write(line)
             except UnicodeEncodeError:
-                self.log("Failed to save log message due to UTF-8 error. ")
+                message = "Failed to save log message due to UTF-8 error. "
+                message = message + self.generate_tb(sys.exc_info())
+                self.log(message)
         print(line, end="")
 
     def generate_tb(self, exc):
@@ -76,5 +78,5 @@ class Logger(object):
             mailer = sendmail.Mailer(self.config)
             mailer.send(tb, self.contact, "Ticketfrei Crash Report")
         except:
-            self.log(self.generate_tb(sys.exc_info()))
+            self.log("Error while shutdown: " + self.generate_tb(sys.exc_info()))
             print()
