@@ -29,6 +29,7 @@ passphrase = "sup3rs3cur3"
 #contact = "your_mail@riseup.net"
 
 [logging]
+# The directory where logs should be stored.
 logpath = "logs"
 
 # [trigger]
