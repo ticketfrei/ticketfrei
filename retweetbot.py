@@ -42,13 +42,6 @@ class RetweetBot(object):
                               keys[3])  # access_token_secret
         self.api = tweepy.API(auth)
 
-        # intialize shutdown contact
-        try:
-            self.no_shutdown_contact = False
-            self.contact = self.config['mail']['contact']
-        except KeyError:
-            self.no_shutdown_contact = True
-
         self.historypath = historypath
         self.last_mention = self.get_history(self.historypath)
         self.trigger = trigger
@@ -134,14 +127,14 @@ class RetweetBot(object):
                     mentions = self.api.mentions_timeline(since_id=self.last_mention)
                 return mentions
         except tweepy.RateLimitError:
-            message = "Twitter API Error: Rate Limit Exceeded."
-            message = message + self.logger.generate_tb(sys.exc_info())
-            self.logger.log(message)
+            logmsg = "Twitter API Error: Rate Limit Exceeded."
+            logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
+            self.logger.log(logmsg)
             self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
-            message = "Twitter API Error: Bad Connection."
-            message = message + self.logger.generate_tb(sys.exc_info())
-            self.logger.log(message)
+            logmsg = "Twitter API Error: Bad Connection."
+            logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
+            self.logger.log(logmsg)
             self.waitcounter += 10
         return None
 
@@ -160,15 +153,15 @@ class RetweetBot(object):
                     self.last_mention = status.id
                 return self.format_mastodon(status)
             except requests.exceptions.ConnectionError:
-                message = "Twitter API Error: Bad Connection."
-                message = message + self.logger.generate_tb(sys.exc_info())
-                self.logger.log(message)
+                logmsg = "Twitter API Error: Bad Connection."
+                logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
+                self.logger.log(logmsg)
                 sleep(10)
             # maybe one day we get rid of this error:
             except tweepy.TweepError:
-                message = "Twitter Error."
-                message = message + self.logger.generate_tb(sys.exc_info())
-                self.logger.log(message)
+                logmsg = "Twitter Error."
+                logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
+                self.logger.log(logmsg)
                 # self.log.log("Twitter API Error: You probably already retweeted this tweet: " + status.text)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
@@ -187,9 +180,9 @@ class RetweetBot(object):
                 self.api.update_status(status=post)
                 return
             except requests.exceptions.ConnectionError:
-                message = "Twitter API Error: Bad Connection."
-                message = message + self.logger.generate_tb(sys.exc_info())
-                self.logger.log(message)
+                logmsg = "Twitter API Error: Bad Connection."
+                logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
+                self.logger.log(logmsg)
                 sleep(10)
 
     def flow(self, to_tweet=()):
