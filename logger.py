@@ -76,7 +76,7 @@ class Logger(object):
         self.log(logmessage)
         try:
             mailer = sendmail.Mailer(self.config)
-            mailer.send(tb, self.contact, "Ticketfrei Crash Report")
+            mailer.send(tb, self.contact, "Ticketfrei Crash Report", attachment=self.logpath)
         except:
             self.log("Error while shutdown: " + self.generate_tb(sys.exc_info()))
             print()

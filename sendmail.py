@@ -3,6 +3,8 @@
 import smtplib
 import pytoml as toml
 from email.mime.text import MIMEText
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 
 
 class Mailer(object):
@@ -12,6 +14,9 @@ class Mailer(object):
 
     def __init__(self, config):
         """
+        Creates an SMTP client to send a mail. Is called only once
+        when you actually want to send a mail. After you sent the
+        mail, the SMTP client is shut down again.
 
         :param config: The config file generated from config.toml
         """
@@ -25,21 +30,35 @@ class Mailer(object):
         self.s.starttls()
         self.s.login(config["mail"]["user"], config["mail"]["passphrase"])
 
-    def send(self, text, recipient, subject):
+    def send(self, text, recipient, subject, attachment=None):
         """
 
         :param text: (string) the content of the mail
         :param recipient: (string) the recipient of the mail
         :param subject: (string) the subject of the mail
+        :param attachment: (string) the path to the logfile
         :return: string for logging purposes, contains recipient & subject
         """
-        msg = MIMEText(text)
+        msg = MIMEMultipart()
+        msg.attach(MIMEText(text))
 
         msg["From"] = self.fromaddr
         msg["To"] = recipient
         msg["Subject"] = subject
 
+        # attach logfile
+        if attachment:
+            with open(attachment, "rb") as fil:
+                part = MIMEApplication(
+                    fil.read(),
+                    Name="logfile"
+                )
+            # After the file is closed
+            part['Content-Disposition'] = 'attachment; filename="logfile"'
+            msg.attach(part)
+
         self.s.send_message(msg)
+        self.s.close()
 
         return "Sent mail to " + recipient + ": " + subject
 
