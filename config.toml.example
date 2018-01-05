@@ -28,6 +28,8 @@ passphrase = "sup3rs3cur3"
 # when it breaks down), you should specify a contact email address:
 #contact = "your_mail@riseup.net"
 
+[logging]
+logpath = "logs"
 
 # [trigger]
 # goodlists are one regex per line.

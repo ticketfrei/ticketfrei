@@ -8,15 +8,13 @@ import re
 import time
 import trigger
 import logger
-import sendmail
-import traceback
 import sys
 
 
 class RetootBot(object):
-    def __init__(self, config, filter, logger):
+    def __init__(self, config, trigger, logger):
         self.config = config
-        self.filter = filter
+        self.trigger = trigger
         self.client_id = self.register()
         self.m = self.login()
 
@@ -26,13 +24,6 @@ class RetootBot(object):
                 self.seen_toots = pickle.load(f)
         except IOError:
             self.seen_toots = set()
-
-        # intialize shutdown contact
-        try:
-            self.no_shutdown_contact = False
-            self.contact = self.config['mail']['contact']
-        except KeyError:
-            self.no_shutdown_contact = True
 
         self.logger = logger
 
@@ -75,7 +66,7 @@ class RetootBot(object):
                 self.seen_toots.add(notification['status']['id'])
                 text_content = re.sub(r'<[^>]*>', '',
                                       notification['status']['content'])
-                if not self.filter.is_ok(text_content):
+                if not self.trigger.is_ok(text_content):
                     continue
                 self.logger.log('Boosting toot from %s: %s' % (
                     # notification['status']['id'],
@@ -95,25 +86,6 @@ class RetootBot(object):
         # return mentions for mirroring
         return retoots
 
-    def shutdown(self, tb):
-        """ If something breaks, it shuts down the bot and messages the owner.
-        """
-        logmessage = "Shit went wrong, closing down.\n" + tb + "\n\n"
-        if self.no_shutdown_contact:
-            self.logger.log(logmessage)
-            return
-        logmessage = logmessage + "Sending message to " + self.contact
-        self.logger.log(logmessage)
-        # feature yet only in RetweetBot:
-        # self.save_last_mention()
-        try:
-            mailer = sendmail.Mailer(self.config)
-            mailer.send(tb, self.contact, "Ticketfrei Crash Report")
-        except:
-            # traceback.print_exc()
-            self.logger.log(traceback.extract_tb(sys.exc_info()[2]))
-            print()
-
 
 if __name__ == '__main__':
     # read config in TOML format (https://github.com/toml-lang/toml#toml)
@@ -121,7 +93,7 @@ if __name__ == '__main__':
         config = toml.load(configfile)
 
     trigger = trigger.Trigger(config)
-    logger = logger.Logger()
+    logger = logger.Logger(config)
 
     bot = RetootBot(config, trigger, logger)
 
@@ -133,11 +105,6 @@ if __name__ == '__main__':
             print("Good bye. Remember to restart the bot!")
     except:
         exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        tb = traceback.extract_tb(exc[2])  # returns StackSummary object
-        tb = "\n".join(tb.format())  # string of the actual traceback
-        message = ("Traceback (most recent call last):\n",
-                   tb,
-                   exc[0].__name__)  # the type of the Exception
-        message = "".join(message)  # concatenate to full traceback message
+        message = logger.generate_tb(exc)
         bot.logger.log(message)
-        bot.shutdown(message)
+        bot.logger.shutdown(message)

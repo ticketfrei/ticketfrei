@@ -3,10 +3,7 @@
 import pytoml as toml
 import logger
 import time
-import traceback
-import os
 import sys
-import datetime
 
 from retootbot import RetootBot
 from retweetbot import RetweetBot
@@ -20,8 +17,7 @@ if __name__ == '__main__':
 
     trigger = Trigger(config)
 
-    logpath = os.path.join("logs", str(datetime.datetime.now()))
-    logger = logger.Logger(logpath)
+    logger = logger.Logger(config)
 
     mbot = RetootBot(config, trigger, logger)
     tbot = RetweetBot(trigger, config, logger)
@@ -36,11 +32,7 @@ if __name__ == '__main__':
         print("Good bye. Remember to restart the bot!")
     except:
         exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        tb = traceback.extract_tb(exc[2])  # returns StackSummary object
-        tb = "\n".join(tb.format())  # string of the actual traceback
-        message = ("Traceback (most recent call last):\n",
-                   tb,
-                   exc[0].__name__)  # the type of the Exception
-        message = "".join(message)  # concatenate to full traceback message
+        message = logger.generate_tb(exc)
         tbot.logger.log(message)
-        tbot.shutdown(message)
+        tbot.save_last_mention()
+        tbot.logger.shutdown(message)

@@ -43,11 +43,12 @@ class Mailer(object):
 
         return "Sent mail to " + recipient + ": " + subject
 
+
 # For testing:
 if __name__ == '__main__':
     # read config in TOML format (https://github.com/toml-lang/toml#toml)
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
-        m = Mailer(config)
-        print(m.send("This is a test mail.", m.fromaddr, "Test"))
+    m = Mailer(config)
+    print(m.send("This is a test mail.", m.fromaddr, "Test"))

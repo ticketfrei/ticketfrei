@@ -6,9 +6,7 @@ import requests
 import pytoml as toml
 import trigger
 from time import sleep
-import traceback
 import logger
-import sendmail
 
 
 class RetweetBot(object):
@@ -216,26 +214,6 @@ class RetweetBot(object):
         # Return Retweets for tooting on mastodon
         return mastodon
 
-    def shutdown(self, tb):
-        """ If something breaks, it shuts down the bot and messages the owner.
-
-        :param tb: (string) traceback
-        """
-        logmessage = "Shit went wrong, closing down.\n" + tb + "\n\n"
-        if self.no_shutdown_contact:
-            self.logger.log(logmessage)
-            return
-        logmessage = logmessage + "Sending message to " + self.contact
-        self.logger.log(logmessage)
-        self.save_last_mention()
-        try:
-            mailer = sendmail.Mailer(self.config)
-            mailer.send(tb, self.contact, "Ticketfrei Crash Report")
-        except:
-            # traceback.print_exc()
-            self.logger.log(traceback.extract_tb(sys.exc_info()[2]))
-            print()
-
 
 if __name__ == "__main__":
     # create an Api object
@@ -243,7 +221,7 @@ if __name__ == "__main__":
         config = toml.load(configfile)
 
     trigger = trigger.Trigger(config)
-    logger = logger.Logger()
+    logger = logger.Logger(config)
 
     bot = RetweetBot(trigger, config, logger)
     try:
@@ -254,11 +232,7 @@ if __name__ == "__main__":
         print("Good bye. Remember to restart the bot!")
     except:
         exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        tb = traceback.extract_tb(exc[2])  # returns StackSummary object
-        tb = "\n".join(tb.format())  # string of the actual traceback
-        message = ("Traceback (most recent call last):\n",
-                   tb,
-                   exc[0].__name__)  # the type of the Exception
-        message = "".join(message)  # concatenate to full traceback message
+        message = logger.generate_tb(exc)
         bot.logger.log(message)
-        bot.shutdown(message)
+        bot.save_last_mention()
+        bot.logger.shutdown(message)
