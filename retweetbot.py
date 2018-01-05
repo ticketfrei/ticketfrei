@@ -22,14 +22,14 @@ class RetweetBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, trigger, config, logger, historypath="last_mention"):
+    def __init__(self, trigger, config, logger, history_path="last_mention"):
         """
         Initializes the bot and loads all the necessary data.
 
         :param trigger: object of the trigger
         :param config: (dictionary) config.toml as a dictionary of dictionaries
         :param logger: object of the logger
-        :param historypath: Path to the file with ID of the last retweeted
+        :param history_path: Path to the file with ID of the last retweeted
             Tweet
         """
         self.config = config
@@ -42,8 +42,8 @@ class RetweetBot(object):
                               keys[3])  # access_token_secret
         self.api = tweepy.API(auth)
 
-        self.historypath = historypath
-        self.last_mention = self.get_history(self.historypath)
+        self.history_path = history_path
+        self.last_mention = self.get_history(self.history_path)
         self.trigger = trigger
         self.waitcounter = 0
 
@@ -87,7 +87,7 @@ class RetweetBot(object):
 
     def save_last_mention(self):
         """ Saves the last retweeted tweet in last_mention. """
-        with open(self.historypath, "w") as f:
+        with open(self.history_path, "w") as f:
             f.write(str(self.last_mention))
 
     def waiting(self):
@@ -136,7 +136,7 @@ class RetweetBot(object):
             logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
             self.logger.log(logmsg)
             self.waitcounter += 10
-        return None
+        return []
 
     def retweet(self, status):
         """
@@ -200,19 +200,18 @@ class RetweetBot(object):
         mentions = self.crawl_mentions()
         mastodon = []
 
-        if mentions is not None:
-            for status in mentions:
-                # Is the Text of the Tweet in the triggerlist?
-                if self.trigger.is_ok(status.text):
-                    # Retweet status
-                    toot = self.retweet(status)
-                    if toot:
-                        mastodon.append(toot)
+        for status in mentions:
+            # Is the Text of the Tweet in the triggerlist?
+            if self.trigger.is_ok(status.text):
+                # Retweet status
+                toot = self.retweet(status)
+                if toot:
+                    mastodon.append(toot)
 
-                # save the id so it doesn't get crawled again
-                if status.id > self.last_mention:
-                    self.last_mention = status.id
-                self.save_last_mention()
+            # save the id so it doesn't get crawled again
+            if status.id > self.last_mention:
+                self.last_mention = status.id
+            self.save_last_mention()
         # Return Retweets for tooting on mastodon
         return mastodon
 

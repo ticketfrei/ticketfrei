@@ -1,7 +1,9 @@
 *.swp
 *.pyc
 .idea/
+__pycache__/
 last_mention
+last_mail
 ticketfrei.cfg
 seen_toots.pickle
 seen_toots.pickle.part
