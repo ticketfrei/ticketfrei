@@ -15,6 +15,9 @@ Schools:
 Nightlife
 * Spread flyers in bars and nightclubs
 
+Fare Dodger
+* ppl in the queue of the Service Center
+
 ## Material
 
 Logo + Header Picture
@@ -39,3 +42,4 @@ Short video how to set up your own Ticketfrei bot
 talk, maybe 15 minutes
 * How does the bot work?
 * Why is this politically relevant, what is sousveillance?
+* What is Ticketfreier ÖPNV & why is it good for everyone?
