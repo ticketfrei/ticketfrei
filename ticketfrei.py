@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
+import logging
 import pytoml as toml
-import logger
 import time
-import sys
+import sendmail
 
 from retootbot import RetootBot
 from retweetbot import RetweetBot
@@ -15,12 +15,14 @@ if __name__ == '__main__':
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
+    logger = logging.getLogger()
+    fh = logging.FileHandler(config['logging']['logpath'])
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
+
     trigger = Trigger(config)
-
-    logger = logger.Logger(config)
-
-    mbot = RetootBot(config, trigger, logger)
-    tbot = RetweetBot(trigger, config, logger)
+    mbot = RetootBot(config, trigger)
+    tbot = RetweetBot(trigger, config)
 
     try:
         statuses = []
@@ -31,8 +33,12 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        message = logger.generate_tb(exc)
-        tbot.logger.log(message)
+        logger.error('Shutdown', exc_info=True)
         tbot.save_last_mention()
-        tbot.logger.shutdown(message)
+        try:
+            mailer = sendmail.Mailer(config)
+            mailer.send('', config['mail']['contact'],
+                        'Ticketfrei Crash Report',
+                        attachment=config['logging']['logpath'])
+        except:
+            logger.error('Mail sending failed', exc_info=True)

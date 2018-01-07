@@ -6,10 +6,11 @@ import time
 import trigger
 import datetime
 import email
-import logger
+import logging
 import pytoml as toml
 import imaplib
-import sys
+
+logger = logging.getLogger(__name__)
 
 
 class Mailbot(object):
@@ -18,7 +19,7 @@ class Mailbot(object):
     other bots that it received mails.
     """
 
-    def __init__(self, config, trigger, logger, history_path="last_mail"):
+    def __init__(self, config, trigger, history_path="last_mail"):
         """
         Creates a Bot who listens to mails and forwards them to other
         bots.
@@ -27,7 +28,6 @@ class Mailbot(object):
         """
         self.config = config
         self.trigger = trigger
-        self.logger = logger
 
         self.history_path = history_path
         self.last_mail = self.get_history(self.history_path)
@@ -42,15 +42,18 @@ class Mailbot(object):
         try:
             self.mailbox.starttls(ssl_context=context)
         except:
-            logmsg = logger.generate_tb(sys.exc_info())
-            logger.log(logmsg)
+            logger.error('StartTLS failed', exc_info=True)
         try:
             self.mailbox.login(self.config["mail"]["user"], self.config["mail"]["passphrase"])
         except imaplib.IMAP4.error:
-            logmsg = "Login to mail server failed."
-            logmsg = logmsg + logger.generate_tb(sys.exc_info())
-            logger.log(logmsg)
-            logger.shutdown(logmsg)
+            logger.error("Login to mail server failed", exc_info=True)
+            try:
+                mailer = sendmail.Mailer(config)
+                mailer.send('', config['mail']['contact'],
+                            'Ticketfrei Crash Report',
+                            attachment=config['logging']['logpath'])
+            except:
+                logger.error('Mail sending failed', exc_info=True)
 
     def listen(self):
         """
@@ -67,8 +70,7 @@ class Mailbot(object):
             for num in data[0].split():
                 rv, data = self.mailbox.fetch(num, '(RFC822)')
                 if rv != 'OK':
-                    logmsg = "Didn't receive mail. Error: " + rv + str(data)
-                    self.logger.log(logmsg)
+                    logger.error("Couldn't fetch mail %s %s" % (rv, str(data)))
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
@@ -157,10 +159,12 @@ if __name__ == "__main__":
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
-    logger = logger.Logger(config)
-    trigger = trigger.Trigger(config)
+    fh = logging.FileHandler(config['logging']['logpath'])
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
 
-    m = Mailbot(config, trigger, logger)
+    trigger = trigger.Trigger(config)
+    m = Mailbot(config, trigger)
     statuses = []
     try:
         while 1:
@@ -169,8 +173,12 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        message = logger.generate_tb(exc)
-        m.logger.log(message)
+        logger.error('Shutdown', exc_info=True)
         m.save_last_mail()
-        m.logger.shutdown(message)
+        try:
+            mailer = sendmail.Mailer(config)
+            mailer.send('', config['mail']['contact'],
+                        'Ticketfrei Crash Report',
+                        attachment=config['logging']['logpath'])
+        except:
+            logger.error('Mail sending failed', exc_info=True)

@@ -10,14 +10,14 @@ server = 'yourmastodoninstance' # Instance where you have your Mastodon account
 [tapp]
 # You get those keys when you follow these steps:
 # https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
-consumer_key = "OD0CLn6twBxHjN2DqMkKuSvli" 
-consumer_secret = "XkvbViwjBWoWoJzIlseJLXmg2fqluq4HYqvwOwoSHGwxdTNi4l"
+consumer_key = "your_consumer_key"
+consumer_secret = "your_consumer_secret"
 
 [tuser]
 # You get those keys when you follow these steps:
 # https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
-access_token_key = "876046057721008128-J35moxFXUvLb24MnaMVbVpqiEtxBlcc"
-access_token_secret = "I7PQZMHuJDS5WslgUhqEeZbEWGhwLhmOetvwFoTn8YDKW" 
+access_token_key = "your_access_token_key"
+access_token_secret = "your_acces_token_secret"
 
 [mail]
 # This is the mail the bot uses to send emails.

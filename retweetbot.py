@@ -1,12 +1,14 @@
 #!/usr/bin/env python3
 
 import tweepy
-import sys
 import requests
 import pytoml as toml
 import trigger
 from time import sleep
-import logger
+import logging
+import sendmail
+
+logger = logging.getLogger(__name__)
 
 
 class RetweetBot(object):
@@ -22,7 +24,7 @@ class RetweetBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, trigger, config, logger, history_path="last_mention"):
+    def __init__(self, trigger, config, history_path="last_mention"):
         """
         Initializes the bot and loads all the necessary data.
 
@@ -46,8 +48,6 @@ class RetweetBot(object):
         self.last_mention = self.get_history(self.history_path)
         self.trigger = trigger
         self.waitcounter = 0
-
-        self.logger = logger
 
     def get_api_keys(self):
         """
@@ -127,14 +127,10 @@ class RetweetBot(object):
                     mentions = self.api.mentions_timeline(since_id=self.last_mention)
                 return mentions
         except tweepy.RateLimitError:
-            logmsg = "Twitter API Error: Rate Limit Exceeded."
-            logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
-            self.logger.log(logmsg)
+            logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
             self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
-            logmsg = "Twitter API Error: Bad Connection."
-            logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
-            self.logger.log(logmsg)
+            logger.error("Twitter API Error: Bad Connection", exc_info=True)
             self.waitcounter += 10
         return []
 
@@ -148,21 +144,16 @@ class RetweetBot(object):
         while 1:
             try:
                 self.api.retweet(status.id)
-                self.logger.log("Retweeted: " + self.format_mastodon(status))
+                logger.info("Retweeted: " + self.format_mastodon(status))
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return self.format_mastodon(status)
             except requests.exceptions.ConnectionError:
-                logmsg = "Twitter API Error: Bad Connection."
-                logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
-                self.logger.log(logmsg)
+                logger.error("Twitter API Error: Bad Connection", exc_info=True)
                 sleep(10)
             # maybe one day we get rid of this error:
             except tweepy.TweepError:
-                logmsg = "Twitter Error."
-                logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
-                self.logger.log(logmsg)
-                # self.log.log("Twitter API Error: You probably already retweeted this tweet: " + status.text)
+                logger.error("Twitter Error", exc_info=True)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 return None
@@ -180,9 +171,7 @@ class RetweetBot(object):
                 self.api.update_status(status=post)
                 return
             except requests.exceptions.ConnectionError:
-                logmsg = "Twitter API Error: Bad Connection."
-                logmsg = logmsg + self.logger.generate_tb(sys.exc_info())
-                self.logger.log(logmsg)
+                logger.error("Twitter API Error: Bad Connection", exc_info=True)
                 sleep(10)
 
     def flow(self, to_tweet=()):
@@ -221,10 +210,12 @@ if __name__ == "__main__":
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
-    trigger = trigger.Trigger(config)
-    logger = logger.Logger(config)
+    fh = logging.FileHandler(config['logging']['logpath'])
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
 
-    bot = RetweetBot(trigger, config, logger)
+    trigger = trigger.Trigger(config)
+    bot = RetweetBot(trigger, config)
     try:
         while True:
             bot.flow()
@@ -232,8 +223,12 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        message = logger.generate_tb(exc)
-        bot.logger.log(message)
+        logger.error('Shutdown', exc_info=True)
         bot.save_last_mention()
-        bot.logger.shutdown(message)
+        try:
+            mailer = sendmail.Mailer(config)
+            mailer.send('', config['mail']['contact'],
+                        'Ticketfrei Crash Report',
+                        attachment=config['logging']['logpath'])
+        except:
+            logger.error('Mail sending failed', exc_info=True)
