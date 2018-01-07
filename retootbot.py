@@ -7,12 +7,14 @@ import pickle
 import re
 import time
 import trigger
-import logger
-import sys
+import logging
+import sendmail
+
+logger = logging.getLogger(__name__)
 
 
 class RetootBot(object):
-    def __init__(self, config, trigger, logger):
+    def __init__(self, config, trigger):
         self.config = config
         self.trigger = trigger
         self.client_id = self.register()
@@ -24,8 +26,6 @@ class RetootBot(object):
                 self.seen_toots = pickle.load(f)
         except IOError:
             self.seen_toots = set()
-
-        self.logger = logger
 
     def register(self):
         client_id = os.path.join(
@@ -68,8 +68,7 @@ class RetootBot(object):
                                       notification['status']['content'])
                 if not self.trigger.is_ok(text_content):
                     continue
-                self.logger.log('Boosting toot from %s: %s' % (
-                    # notification['status']['id'],
+                logger.info('Boosting toot from %s: %s' % (
                     notification['status']['account']['acct'],
                     notification['status']['content']))
                 self.m.status_reblog(notification['status']['id'])
@@ -92,10 +91,12 @@ if __name__ == '__main__':
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
-    trigger = trigger.Trigger(config)
-    logger = logger.Logger(config)
+    fh = logging.FileHandler(config['logging']['logpath'])
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
 
-    bot = RetootBot(config, trigger, logger)
+    trigger = trigger.Trigger(config)
+    bot = RetootBot(config, trigger)
 
     try:
         while True:
@@ -104,7 +105,11 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
             print("Good bye. Remember to restart the bot!")
     except:
-        exc = sys.exc_info()  # returns tuple [Exception type, Exception object, Traceback object]
-        message = logger.generate_tb(exc)
-        bot.logger.log(message)
-        bot.logger.shutdown(message)
+        logger.error('Shutdown', exc_info=True)
+        try:
+            mailer = sendmail.Mailer(config)
+            mailer.send('', config['mail']['contact'],
+                        'Ticketfrei Crash Report',
+                        attachment=config['logging']['logpath'])
+        except:
+            logger.error('Mail sending failed', exc_info=True)
