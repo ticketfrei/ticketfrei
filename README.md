@@ -19,14 +19,14 @@ First you need to install python and virtualenv with your favourite package mana
 Create and activate virtualenv:
 
 ```shell
-sudo apt install python virtualenv
+sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python nginx
 virtualenv -p python3 .
 . bin/activate
 ```
 
 Install the dependencies:
 ```shell
-pip install tweepy pytoml requests Mastodon.py
+pip install tweepy pytoml requests Mastodon.py bottle
 ```
 
 Configure the bot:
