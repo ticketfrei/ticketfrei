@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 
+import os
 import bottle
 import sqlite3
 import sendmail
+import pytoml as toml
+import jwt
+import pylibscrypt
+
 
 class Datagetter(object):
     def __init__(self):
@@ -54,7 +59,9 @@ def register():
         return "ERROR: Passwords don't match. Try again."
 
     # needs to be encoded somehow
-    confirmlink = "ticketfrei.links-tech.org/confirm?email=" + email + "&passphrase=" + psw
+    payload = {"email":email, "psw_hashed":pylibscrypt.scrypt_mcf(psw)}  # hash password
+    encoded_jwt = jwt.encode(payload, secret)
+    confirmlink = "ticketfrei.links-tech.org/confirm?" + encoded_jwt
     config = ""
     m = sendmail.Mailer(config)
     m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
@@ -63,16 +70,19 @@ def register():
 
 # How can I parse the arguments from the URI?
 # https://ticketfrei.links-tech.org/confirm?user=asdf&pass=sup3rs3cur3
-@app.route('/confirm')
+@app.route('/confirm', method="GET")
 def confirmaccount():
     """
     Confirm the account creation and create a database entry.
     :return: Redirection to bot.html
     """
-    uname = "user"      # :todo get user from URI
-    passphrase = "pass" # :todo get passphrase from URI
+    encoded_jwt = bottle.request.forms.get('encoded_jwt')
+    dict = jwt.decode(encoded_jwt, secret)
+    uname = dict["email"]
+    pass_hashed = dict["psw_hashed"]
+    print(uname, pass_hashed)
     active = "1"
-    db.conn.execute("CREATE ?, ?, ? IN user;", (uname, passphrase, active))
+    db.conn.execute("CREATE ?, ?, ? IN user;", (uname, pass_hashed, active))
 
 
 @app.route('/static/<filename:path>')
@@ -105,6 +115,11 @@ class StripPathMiddleware(object):
 
 
 if __name__ == "__main__":
+    with open('../config.toml') as configfile:
+        config = toml.load(configfile)
+
     global db
+    global secret
+    secret = os.urandom(32)
     db = Datagetter()
     bottle.run(app=StripPathMiddleware(app), host='0.0.0.0', port=8080)

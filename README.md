@@ -26,7 +26,7 @@ virtualenv -p python3 .
 
 Install the dependencies:
 ```shell
-pip install tweepy pytoml requests Mastodon.py bottle
+pip install tweepy pytoml requests Mastodon.py bottle pyjwt 
 ```
 
 Configure the bot:
