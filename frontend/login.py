@@ -2,6 +2,7 @@
 
 import bottle
 import sqlite3
+import sendmail
 
 class Datagetter(object):
     def __init__(self):
@@ -46,14 +47,33 @@ def register():
 
     :return: bot.py Session Cookie
     """
-    uname = bottle.request.forms.get('email')
+    email = bottle.request.forms.get('email')
     psw = bottle.request.forms.get('psw')
     pswrepeat = bottle.request.forms.get('psw-repeat')
     if pswrepeat != psw:
         return "ERROR: Passwords don't match. Try again."
 
-    # :todo send confirmation Mail with encoded email+passphrase to email
-    return "We Sent you an E-Mail. Please click on the confirmation link."
+    # needs to be encoded somehow
+    confirmlink = "ticketfrei.links-tech.org/confirm?email=" + email + "&passphrase=" + psw
+    config = ""
+    m = sendmail.Mailer(config)
+    m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
+    return "We sent you an E-Mail. Please click on the confirmation link."
+
+
+# How can I parse the arguments from the URI?
+# https://ticketfrei.links-tech.org/confirm?user=asdf&pass=sup3rs3cur3
+@app.route('/confirm')
+def confirmaccount():
+    """
+    Confirm the account creation and create a database entry.
+    :return: Redirection to bot.html
+    """
+    uname = "user"      # :todo get user from URI
+    passphrase = "pass" # :todo get passphrase from URI
+    active = "1"
+    db.conn.execute("CREATE ?, ?, ? IN user;", (uname, passphrase, active))
+
 
 @app.route('/static/<filename:path>')
 def static(filename):
