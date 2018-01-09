@@ -39,7 +39,7 @@ def login():
     """
     uname = bottle.request.forms.get('uname')
     psw = bottle.request.forms.get('psw')
-    if psw == db.cur.execute("SELECT pass FROM user WHERE email=?;", (uname, )):
+    if pylibscrypt.scrypt_mcf_check(db.cur.execute("SELECT pass FROM user WHERE email=?;", (uname, )), psw):
         # :todo Generate Session Cookie and give to user
         return bottle.static_file("../static/bot.html", root="../static")
     else:
