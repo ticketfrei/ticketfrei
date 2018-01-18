@@ -126,6 +126,8 @@ class RetweetBot(object):
         except requests.exceptions.ConnectionError:
             logger.error("Twitter API Error: Bad Connection", exc_info=True)
             self.waitcounter += 10
+        except tweepy.TweepError:
+            logger.error("Twitter API Error: General Error", exc_info=True)
         return []
 
     def repost(self, status):
