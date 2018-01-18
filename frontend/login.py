@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+import base64
 import bottle
 import sqlite3
 import sendmail
@@ -28,7 +29,9 @@ class Datagetter(object):
             print(e)
         return None
 
+
 app = application = bottle.Bottle()
+
 
 @app.route('/login', method="POST")
 def login():
@@ -39,11 +42,13 @@ def login():
     """
     uname = bottle.request.forms.get('uname')
     psw = bottle.request.forms.get('psw')
+    psw = psw.encode("utf-8")
     if pylibscrypt.scrypt_mcf_check(db.cur.execute("SELECT pass FROM user WHERE email=?;", (uname, )), psw):
         # :todo Generate Session Cookie and give to user
         return bottle.static_file("../static/bot.html", root="../static")
     else:
         return "Wrong Credentials."
+
 
 @app.route('/register', method="POST")
 def register():
@@ -59,7 +64,11 @@ def register():
         return "ERROR: Passwords don't match. Try again."
 
     # needs to be encoded somehow
-    payload = {"email":email, "psw_hashed":pylibscrypt.scrypt_mcf(psw)}  # hash password
+    psw = psw.encode("utf-8")
+    psw = pylibscrypt.scrypt_mcf(psw)
+    psw = base64.encodebytes(psw)
+    psw = psw.decode("ascii")
+    payload = {"email": email, "psw_hashed": psw}  # hash password
     encoded_jwt = jwt.encode(payload, secret)
     confirmlink = "ticketfrei.links-tech.org/confirm?" + encoded_jwt
     config = ""
@@ -83,6 +92,7 @@ def confirmaccount():
     print(uname, pass_hashed)
     active = "1"
     db.conn.execute("CREATE ?, ?, ? IN user;", (uname, pass_hashed, active))
+    return bottle.static_file("../static/bot.html", root='../static')
 
 
 @app.route('/static/<filename:path>')
@@ -122,4 +132,5 @@ if __name__ == "__main__":
     global secret
     secret = os.urandom(32)
     db = Datagetter()
+
     bottle.run(app=StripPathMiddleware(app), host='0.0.0.0', port=8080)
