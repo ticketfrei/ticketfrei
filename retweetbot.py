@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import tweepy
+import re
 import requests
 import pytoml as toml
 import trigger
@@ -111,9 +112,10 @@ class RetweetBot(object):
                 else:
                     mentions = self.api.mentions_timeline(since_id=self.last_mention)
                 for status in mentions:
+                    text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", status.text)
                     reports.append(report.Report(status.author.screen_name,
                                                  "twitter",
-                                                 status.text,
+                                                 text,
                                                  status.id,
                                                  status.created_at))
                 return reports

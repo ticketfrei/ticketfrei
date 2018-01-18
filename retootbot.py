@@ -77,9 +77,10 @@ class RetootBot(object):
                 self.save_last()
                 os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
                 # add mention to mentions
+                text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", status['status']['content'])
                 mentions.append(report.Report(status['account']['acct'],
                                               "mastodon",
-                                              re.sub(r'<[^>]*>', '', status['status']['content']),
+                                              re.sub(r'<[^>]*>', '', text),
                                               status['status']['id'],
                                               status['status']['created_at']))
         return mentions
