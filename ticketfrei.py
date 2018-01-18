@@ -9,7 +9,6 @@ from retootbot import RetootBot
 from retweetbot import RetweetBot
 from trigger import Trigger
 
-
 if __name__ == '__main__':
     # read config in TOML format (https://github.com/toml-lang/toml#toml)
     with open('config.toml') as configfile:
@@ -21,14 +20,14 @@ if __name__ == '__main__':
     logger.addHandler(fh)
 
     trigger = Trigger(config)
-    mbot = RetootBot(config, trigger)
-    tbot = RetweetBot(trigger, config)
+    mbot = RetootBot(config)
+    tbot = RetweetBot(config)
 
     try:
         statuses = []
         while True:
-            statuses = mbot.retoot(statuses)
-            statuses = tbot.flow(statuses)
+            statuses = mbot.flow(trigger, statuses)
+            statuses = tbot.flow(trigger, to_tweet=statuses)
             time.sleep(60)
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")

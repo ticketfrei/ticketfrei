@@ -9,14 +9,14 @@ import time
 import trigger
 import logging
 import sendmail
+import report
 
 logger = logging.getLogger(__name__)
 
 
 class RetootBot(object):
-    def __init__(self, config, trigger):
+    def __init__(self, config):
         self.config = config
-        self.trigger = trigger
         self.client_id = self.register()
         self.m = self.login()
 
@@ -53,34 +53,61 @@ class RetootBot(object):
         )
         return m
 
-    def retoot(self, toots=()):
+    def crawl(self):
+        """
+        Crawl mentions from Mastodon.
+
+        :return: list of statuses
+        """
+        all = self.m.notifications()
+        mentions = []
+        for status in all:
+            if (status['type'] == 'mention' and status['status']['id'] not in self.seen_toots):
+                # save state
+                self.seen_toots.add(status['status']['id'])
+                with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
+                    pickle.dump(self.seen_toots, f)
+                os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
+                # add mention to mentions
+                mentions.append(report.Report(status['account']['acct'],
+                                              "mastodon",
+                                              re.sub(r'<[^>]*>', '', status['status']['content']),
+                                              status['status']['id'],
+                                              status['status']['created_at']))
+        return mentions
+
+    def repost(self, mention):
+        """
+        Retoots a mention.
+
+        :param mention: (report.Report object)
+        """
+        logger.info('Boosting toot from %s' % (
+            mention.format()))
+        self.m.status_reblog(mention.id)
+
+
+    def post(self, report):
+        """
+        Toots a report from other sources.
+
+        :param report: (report.Report object)
+        """
+        toot = report.format()
+        self.m.toot(toot)
+
+    def flow(self, trigger, reports=()):
         # toot external provided messages
-        for toot in toots:
-            self.m.toot(toot)
+        for report in reports:
+            self.post(report)
 
         # boost mentions
         retoots = []
-        for notification in self.m.notifications():
-            if (notification['type'] == 'mention'
-                    and notification['status']['id'] not in self.seen_toots):
-                self.seen_toots.add(notification['status']['id'])
-                text_content = re.sub(r'<[^>]*>', '',
-                                      notification['status']['content'])
-                if not self.trigger.is_ok(text_content):
-                    continue
-                logger.info('Boosting toot from %s: %s' % (
-                    notification['status']['account']['acct'],
-                    notification['status']['content']))
-                self.m.status_reblog(notification['status']['id'])
-                retoots.append('%s: %s' % (
-                    notification['status']['account']['acct'],
-                    re.sub(r'@\S*', '', text_content)))
-        # If the Mastodon instance returns interesting Errors, add them here:
-
-        # save state
-        with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
-            pickle.dump(self.seen_toots, f)
-        os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
+        for mention in self.crawl():
+            if not trigger.is_ok(mention.text):
+                continue
+            self.repost(mention)
+            retoots.append(mention)
 
         # return mentions for mirroring
         return retoots
@@ -96,11 +123,11 @@ if __name__ == '__main__':
     logger.addHandler(fh)
 
     trigger = trigger.Trigger(config)
-    bot = RetootBot(config, trigger)
+    bot = RetootBot(config)
 
     try:
         while True:
-            bot.retoot()
+            bot.flow(trigger)
             time.sleep(1)
     except KeyboardInterrupt:
             print("Good bye. Remember to restart the bot!")
