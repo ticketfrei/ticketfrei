@@ -55,10 +55,13 @@ class Mailbot(object):
             except:
                 logger.error('Mail sending failed', exc_info=True)
 
-    def repost(self):
+    def repost(self, status):
         """
         E-Mails don't have to be reposted - they already reached everyone on the mailing list.
-        The function still needs to be here because ticketfrei.py assumes it.
+        The function still needs to be here because ticketfrei.py assumes it, and take the
+        report object they want to give us.
+
+        :param status: (report.Report object)
         """
         pass
 
