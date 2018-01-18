@@ -141,6 +141,7 @@ class RetweetBot(object):
                 logger.info("Retweeted: " + status.format())
                 if status.id > self.last_mention:
                     self.last_mention = status.id
+                self.save_last()
                 return status.format()
             except requests.exceptions.ConnectionError:
                 logger.error("Twitter API Error: Bad Connection", exc_info=True)
@@ -150,6 +151,7 @@ class RetweetBot(object):
                 logger.error("Twitter Error", exc_info=True)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
+                self.save_last()
                 return None
 
     def post(self, status):
@@ -194,10 +196,6 @@ class RetweetBot(object):
                 if toot:
                     all_tweets.append(toot)
 
-            # save the id so it doesn't get crawled again
-            if status.id > self.last_mention:
-                self.last_mention = status.id
-            self.save_last()
         # Return Retweets for posting on other bots
         return all_tweets
 
