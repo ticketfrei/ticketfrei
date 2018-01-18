@@ -117,15 +117,14 @@ class Mailbot(object):
         with open(self.history_path, "w") as f:
             f.write(str(self.last_mail))
 
-    def post(self, statuses):
+    def post(self, status):
         """
         sends reports by other sources to a mailing list.
 
-        :param statuses: (list of report.Report objects)
+        :param status: (report.Report object)
         """
-        for status in statuses:
-            mailer = sendmail.Mailer(self.config)
-            mailer.send(status.format(), self.mailinglist, "Warnung: Kontrolleure gesehen")
+        mailer = sendmail.Mailer(self.config)
+        mailer.send(status.format(), self.mailinglist, "Warnung: Kontrolleure gesehen")
 
     def make_report(self, msg):
         """
