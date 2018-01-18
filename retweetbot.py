@@ -216,7 +216,7 @@ if __name__ == "__main__":
     trigger = trigger.Trigger(config)
 
     # initialise twitter bot
-    bot = RetweetBot(trigger, config)
+    bot = RetweetBot(config)
 
     try:
         while True:
