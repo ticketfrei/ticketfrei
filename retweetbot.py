@@ -118,6 +118,7 @@ class RetweetBot(object):
                                                  text,
                                                  status.id,
                                                  status.created_at))
+                self.save_last()
                 return reports
         except tweepy.RateLimitError:
             logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
