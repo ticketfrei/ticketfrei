@@ -5,6 +5,7 @@ import requests
 import pytoml as toml
 import trigger
 from time import sleep
+import report
 import logging
 import sendmail
 
@@ -100,15 +101,18 @@ class RetweetBot(object):
         """
         crawls all Tweets which mention the bot from the twitter rest API.
 
-        :return: list of Status objects
+        :return: reports: (list of report.Report objects)
         """
+        reports = []
         try:
             if not self.waiting():
                 if self.last_mention == 0:
                     mentions = self.api.mentions_timeline()
                 else:
                     mentions = self.api.mentions_timeline(since_id=self.last_mention)
-                return mentions
+                for status in mentions:
+                    reports.append(report.Report(status.author, "twitter", status.text, status.id, status.created_at))
+                return reports
         except tweepy.RateLimitError:
             logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
             self.waitcounter += 60*15 + 1
