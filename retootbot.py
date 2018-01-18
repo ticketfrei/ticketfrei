@@ -59,8 +59,10 @@ class RetootBot(object):
             with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
                 pickle.dump(self.seen_toots, f)
         except FileExistsError:
-            with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY), 'wb') as f:
+            os.unlink('seen_toots.pickle.part')
+            with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
                 pickle.dump(self.seen_toots, f)
+        os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
 
     def crawl(self):
         """
@@ -75,12 +77,12 @@ class RetootBot(object):
                 # save state
                 self.seen_toots.add(status['status']['id'])
                 self.save_last()
-                os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
                 # add mention to mentions
-                text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", status['status']['content'])
+                text = re.sub(r'<[^>]*>', '', status['status']['content'])
+                text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", text)
                 mentions.append(report.Report(status['account']['acct'],
                                               "mastodon",
-                                              re.sub(r'<[^>]*>', '', text),
+                                              text,
                                               status['status']['id'],
                                               status['status']['created_at']))
         return mentions
