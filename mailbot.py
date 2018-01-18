@@ -84,14 +84,16 @@ class Mailbot(object):
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
-                # get a comparable date out of the email
-                date_tuple = email.utils.parsedate_tz(msg['Date'])
-                date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-                date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
-                if date > self.get_history(self.history_path):
-                    self.last_mail = date
-                    self.save_last()
-                    msgs.append(self.make_report(msg))
+                if not self.config['mail']['user'] + "@" + \
+                        self.config["mail"]["mailserver"].partition(".")[2] in msg['From']:
+                    # get a comparable date out of the email
+                    date_tuple = email.utils.parsedate_tz(msg['Date'])
+                    date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
+                    date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
+                    if date > self.get_history(self.history_path):
+                        self.last_mail = date
+                        self.save_last()
+                        msgs.append(self.make_report(msg))
         return msgs
 
     def get_history(self, path):
@@ -154,7 +156,8 @@ class Mailbot(object):
         :param statuses: (list of report.Report objects)
         :return: statuses: (list of report.Report objects)
         """
-        self.post(statuses)
+        for status in statuses:
+            self.post(status)
 
         msgs = self.crawl()
 
