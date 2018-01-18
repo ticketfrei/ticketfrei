@@ -70,8 +70,12 @@ class RetootBot(object):
 
         :return: list of statuses
         """
-        all = self.m.notifications()
         mentions = []
+        try:
+            all = self.m.notifications()
+        except:  # mastodon.Mastodon.MastodonAPIError is unfortunately not in __init__.py
+            logger.error("Unknown Mastodon API Error.", exc_info=True)
+            return mentions
         for status in all:
             if (status['type'] == 'mention' and status['status']['id'] not in self.seen_toots):
                 # save state
