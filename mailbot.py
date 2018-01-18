@@ -87,7 +87,7 @@ class Mailbot(object):
                 date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
                 if date > self.get_history(self.history_path):
                     self.last_mail = date
-                    self.save_last_mail()
+                    self.save_last()
                     msgs.append(self.make_report(msg))
         return msgs
 
@@ -109,7 +109,7 @@ class Mailbot(object):
                 f.write(last_mail)
         return float(last_mail)
 
-    def save_last_mail(self):
+    def save_last(self):
         """ Saves the last retweeted tweet in last_mention. """
         with open(self.history_path, "w") as f:
             f.write(str(self.last_mail))
@@ -121,9 +121,8 @@ class Mailbot(object):
         :param statuses: (list of report.Report objects)
         """
         for status in statuses:
-            status = status.format()
             mailer = sendmail.Mailer(self.config)
-            mailer.send(status, self.mailinglist, "Warnung: Kontrolleure gesehen")
+            mailer.send(status.format(), self.mailinglist, "Warnung: Kontrolleure gesehen")
 
     def make_report(self, msg):
         """
@@ -143,7 +142,7 @@ class Mailbot(object):
         text = msg.get_payload()
         post = report.Report(author, "mail", text, None, date)
         self.last_mail = date
-        self.save_last_mail()
+        self.save_last()
         return post
 
     def flow(self, trigger, statuses):
@@ -170,6 +169,7 @@ if __name__ == "__main__":
         config = toml.load(configfile)
 
     # set log file
+    logger = logging.getLogger()
     fh = logging.FileHandler(config['logging']['logpath'])
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
@@ -189,7 +189,7 @@ if __name__ == "__main__":
         print("Good bye. Remember to restart the bot!")
     except:
         logger.error('Shutdown', exc_info=True)
-        m.save_last_mail()
+        m.save_last()
         try:
             mailer = sendmail.Mailer(config)
             mailer.send('', config['mail']['contact'],

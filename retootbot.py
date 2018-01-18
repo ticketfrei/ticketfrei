@@ -53,6 +53,11 @@ class RetootBot(object):
         )
         return m
 
+    def save_last(self):
+        """ save the last seen toot """
+        with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
+            pickle.dump(self.seen_toots, f)
+
     def crawl(self):
         """
         Crawl mentions from Mastodon.
@@ -65,8 +70,7 @@ class RetootBot(object):
             if (status['type'] == 'mention' and status['status']['id'] not in self.seen_toots):
                 # save state
                 self.seen_toots.add(status['status']['id'])
-                with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
-                    pickle.dump(self.seen_toots, f)
+                self.save_last()
                 os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
                 # add mention to mentions
                 mentions.append(report.Report(status['account']['acct'],

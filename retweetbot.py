@@ -80,7 +80,7 @@ class RetweetBot(object):
                 f.write(last_mention)
         return int(last_mention)
 
-    def save_last_mention(self):
+    def save_last(self):
         """ Saves the last retweeted tweet in last_mention. """
         with open(self.history_path, "w") as f:
             f.write(str(self.last_mention))
@@ -186,7 +186,7 @@ class RetweetBot(object):
             # save the id so it doesn't get crawled again
             if status.id > self.last_mention:
                 self.last_mention = status.id
-            self.save_last_mention()
+            self.save_last()
         # Return Retweets for posting on other bots
         return all_tweets
 
@@ -216,7 +216,7 @@ if __name__ == "__main__":
         print("Good bye. Remember to restart the bot!")
     except:
         logger.error('Shutdown', exc_info=True)
-        bot.save_last_mention()
+        bot.save_last()
         try:
             mailer = sendmail.Mailer(config)
             mailer.send('', config['mail']['contact'],
