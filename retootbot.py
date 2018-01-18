@@ -55,8 +55,12 @@ class RetootBot(object):
 
     def save_last(self):
         """ save the last seen toot """
-        with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
-            pickle.dump(self.seen_toots, f)
+        try:
+            with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
+                pickle.dump(self.seen_toots, f)
+        except FileExistsError:
+            with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY), 'wb') as f:
+                pickle.dump(self.seen_toots, f)
 
     def crawl(self):
         """
