@@ -111,7 +111,11 @@ class RetweetBot(object):
                 else:
                     mentions = self.api.mentions_timeline(since_id=self.last_mention)
                 for status in mentions:
-                    reports.append(report.Report(status.author, "twitter", status.text, status.id, status.created_at))
+                    reports.append(report.Report(status.author.screen_name,
+                                                 "twitter",
+                                                 status.text,
+                                                 status.id,
+                                                 status.created_at))
                 return reports
         except tweepy.RateLimitError:
             logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
