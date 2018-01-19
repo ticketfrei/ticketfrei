@@ -23,7 +23,14 @@ if __name__ == '__main__':
 
     trigger = Trigger(config)
 
-    bots = [RetootBot(config), RetweetBot(config), Mailbot(config)]
+    bots = []
+
+    if config["muser"]["enabled"] != "false":
+        bots.append(RetootBot(config))
+    if config["tuser"]["enabled"] != "false":
+        bots.append(RetweetBot(config))
+    if config["mail"]["enabled"] != "false":
+        bots.append(Mailbot(config))
 
     try:
         statuses = []

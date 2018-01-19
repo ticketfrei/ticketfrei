@@ -3,6 +3,7 @@
 name = 'yourcity_ticketfrei'    # What you want the app to be called
 
 [muser]
+enabled = 'false'  # set to true if you want to use Mastodon
 email = 'youremail@server.tld'  # E-mail address of your Mastodon account
 password = 'yourpassword'       # Password of your Mastodon account
 server = 'yourmastodoninstance' # Instance where you have your Mastodon account
@@ -14,12 +15,14 @@ consumer_key = "your_consumer_key"
 consumer_secret = "your_consumer_secret"
 
 [tuser]
+enabled = 'false'  # set to true if you want to use Twitter
 # You get those keys when you follow these steps:
 # https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
 access_token_key = "your_access_token_key"
 access_token_secret = "your_acces_token_secret"
 
 [mail]
+enabled = 'false'  # set to true if you want to use Mail notifications
 # This is the mail the bot uses to send emails.
 mailserver = "smtp.riseup.net"
 user = "ticketfrei"
@@ -28,11 +31,11 @@ passphrase = "sup3rs3cur3"
 # when it breaks down), you should specify a contact email address:
 #contact = "your_mail@riseup.net"
 # Mailing list where you want to send warnings to
-#list = "nbg_ticketfrei@lists.links-tech.org"
+list = "yourcity_ticketfrei@lists.links-tech.org"
 
 [logging]
 # The directory where logs should be stored.
-logpath = "logs"
+logpath = "logs/ticketfrei.log"
 
 # [trigger]
 # goodlists are one regex per line.
