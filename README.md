@@ -1,8 +1,9 @@
-# Ticketfrei micro messaging bot
+# Ticketfrei social bot
 
 Version: 1.0
 
-<!-- This mastodon/twitter bot has one purpose - breaking the law. -->
+Ticketfrei is a mastodon/twitter/mail bot to dodge ticket controllers
+in public transport systems.
 
 The functionality is simple: it retweets every tweet where it is
 mentioned.
