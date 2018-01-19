@@ -9,6 +9,7 @@ import email
 import logging
 import pytoml as toml
 import imaplib
+import report
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class Mailbot(object):
     other bots that it received mails.
     """
 
-    def __init__(self, config, trigger, history_path="last_mail"):
+    def __init__(self, config, history_path="last_mail"):
         """
         Creates a Bot who listens to mails and forwards them to other
         bots.
@@ -27,7 +28,6 @@ class Mailbot(object):
         :param config: (dictionary) config.toml as a dictionary of dictionaries
         """
         self.config = config
-        self.trigger = trigger
 
         self.history_path = history_path
         self.last_mail = self.get_history(self.history_path)
@@ -55,10 +55,20 @@ class Mailbot(object):
             except:
                 logger.error('Mail sending failed', exc_info=True)
 
-    def listen(self):
+    def repost(self, status):
         """
-        listen for mails which contain goodwords but no badwords.
-        :return:
+        E-Mails don't have to be reposted - they already reached everyone on the mailing list.
+        The function still needs to be here because ticketfrei.py assumes it, and take the
+        report object they want to give us.
+
+        :param status: (report.Report object)
+        """
+        pass
+
+    def crawl(self):
+        """
+        crawl for new mails.
+        :return: msgs: (list of report.Report objects)
         """
         rv, data = self.mailbox.select("Inbox")
         msgs = []
@@ -74,18 +84,21 @@ class Mailbot(object):
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
-                # get a comparable date out of the email
-                date_tuple = email.utils.parsedate_tz(msg['Date'])
-                date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-                date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
-                if date > self.get_history(self.history_path):
-                    self.last_mail = date
-                    self.save_last_mail()
-                    msgs.append(msg)
+                if not self.config['mail']['user'] + "@" + \
+                        self.config["mail"]["mailserver"].partition(".")[2] in msg['From']:
+                    # get a comparable date out of the email
+                    date_tuple = email.utils.parsedate_tz(msg['Date'])
+                    date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
+                    date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
+                    if date > self.get_history(self.history_path):
+                        self.last_mail = date
+                        self.save_last()
+                        msgs.append(self.make_report(msg))
         return msgs
 
     def get_history(self, path):
-        """ This counter is needed to keep track of your mails, so you
+        """
+        This counter is needed to keep track of your mails, so you
         don't double parse them
 
         :param path: string: contains path to the file where the ID of the
@@ -101,26 +114,26 @@ class Mailbot(object):
                 f.write(last_mail)
         return float(last_mail)
 
-    def save_last_mail(self):
+    def save_last(self):
         """ Saves the last retweeted tweet in last_mention. """
         with open(self.history_path, "w") as f:
             f.write(str(self.last_mail))
 
-    def send_report(self, statuses):
+    def post(self, status):
         """
-        sends reports by twitter & mastodon to a mailing list.
+        sends reports by other sources to a mailing list.
 
-        :param statuses: (list) of status strings
+        :param status: (report.Report object)
         """
-        for status in statuses:
-            mailer = sendmail.Mailer(self.config)
-            mailer.send(status, self.mailinglist, "Warnung: Kontrolleure gesehen")
+        mailer = sendmail.Mailer(self.config)
+        mailer.send(status.format(), self.mailinglist, "Warnung: Kontrolleure gesehen")
 
-    def to_social(self, msg):
+    def make_report(self, msg):
         """
-        sends a report from the mailing list to social
+        generates a report out of a mail
+
         :param msg: email.parser.Message object
-        :return: post: (string) of author + text
+        :return: post: report.Report object
         """
         # get a comparable date out of the email
         date_tuple = email.utils.parsedate_tz(msg['Date'])
@@ -131,26 +144,27 @@ class Mailbot(object):
         # :todo take only the part before the @
 
         text = msg.get_payload()
-        post = author + ": " + text
+        post = report.Report(author, "mail", text, None, date)
         self.last_mail = date
-        self.save_last_mail()
+        self.save_last()
         return post
 
-    def flow(self, statuses):
+    def flow(self, trigger, statuses):
         """
-        to be iterated
+        to be iterated. uses trigger to separate the sheep from the goats
 
-        :param statuses: (list) of statuses to send to mailinglist
-        :return: list of statuses to post in mastodon & twitter
+        :param statuses: (list of report.Report objects)
+        :return: statuses: (list of report.Report objects)
         """
-        self.send_report(statuses)
+        for status in statuses:
+            self.post(status)
 
-        msgs = self.listen()
+        msgs = self.crawl()
 
         statuses = []
         for msg in msgs:
-            if self.trigger.is_ok(msg.get_payload()):
-                statuses.append(self.to_social(msg))
+            if trigger.is_ok(msg.get_payload()):
+                statuses.append(msg)
         return statuses
 
 
@@ -159,22 +173,28 @@ if __name__ == "__main__":
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
+    # set log file
+    logger = logging.getLogger()
     fh = logging.FileHandler(config['logging']['logpath'])
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
+    # initialise trigger
     trigger = trigger.Trigger(config)
-    m = Mailbot(config, trigger)
+
+    # initialise mail bot
+    m = Mailbot(config)
+
     statuses = []
     try:
         while 1:
-            print("Received Reports: " + str(m.flow(statuses)))
+            print("Received Reports: " + str(m.flow(trigger, statuses)))
             time.sleep(1)
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
         logger.error('Shutdown', exc_info=True)
-        m.save_last_mail()
+        m.save_last()
         try:
             mailer = sendmail.Mailer(config)
             mailer.send('', config['mail']['contact'],

@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
 import tweepy
+import re
 import requests
 import pytoml as toml
 import trigger
 from time import sleep
+import report
 import logging
 import sendmail
 
@@ -19,18 +21,14 @@ class RetweetBot(object):
 
     api: The api object, generated with your oAuth keys, responsible for
         communication with twitter rest API
-    triggers: a list of words, one of them has to be in a tweet for it to be
-        retweeted
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, trigger, config, history_path="last_mention"):
+    def __init__(self, config, history_path="last_mention"):
         """
         Initializes the bot and loads all the necessary data.
 
-        :param trigger: object of the trigger
         :param config: (dictionary) config.toml as a dictionary of dictionaries
-        :param logger: object of the logger
         :param history_path: Path to the file with ID of the last retweeted
             Tweet
         """
@@ -46,7 +44,6 @@ class RetweetBot(object):
 
         self.history_path = history_path
         self.last_mention = self.get_history(self.history_path)
-        self.trigger = trigger
         self.waitcounter = 0
 
     def get_api_keys(self):
@@ -85,7 +82,7 @@ class RetweetBot(object):
                 f.write(last_mention)
         return int(last_mention)
 
-    def save_last_mention(self):
+    def save_last(self):
         """ Saves the last retweeted tweet in last_mention. """
         with open(self.history_path, "w") as f:
             f.write(str(self.last_mention))
@@ -101,53 +98,53 @@ class RetweetBot(object):
             self.waitcounter -= 1
         return self.waitcounter
 
-    def format_mastodon(self, status):
-        """
-        Bridge your Retweets to mastodon.
-
-        :rtype: string
-        :param status: Object of a tweet.
-        :return: toot: text tooted on mastodon, e.g. "_b3yond: There are
-            uniformed controllers in the U2 at Opernhaus."
-        """
-        toot = status.user.name + ": " + status.text
-        return toot
-
-    def crawl_mentions(self):
+    def crawl(self):
         """
         crawls all Tweets which mention the bot from the twitter rest API.
 
-        :return: list of Status objects
+        :return: reports: (list of report.Report objects)
         """
+        reports = []
         try:
             if not self.waiting():
                 if self.last_mention == 0:
                     mentions = self.api.mentions_timeline()
                 else:
                     mentions = self.api.mentions_timeline(since_id=self.last_mention)
-                return mentions
+                for status in mentions:
+                    text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", status.text)
+                    reports.append(report.Report(status.author.screen_name,
+                                                 "twitter",
+                                                 text,
+                                                 status.id,
+                                                 status.created_at))
+                self.save_last()
+                return reports
         except tweepy.RateLimitError:
             logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
             self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
             logger.error("Twitter API Error: Bad Connection", exc_info=True)
             self.waitcounter += 10
+        except tweepy.TweepError:
+            logger.error("Twitter API Error: General Error", exc_info=True)
         return []
 
-    def retweet(self, status):
+    def repost(self, status):
         """
         Retweets a given tweet.
 
-        :param status: A tweet object.
+        :param status: (report.Report object)
         :return: toot: string of the tweet, to toot on mastodon.
         """
         while 1:
             try:
                 self.api.retweet(status.id)
-                logger.info("Retweeted: " + self.format_mastodon(status))
+                logger.info("Retweeted: " + status.format())
                 if status.id > self.last_mention:
                     self.last_mention = status.id
-                return self.format_mastodon(status)
+                self.save_last()
+                return status.format()
             except requests.exceptions.ConnectionError:
                 logger.error("Twitter API Error: Bad Connection", exc_info=True)
                 sleep(10)
@@ -156,75 +153,81 @@ class RetweetBot(object):
                 logger.error("Twitter Error", exc_info=True)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
+                self.save_last()
                 return None
 
-    def tweet(self, post):
+    def post(self, status):
         """
         Tweet a post.
 
-        :param post: String with the text to tweet.
+        :param status: (report.Report object)
         """
-        if len(post) > 280:
-            post = post[:280 - 4] + u' ...'
+        text = status.format()
+        if len(text) > 280:
+            text = status.text[:280 - 4] + u' ...'
         while 1:
             try:
-                self.api.update_status(status=post)
+                self.api.update_status(status=text)
                 return
             except requests.exceptions.ConnectionError:
                 logger.error("Twitter API Error: Bad Connection", exc_info=True)
                 sleep(10)
 
-    def flow(self, to_tweet=()):
+    def flow(self, trigger, to_tweet=()):
         """ The flow of crawling mentions and retweeting them.
 
         :param to_tweet: list of strings to tweet
         :return list of retweeted tweets, to toot on mastodon
         """
 
-        # Tweet the toots the Retootbot gives to us
+        # Tweet the reports from other sources
         for post in to_tweet:
-            self.tweet(post)
+            self.post(post)
 
         # Store all mentions in a list of Status Objects
-        mentions = self.crawl_mentions()
-        mastodon = []
+        mentions = self.crawl()
+
+        # initialise list of strings for other bots
+        all_tweets = []
 
         for status in mentions:
             # Is the Text of the Tweet in the triggerlist?
-            if self.trigger.is_ok(status.text):
+            if trigger.is_ok(status.text):
                 # Retweet status
-                toot = self.retweet(status)
+                toot = self.repost(status)
                 if toot:
-                    mastodon.append(toot)
+                    all_tweets.append(toot)
 
-            # save the id so it doesn't get crawled again
-            if status.id > self.last_mention:
-                self.last_mention = status.id
-            self.save_last_mention()
-        # Return Retweets for tooting on mastodon
-        return mastodon
+        # Return Retweets for posting on other bots
+        return all_tweets
 
 
 if __name__ == "__main__":
-    # create an Api object
+    # get the config dict of dicts
     with open('config.toml') as configfile:
         config = toml.load(configfile)
 
+    # set log file
     fh = logging.FileHandler(config['logging']['logpath'])
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
+    # initialise trigger
     trigger = trigger.Trigger(config)
-    bot = RetweetBot(trigger, config)
+
+    # initialise twitter bot
+    bot = RetweetBot(config)
+
     try:
         while True:
-            bot.flow()
+            # :todo separate into small functions
+            bot.flow(trigger)
             sleep(60)
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
         logger.error('Shutdown', exc_info=True)
-        bot.save_last_mention()
+        bot.save_last()
         try:
             mailer = sendmail.Mailer(config)
             mailer.send('', config['mail']['contact'],

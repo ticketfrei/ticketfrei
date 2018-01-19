@@ -96,6 +96,10 @@ SCHWARZFAHREN erwischt wirst,
 DANN nur weil Du noch nicht den Ticketfrei-Service deiner
 VGN nutzt.
 
+WENN
+ÜBERWACHUNG sich lohnt,
+DANN weil die
+VAG öffentlich ist
 
 # Eine Zukunft ohne Ticketautomaten und Kontrolleure
 
