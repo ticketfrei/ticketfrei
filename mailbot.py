@@ -70,7 +70,11 @@ class Mailbot(object):
         crawl for new mails.
         :return: msgs: (list of report.Report objects)
         """
-        rv, data = self.mailbox.select("Inbox")
+        try:
+            rv, data = self.mailbox.select("Inbox")
+        except imaplib.IMAP4.abort:
+            logger.error("Crawling Mail failed", exc_info=True)
+            rv = False
         msgs = []
         if rv == 'OK':
             rv, data = self.mailbox.search(None, "ALL")
