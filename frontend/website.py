@@ -12,7 +12,7 @@ import pylibscrypt
 
 class Datagetter(object):
     def __init__(self):
-        self.db = "../../../ticketfrei.sqlite"
+        self.db = "../ticketfrei.sqlite"
         self.conn = self.create_connection(self.db)
         self.cur = self.conn.cursor()
 
@@ -43,7 +43,10 @@ def login():
     uname = bottle.request.forms.get('uname')
     psw = bottle.request.forms.get('psw')
     psw = psw.encode("utf-8")
-    if pylibscrypt.scrypt_mcf_check(db.cur.execute("SELECT pass FROM user WHERE email=?;", (uname, )), psw):
+    db.cur.execute("SELECT pass_hashed FROM user WHERE email=?;", (uname, )), psw
+    pass_hashed = db.cur.fetchone()
+    print(pass_hashed)
+    if pylibscrypt.scrypt_mcf_check(pass_hashed, psw):
         # :todo Generate Session Cookie and give to user
         return bottle.static_file("../static/bot.html", root="../static")
     else:
@@ -62,6 +65,8 @@ def register():
     pswrepeat = bottle.request.forms.get('psw-repeat')
     if pswrepeat != psw:
         return "ERROR: Passwords don't match. Try again."
+
+    # check if email is already in use
 
     # needs to be encoded somehow
     psw = psw.encode("utf-8")
@@ -91,7 +96,8 @@ def confirmaccount():
     pass_hashed = dict["psw_hashed"]
     print(uname, pass_hashed)
     active = "1"
-    db.conn.execute("CREATE ?, ?, ? IN user;", (uname, pass_hashed, active))
+    db.cur.execute("INSERT INTO user(id, email, pass_hashed, enabled) VALUES(?, ?, ?, ?);", (uname, pass_hashed, active, True))
+    db.conn.commit()
     return bottle.static_file("../static/bot.html", root='../static')
 
 
@@ -132,5 +138,7 @@ if __name__ == "__main__":
     global secret
     secret = os.urandom(32)
     db = Datagetter()
-
-    bottle.run(app=StripPathMiddleware(app), host='0.0.0.0', port=8080)
+    try:
+        bottle.run(app=StripPathMiddleware(app), host='0.0.0.0', port=8080)
+    finally:
+        db.conn.close()

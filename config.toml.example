@@ -33,9 +33,6 @@ passphrase = "sup3rs3cur3"
 # Mailing list where you want to send warnings to
 list = "yourcity_ticketfrei@lists.links-tech.org"
 
-[web]
-secret = "adoijf83wuc2mwipje8r"
-
 [logging]
 # The directory where logs should be stored.
 logpath = "logs/ticketfrei.log"
