@@ -75,8 +75,8 @@ def register():
     psw = psw.decode("ascii")
     payload = {"email": email, "psw_hashed": psw}  # hash password
     encoded_jwt = jwt.encode(payload, secret)
-    confirmlink = "ticketfrei.links-tech.org/confirm?" + encoded_jwt
-    config = ""
+    confirmlink = "ticketfrei.links-tech.org/confirm?" + str(encoded_jwt)
+    print(type(confirmlink))
     m = sendmail.Mailer(config)
     m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
     return "We sent you an E-Mail. Please click on the confirmation link."
@@ -95,8 +95,7 @@ def confirmaccount():
     uname = dict["email"]
     pass_hashed = dict["psw_hashed"]
     print(uname, pass_hashed)
-    active = "1"
-    db.cur.execute("INSERT INTO user(id, email, pass_hashed, enabled) VALUES(?, ?, ?, ?);", (uname, pass_hashed, active, True))
+    db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, True))
     db.conn.commit()
     return bottle.static_file("../static/bot.html", root='../static')
 
@@ -131,6 +130,7 @@ class StripPathMiddleware(object):
 
 
 if __name__ == "__main__":
+    global config
     with open('../config.toml') as configfile:
         config = toml.load(configfile)
 
