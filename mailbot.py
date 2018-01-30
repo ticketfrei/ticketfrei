@@ -73,8 +73,11 @@ class Mailbot(object):
         try:
             rv, data = self.mailbox.select("Inbox")
         except imaplib.IMAP4.abort:
-            logger.error("Crawling Mail failed", exc_info=True)
-            rv = False
+            rv = "Crawling Mail failed"
+            logger.error(rv, exc_info=True)
+        except TimeoutError:
+            rv = "No Connection"
+            logger.error(rv, exc_info=True)
         msgs = []
         if rv == 'OK':
             rv, data = self.mailbox.search(None, "ALL")
