@@ -5,9 +5,9 @@ __pycache__/
 last_mention
 last_mail
 ticketfrei.cfg
+ticketfrei.sqlite
 seen_toots.pickle
 seen_toots.pickle.part
-ticketfrei.sqlite
 pip-selfcheck.json
 config.toml
 bin/
