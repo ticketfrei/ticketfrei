@@ -95,3 +95,20 @@ python3 ticketfrei.py
 
 To log out of the screen session, press "ctrl+a", and then "d".
 
+### Manually creating the database
+
+Unfortunately, if you want to help developing, you have to create the
+database manually for now.
+
+At the moment, we use a SQLITE3 database. If you are in the repo
+directory, just open it with ```sqlitebrowser ticketfrei.sqlite```.
+Then execute following SQL to create the tables:
+
+```sql
+CREATE TABLE `user` (
+    `id`    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    `email` TEXT,
+    `pass_hashed`   TEXT,
+    `enabled`   INTEGER
+)
+```
