@@ -49,8 +49,8 @@ def login():
     except TypeError:
         return "Wrong Credentials."  # no user with this email
     if pylibscrypt.scrypt_mcf_check(pass_hashed, psw):
-        # :todo Generate Session Cookie and give to user
-        return bottle.static_file("../static/bot.html", root="../static")
+        bottle.response.set_cookie("account", uname, secret)
+        return bottle.redirect("/settings")
     else:
         return "Wrong Credentials."  # passphrase is wrong
 
@@ -106,7 +106,21 @@ def confirmaccount(encoded_jwt):
     # create db entry
     db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, True))
     db.conn.commit()
-    return bottle.static_file("../static/bot.html", root='../static')
+    bottle.response.set_cookie("account", uname, secret)
+    return bottle.redirect("/settings")
+
+
+@app.route('/settings')
+def manage_bot():
+    """
+    Restricted area. Deliver the bot settings page.
+    :return:
+    """
+    uname = bottle.request.get_cookie("account", secret=secret)
+    if uname is not None:
+        return bottle.static_file("../static/bot.html", root='../static')
+    else:
+        bottle.abort(401, "Sorry, access denied.")
 
 
 @app.route('/static/<filename:path>')
