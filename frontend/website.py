@@ -43,7 +43,7 @@ def login():
     uname = bottle.request.forms.get('uname')
     psw = bottle.request.forms.get('psw')
     psw = psw.encode("utf-8")
-    db.cur.execute("SELECT pass_hashed FROM user WHERE email=?;", (uname, )), psw
+    db.cur.execute("SELECT pass_hashed FROM user WHERE email=?;", (uname, ))
     try:
         pass_hashed = db.cur.fetchone()[0]
     except TypeError:
@@ -69,6 +69,9 @@ def register():
         return "ERROR: Passwords don't match. Try again."
 
     # check if email is already in use
+    db.cur.execute("SELECT id FROM user WHERE email=?;", (email,))
+    if db.cur.fetchone() is not None:
+        return "E-Mail is already in use."  # account already exists
 
     # hash and format for being encoded in the confirmation mail
     psw = psw.encode("utf-8")
