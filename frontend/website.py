@@ -12,7 +12,7 @@ import pylibscrypt
 
 class Datagetter(object):
     def __init__(self):
-        self.db = "../ticketfrei.sqlite"
+        self.db = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "ticketfrei.sqlite")
         self.conn = self.create_connection(self.db)
         self.cur = self.conn.cursor()
 
@@ -44,13 +44,15 @@ def login():
     psw = bottle.request.forms.get('psw')
     psw = psw.encode("utf-8")
     db.cur.execute("SELECT pass_hashed FROM user WHERE email=?;", (uname, )), psw
-    pass_hashed = db.cur.fetchone()
-    print(pass_hashed)
+    try:
+        pass_hashed = db.cur.fetchone()[0]
+    except TypeError:
+        return "Wrong Credentials."  # no user with this email
     if pylibscrypt.scrypt_mcf_check(pass_hashed, psw):
         # :todo Generate Session Cookie and give to user
         return bottle.static_file("../static/bot.html", root="../static")
     else:
-        return "Wrong Credentials."
+        return "Wrong Credentials."  # passphrase is wrong
 
 
 @app.route('/register', method="POST")
@@ -68,33 +70,37 @@ def register():
 
     # check if email is already in use
 
-    # needs to be encoded somehow
+    # hash and format for being encoded in the confirmation mail
     psw = psw.encode("utf-8")
-    psw = pylibscrypt.scrypt_mcf(psw)
-    psw = base64.encodebytes(psw)
-    psw = psw.decode("ascii")
-    payload = {"email": email, "psw_hashed": psw}  # hash password
-    encoded_jwt = jwt.encode(payload, secret)
-    confirmlink = "ticketfrei.links-tech.org/confirm?" + str(encoded_jwt)
-    print(type(confirmlink))
+    pass_hashed = pylibscrypt.scrypt_mcf(psw)  # hash password
+    pass_hashed = base64.encodebytes(pass_hashed)
+    pass_hashed = pass_hashed.decode("ascii")
+    payload = {"email": email, "pass_hashed": pass_hashed}
+
+    # create confirmlink
+    encoded_jwt = jwt.encode(payload, secret).decode('utf-8')
+    host = bottle.request.get_header('host')
+    confirmlink = "http://" + host + "/confirm/" + str(encoded_jwt)  # to be changed to https
+
+    # send the mail
     m = sendmail.Mailer(config)
     m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
     return "We sent you an E-Mail. Please click on the confirmation link."
 
 
-# How can I parse the arguments from the URI?
-# https://ticketfrei.links-tech.org/confirm?user=asdf&pass=sup3rs3cur3
-@app.route('/confirm', method="GET")
-def confirmaccount():
+@app.route('/confirm/<encoded_jwt>', method="GET")
+def confirmaccount(encoded_jwt):
     """
     Confirm the account creation and create a database entry.
     :return: Redirection to bot.html
     """
-    encoded_jwt = bottle.request.forms.get('encoded_jwt')
+    # get values from URL
     dict = jwt.decode(encoded_jwt, secret)
     uname = dict["email"]
-    pass_hashed = dict["psw_hashed"]
+    pass_hashed = base64.b64decode(dict["pass_hashed"])
     print(uname, pass_hashed)
+
+    # create db entry
     db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, True))
     db.conn.commit()
     return bottle.static_file("../static/bot.html", root='../static')
