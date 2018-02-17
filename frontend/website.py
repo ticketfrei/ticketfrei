@@ -128,6 +128,8 @@ def static(filename):
     """
     Serve static files
     """
+    if filename == "bot.html":
+        bottle.abort(401, "Sorry, access denied.")
     return bottle.static_file(filename, root='../static')
 
 
