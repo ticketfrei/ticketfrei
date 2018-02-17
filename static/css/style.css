@@ -1,5 +1,5 @@
 body {
-  background-image: url(../img/wallpaper.png);
+  background-image: url(/static/img/wallpaper.png);
   font-family: Verdana, Arial, Helvetica, sans-serif;
   font-size: 15px;
   line-height: 1.5em;

@@ -8,6 +8,7 @@ import sendmail
 import pytoml as toml
 import jwt
 import pylibscrypt
+import smtplib
 
 
 class Datagetter(object):
@@ -87,7 +88,10 @@ def register():
 
     # send the mail
     m = sendmail.Mailer(config)
-    m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
+    try:
+        m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
+    except smtplib.SMTPRecipientsRefused:
+        return "Please enter a valid E-Mail address."
     return "We sent you an E-Mail. Please click on the confirmation link."
 
 
