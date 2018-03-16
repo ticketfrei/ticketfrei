@@ -47,6 +47,16 @@ button {
     font-size: 120%;
 }
 
+a.button {
+    background-color: #1da1f2;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    font-size: 120%;
+}
+
 button:hover {
     opacity: 0.8;
 }
@@ -71,8 +81,8 @@ input[type=text], input[type=password] {
 .footer {
     padding: 2em;
     bottom: 0;
-    text-align: center;
-    width: 540px;
+    float: center;
+    width: 240px;
     height: 30px;
     flex-shrink: 0;
 }

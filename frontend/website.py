@@ -111,6 +111,7 @@ def confirmaccount(encoded_jwt):
     db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, 1))
     db.conn.commit()
     bottle.response.set_cookie("account", uname, secret)
+    bottle.response.set_cookie("enabled", "True")
     return bottle.redirect("/settings")
 
 
@@ -122,17 +123,43 @@ def manage_bot():
     """
     uname = bottle.request.get_cookie("account", secret=secret)
     if uname is not None:
+        db.cur.execute("SELECT enabled FROM user WHERE email=?;", (uname,))
+        try:
+            enabled = db.cur.fetchone()[0]
+        except TypeError:
+            return "Wrong Credentials."  # no user with this email
+        # Set Enable Status with a Cookie
+        if enabled:
+            bottle.response.set_cookie("enabled", "True")
+        else:
+            bottle.response.set_cookie("enabled", "False")
         return bottle.static_file("../static/bot.html", root='../static')
     else:
         bottle.abort(401, "Sorry, access denied.")
 
-@app.route('/enable')
+@app.route('/enable', method="POST")
 def enable():
+    """
+    Enable the bot. Called by the Enable button in bot.html
+    :return: redirect to settings page
+    """
     email = bottle.request.get_cookie("account", secret=secret)
-    db.cur.execute("MODIFY user.enabled = 1 WHERE email=?;", (email))  # :todo is this correct SQL?
+    db.cur.execute("UPDATE user SET enabled = 1 WHERE email=?;", (email,))  # :todo is this correct SQL?
     db.conn.commit()
-    return bottle.static_file("../static/bot.html", root='../static')
+    bottle.response.set_cookie("enabled", "True")
+    return bottle.redirect("/settings")
 
+@app.route('/disable', method="POST")
+def disable():
+    """
+    Disable the bot. Called by the Disable button in bot.html
+    :return: redirect to settings page
+    """
+    email = bottle.request.get_cookie("account", secret=secret)
+    db.cur.execute("UPDATE user SET enabled = 0 WHERE email=?;", (email,))  # :todo is this correct SQL?
+    db.conn.commit()
+    bottle.response.set_cookie("enabled", "False")
+    return bottle.redirect("/settings")
 
 @app.route('/static/<filename:path>')
 def static(filename):
