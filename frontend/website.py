@@ -137,6 +137,41 @@ def manage_bot():
     else:
         bottle.abort(401, "Sorry, access denied.")
 
+@app.route('/settings/goodlist', method="POST")
+def update_goodlist():
+    """
+    Writes the goodlist textarea on /settings to the database.
+    This function expects a multi-line string, transmitted over the textarea form.
+    :return: redirect to settings page
+    """
+    # get new goodlist
+    words = bottle.request.forms.get("goodlist")
+    # get user.id
+    email = bottle.cookie_decode("account", secret)
+    db.cur.execute("SELECT id FROM user WHERE email = ?", (email, ))
+    user_id = db.cur.fetchone()
+    # write new goodlist to db
+    db.cur.execute("UPDATE trigger_good SET ? WHERE user.id = ?", (words, user_id, ))
+    return bottle.redirect("/settings")
+
+
+@app.route('/settings/blacklist', method="POST")
+def update_blacklist():
+    """
+    Writes the blacklist textarea on /settings to the database.
+    This function expects a multi-line string, transmitted over the textarea form.
+    :return: redirect to settings page
+    """
+    # get new blacklist
+    words = bottle.request.forms.get("blacklist")
+    # get user.id
+    email = bottle.cookie_decode("account", secret)
+    db.cur.execute("SELECT id FROM user WHERE email = ?", (email, ))
+    user_id = db.cur.fetchone()
+    # write new goodlist to db
+    db.cur.execute("UPDATE trigger_bad SET ? WHERE user.id = ?", (words, user_id, ))
+    return bottle.redirect("/settings")
+
 
 @app.route('/enable', method="POST")
 def enable():
