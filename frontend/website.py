@@ -9,7 +9,7 @@ import pytoml as toml
 import jwt
 import pylibscrypt
 import smtplib
-from bottle_auth import AuthPlugin
+# from bottle_auth import AuthPlugin
 
 
 class Datagetter(object):
@@ -42,16 +42,16 @@ def login():
 
     :return: bot.py Session Cookie
     """
-    uname = bottle.request.forms.get('uname')
+    email = bottle.request.forms.get('uname')
     psw = bottle.request.forms.get('psw')
     psw = psw.encode("utf-8")
-    db.cur.execute("SELECT pass_hashed FROM user WHERE email=?;", (uname, ))
+    db.cur.execute("SELECT pass_hashed FROM user WHERE email=?;", (email, ))
     try:
         pass_hashed = db.cur.fetchone()[0]
     except TypeError:
         return "Wrong Credentials."  # no user with this email
     if pylibscrypt.scrypt_mcf_check(pass_hashed, psw):
-        bottle.response.set_cookie("account", uname, secret)
+        bottle.response.set_cookie("account", email, secret)
         return bottle.redirect("/settings")
     else:
         return "Wrong Credentials."  # passphrase is wrong
@@ -105,13 +105,20 @@ def confirm_account(encoded_jwt):
     payload = jwt.decode(encoded_jwt, secret)
     email = payload["email"]
     pass_hashed = base64.b64decode(payload["pass_hashed"])
-    print(email, pass_hashed)
 
     # create db entry
     db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (email, pass_hashed, 1))
+    # insert default good- & blacklist into db
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "goodlists", "nbg_goodlist"),
+              "r") as f:
+        default_goodlist = f.read()
+    db.cur.execute("INSERT INTO trigger_good(user_id, words) VALUES(?, ?);", (get_user_id(email), default_goodlist))
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "blacklists", "nbg_blacklist"),
+              "r") as f:
+        default_blacklist = f.read()
+    db.cur.execute("INSERT INTO trigger_bad(user_id, words) VALUES(?, ?);", (get_user_id(email), default_blacklist))
     db.conn.commit()
-    bottle.response.set_cookie("account", email, secret)
-    bottle.response.set_cookie("enabled", "True")
+    bottle.response.set_cookie("account", email, secret, path="/")
     return bottle.redirect("/settings")
 
 
@@ -119,23 +126,46 @@ def confirm_account(encoded_jwt):
 def manage_bot():
     """
     Restricted area. Deliver the bot settings page.
-    :return:
+    Deliver user settings with Cookies.
+    :return: If it returns something, it just refreshes the page.
     """
-    uname = bottle.request.get_cookie("account", secret=secret)
-    if uname is not None:
-        db.cur.execute("SELECT enabled FROM user WHERE email=?;", (uname,))
-        try:
-            enabled = db.cur.fetchone()[0]
-        except TypeError:
-            return "Wrong Credentials."  # no user with this email
+    email = bottle.request.get_cookie("account", secret=secret)
+    print(email)  # debug
+    if email is not None:
+        user_id = get_user_id(email)
+        # get Enable Status from db
+        db.cur.execute("SELECT enabled FROM user WHERE email = ?;", (email,))
+        enabled = db.cur.fetchone()[0]
         # Set Enable Status with a Cookie
         if enabled:
             bottle.response.set_cookie("enabled", "True")
         else:
             bottle.response.set_cookie("enabled", "False")
+
+        # Get goodlist from db
+        db.cur.execute("SELECT words FROM trigger_good WHERE user_id=?;", (user_id,))
+        words = db.cur.fetchone()[0]
+        # Deliver goodlist with a Cookie
+        print("setting goodlist cookies?")
+        bottle.response.set_cookie("goodlist", words, path="/settings")
+
+        # Get blacklist from db
+        db.cur.execute("SELECT words FROM trigger_bad WHERE user_id=?;", (user_id,))
+        words = db.cur.fetchone()[0]
+        # Deliver badlist with a Cookie
+        print("setting blacklist cookies?")
+        bottle.response.set_cookie("blacklist", words, path="/settings")
+
         return bottle.static_file("../static/bot.html", root='../static')
     else:
-        bottle.abort(401, "Sorry, access denied.")
+        bottle.abort(401, "Wrong username or passphrase. Try again!")
+
+
+def get_user_id(email):
+    # get user_id from email
+    db.cur.execute("SELECT id FROM user WHERE email = ?", (email, ))
+    return db.cur.fetchone()[0]
+
 
 @app.route('/settings/goodlist', method="POST")
 def update_goodlist():
@@ -146,12 +176,10 @@ def update_goodlist():
     """
     # get new goodlist
     words = bottle.request.forms.get("goodlist")
-    # get user.id
-    email = bottle.cookie_decode("account", secret)
-    db.cur.execute("SELECT id FROM user WHERE email = ?", (email, ))
-    user_id = db.cur.fetchone()
+    user_id = get_user_id(bottle.cookie_decode("account", secret))
     # write new goodlist to db
-    db.cur.execute("UPDATE trigger_good SET ? WHERE user.id = ?", (words, user_id, ))
+    db.cur.execute("UPDATE trigger_good SET words = ? WHERE user_id = ?;", (words, user_id, ))
+    db.conn.commit()
     return bottle.redirect("/settings")
 
 
@@ -164,12 +192,13 @@ def update_blacklist():
     """
     # get new blacklist
     words = bottle.request.forms.get("blacklist")
-    # get user.id
+    # get user_id
     email = bottle.cookie_decode("account", secret)
     db.cur.execute("SELECT id FROM user WHERE email = ?", (email, ))
     user_id = db.cur.fetchone()
     # write new goodlist to db
-    db.cur.execute("UPDATE trigger_bad SET ? WHERE user.id = ?", (words, user_id, ))
+    db.cur.execute("UPDATE trigger_bad SET words = ? WHERE user_id = ?;", (words, user_id, ))
+    db.conn.commit()
     return bottle.redirect("/settings")
 
 
@@ -272,10 +301,10 @@ if __name__ == "__main__":
     db = Datagetter()
     host = '0.0.0.0'
 
-    from bottle_auth.social import twitter as twitterplugin
-    callback_url = host + '/login/twitter/callback'
-    twitter = twitterplugin.Twitter(config['tapp']['consumer_key'], config['tapp']['consumer_secret'], callback_url)
-    bottle.install(AuthPlugin(twitter))
+    # from bottle_auth.social import twitter as twitterplugin
+    # callback_url = host + '/login/twitter/callback'
+    # twitter = twitterplugin.Twitter(config['tapp']['consumer_key'], config['tapp']['consumer_secret'], callback_url)
+    # bottle.install(AuthPlugin(twitter))
 
     try:
         bottle.run(app=StripPathMiddleware(app), host=host, port=8080)

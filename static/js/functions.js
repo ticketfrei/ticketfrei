@@ -26,3 +26,10 @@ function getCookie(cname) {
 }
 
 document.getElementById("enablebutton").innerHTML = enableButton();
+
+// document.getElementById("goodlist").innerHTML = getCookie("goodlist");
+
+alert(getCookie("goodlist"))
+alert(getCookie("blacklist"))
+
+// document.getElementById("blacklist").innerHTML = getCookie("blacklist");
