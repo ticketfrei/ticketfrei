@@ -9,6 +9,7 @@ import pytoml as toml
 import jwt
 import pylibscrypt
 import smtplib
+from bottle_auth import AuthPlugin
 
 
 class Datagetter(object):
@@ -81,36 +82,35 @@ def register():
     pass_hashed = pass_hashed.decode("ascii")
     payload = {"email": email, "pass_hashed": pass_hashed}
 
-    # create confirmlink
+    # create confirm_link
     encoded_jwt = jwt.encode(payload, secret).decode('utf-8')
-    host = bottle.request.get_header('host')
-    confirmlink = "http://" + host + "/confirm/" + str(encoded_jwt)  # to be changed to https
+    confirm_link = "http://" + bottle.request.get_header('host') + "/confirm/" + str(encoded_jwt)  # :todo http -> https
 
     # send the mail
     m = sendmail.Mailer(config)
     try:
-        m.send("Complete your registration here: " + confirmlink, email, "[Ticketfrei] Confirm your account")
+        m.send("Complete your registration here: " + confirm_link, email, "[Ticketfrei] Confirm your account")
     except smtplib.SMTPRecipientsRefused:
         return "Please enter a valid E-Mail address."
     return "We sent you an E-Mail. Please click on the confirmation link."
 
 
 @app.route('/confirm/<encoded_jwt>', method="GET")
-def confirmaccount(encoded_jwt):
+def confirm_account(encoded_jwt):
     """
     Confirm the account creation and create a database entry.
     :return: Redirection to bot.html
     """
     # get values from URL
-    dict = jwt.decode(encoded_jwt, secret)
-    uname = dict["email"]
-    pass_hashed = base64.b64decode(dict["pass_hashed"])
-    print(uname, pass_hashed)
+    payload = jwt.decode(encoded_jwt, secret)
+    email = payload["email"]
+    pass_hashed = base64.b64decode(payload["pass_hashed"])
+    print(email, pass_hashed)
 
     # create db entry
-    db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, 1))
+    db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (email, pass_hashed, 1))
     db.conn.commit()
-    bottle.response.set_cookie("account", uname, secret)
+    bottle.response.set_cookie("account", email, secret)
     bottle.response.set_cookie("enabled", "True")
     return bottle.redirect("/settings")
 
@@ -137,6 +137,7 @@ def manage_bot():
     else:
         bottle.abort(401, "Sorry, access denied.")
 
+
 @app.route('/enable', method="POST")
 def enable():
     """
@@ -144,10 +145,11 @@ def enable():
     :return: redirect to settings page
     """
     email = bottle.request.get_cookie("account", secret=secret)
-    db.cur.execute("UPDATE user SET enabled = 1 WHERE email=?;", (email,))  # :todo is this correct SQL?
+    db.cur.execute("UPDATE user SET enabled = 1 WHERE email=?;", (email,))
     db.conn.commit()
     bottle.response.set_cookie("enabled", "True")
     return bottle.redirect("/settings")
+
 
 @app.route('/disable', method="POST")
 def disable():
@@ -156,10 +158,40 @@ def disable():
     :return: redirect to settings page
     """
     email = bottle.request.get_cookie("account", secret=secret)
-    db.cur.execute("UPDATE user SET enabled = 0 WHERE email=?;", (email,))  # :todo is this correct SQL?
+    db.cur.execute("UPDATE user SET enabled = 0 WHERE email=?;", (email,))
     db.conn.commit()
     bottle.response.set_cookie("enabled", "False")
     return bottle.redirect("/settings")
+
+
+@app.route('/login/twitter', method="POST")
+def login_twitter():
+    """
+    Starts the twitter OAuth authentication process.
+    :return: redirect to twitter.
+    """
+    # twitter.redirect("no environ", "no cookie monster")
+    return "logging in with twitter is not implemented yet."
+
+
+@app.route('/login/twitter/callback', method="POST")
+def twitter_callback():
+    """
+    Gets the callback
+    :return:
+    """
+    return "logging in with twitter is not implemented yet."
+
+
+@app.route('/login/mastodon', method="POST")
+def login_mastodon():
+    """
+    Starts the mastodon OAuth authentication process.
+    :return: redirect to twitter.
+    """
+    # instance_url = bottle.request.forms.get('instance_url')
+    return "logging in with mastodon is not implemented yet."
+
 
 @app.route('/static/<filename:path>')
 def static(filename):
@@ -199,9 +231,18 @@ if __name__ == "__main__":
 
     global db
     global secret
+    global twitter
+
     secret = os.urandom(32)
     db = Datagetter()
+    host = '0.0.0.0'
+
+    from bottle_auth.social import twitter as twitterplugin
+    callback_url = host + '/login/twitter/callback'
+    twitter = twitterplugin.Twitter(config['tapp']['consumer_key'], config['tapp']['consumer_secret'], callback_url)
+    bottle.install(AuthPlugin(twitter))
+
     try:
-        bottle.run(app=StripPathMiddleware(app), host='0.0.0.0', port=8080)
+        bottle.run(app=StripPathMiddleware(app), host=host, port=8080)
     finally:
         db.conn.close()

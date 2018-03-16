@@ -1,6 +1,6 @@
 function enableButton() {
     var enablebutton = '<form action="/enable" method="POST"> <button type="submit">Enable</button> </form> ';
-    var disablebutton = '<form action="/disable" method="POST"> <button type="submit">Disable</button> </form> ';
+    var disablebutton = '<form action="/disable" method="POST"> <button style="background-color: red;" type="submit">Disable</button> </form> ';
     var enabled = getCookie('enabled');
     if (enabled == "True") {
         return disablebutton;
