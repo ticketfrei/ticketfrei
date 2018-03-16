@@ -116,6 +116,8 @@ def confirm_account(encoded_jwt):
     with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "blacklists", "nbg_blacklist"),
               "r") as f:
         default_blacklist = f.read()
+    print(default_goodlist)  # debug
+    print(default_blacklist)  # debug
     db.cur.execute("INSERT INTO trigger_bad(user_id, words) VALUES(?, ?);", (get_user_id(email), default_blacklist))
     db.conn.commit()
     bottle.response.set_cookie("account", email, secret, path="/")
@@ -137,26 +139,29 @@ def manage_bot():
         db.cur.execute("SELECT enabled FROM user WHERE email = ?;", (email,))
         enabled = db.cur.fetchone()[0]
         # Set Enable Status with a Cookie
+        resp = bottle.static_file("../static/bot.html", root='../static')
         if enabled:
-            bottle.response.set_cookie("enabled", "True")
+            resp.set_cookie("enabled", "True")
         else:
-            bottle.response.set_cookie("enabled", "False")
+            resp.set_cookie("enabled", "False")
 
         # Get goodlist from db
         db.cur.execute("SELECT words FROM trigger_good WHERE user_id=?;", (user_id,))
         words = db.cur.fetchone()[0]
         # Deliver goodlist with a Cookie
         print("setting goodlist cookies?")
-        bottle.response.set_cookie("goodlist", words, path="/settings")
+        resp.set_cookie("goodlist", words, path="/settings")
+        print(words)  # debug
 
         # Get blacklist from db
         db.cur.execute("SELECT words FROM trigger_bad WHERE user_id=?;", (user_id,))
         words = db.cur.fetchone()[0]
         # Deliver badlist with a Cookie
         print("setting blacklist cookies?")
-        bottle.response.set_cookie("blacklist", words, path="/settings")
+        resp.set_cookie("blacklist", words, path="/settings")
+        print(words)  # debug
 
-        return bottle.static_file("../static/bot.html", root='../static')
+        return resp
     else:
         bottle.abort(401, "Wrong username or passphrase. Try again!")
 
@@ -176,7 +181,7 @@ def update_goodlist():
     """
     # get new goodlist
     words = bottle.request.forms.get("goodlist")
-    user_id = get_user_id(bottle.cookie_decode("account", secret))
+    user_id = get_user_id(bottle.request.get_cookie("account", secret=secret))
     # write new goodlist to db
     db.cur.execute("UPDATE trigger_good SET words = ? WHERE user_id = ?;", (words, user_id, ))
     db.conn.commit()
@@ -193,9 +198,7 @@ def update_blacklist():
     # get new blacklist
     words = bottle.request.forms.get("blacklist")
     # get user_id
-    email = bottle.cookie_decode("account", secret)
-    db.cur.execute("SELECT id FROM user WHERE email = ?", (email, ))
-    user_id = db.cur.fetchone()
+    user_id = get_user_id(bottle.request.get_cookie("account", secret=secret))
     # write new goodlist to db
     db.cur.execute("UPDATE trigger_bad SET words = ? WHERE user_id = ?;", (words, user_id, ))
     db.conn.commit()

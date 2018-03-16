@@ -25,11 +25,15 @@ function getCookie(cname) {
     return "";
 }
 
+function listformat(list) {
+    list = list.replace(/\"/g, '')
+    list = list.split('\\012');
+    return list.join('\n');
+}
+
+
 document.getElementById("enablebutton").innerHTML = enableButton();
 
-// document.getElementById("goodlist").innerHTML = getCookie("goodlist");
+document.getElementById("goodlist").innerHTML = listformat(getCookie("goodlist"));
 
-alert(getCookie("goodlist"))
-alert(getCookie("blacklist"))
-
-// document.getElementById("blacklist").innerHTML = getCookie("blacklist");
+document.getElementById("blacklist").innerHTML = listformat(getCookie("blacklist"));
