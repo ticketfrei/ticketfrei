@@ -108,7 +108,7 @@ def confirmaccount(encoded_jwt):
     print(uname, pass_hashed)
 
     # create db entry
-    db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, True))
+    db.cur.execute("INSERT INTO user(email, pass_hashed, enabled) VALUES(?, ?, ?);", (uname, pass_hashed, 1))
     db.conn.commit()
     bottle.response.set_cookie("account", uname, secret)
     return bottle.redirect("/settings")
@@ -125,6 +125,13 @@ def manage_bot():
         return bottle.static_file("../static/bot.html", root='../static')
     else:
         bottle.abort(401, "Sorry, access denied.")
+
+@app.route('/enable')
+def enable():
+    email = bottle.request.get_cookie("account", secret=secret)
+    db.cur.execute("MODIFY user.enabled = 1 WHERE email=?;", (email))  # :todo is this correct SQL?
+    db.conn.commit()
+    return bottle.static_file("../static/bot.html", root='../static')
 
 
 @app.route('/static/<filename:path>')

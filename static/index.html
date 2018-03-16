@@ -1,13 +1,18 @@
 <head>
-  <title>Ticketfrei</title>
-  <link rel='stylesheet' href='/static/css/style.css'>
+    <title>Ticketfrei</title>
+    <link rel='stylesheet' href='/static/css/style.css'>
+    <meta name='og:title' content='Ticketfrei'/>
+    <meta name='og:description' content='A bot against control society! Nobody should have to pay for public transport. Find out where ticket controllers are!'/>
+    <meta name='og:image' content="https://ticketfrei.links-tech.org/static/img/ticketfrei-og-image.png"/>
+    <meta name='og:image:alt' content='Ticketfrei'/>
+    <meta name='og:type' content='website' />
 </head>
 <body>
 <div class="area">
 
     <h1><a href="/"><img src="/static/img/ticketfrei_logo.png" alt="Ticketfrei" height="150px" align="center" style="float: none;"></a></h1>
 
-    <form action="../login" method="POST">
+    <form action="/login" method="POST">
         <div class="container">
             <label><b>Username</b></label>
             <input type="text" placeholder="Enter Username" name="uname" required>
