@@ -116,8 +116,6 @@ def confirm_account(encoded_jwt):
     with open(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "blacklists", "nbg_blacklist"),
               "r") as f:
         default_blacklist = f.read()
-    print(default_goodlist)  # debug
-    print(default_blacklist)  # debug
     db.cur.execute("INSERT INTO trigger_bad(user_id, words) VALUES(?, ?);", (get_user_id(email), default_blacklist))
     db.conn.commit()
     bottle.response.set_cookie("account", email, secret, path="/")
@@ -132,7 +130,6 @@ def manage_bot():
     :return: If it returns something, it just refreshes the page.
     """
     email = bottle.request.get_cookie("account", secret=secret)
-    print(email)  # debug
     if email is not None:
         user_id = get_user_id(email)
         # get Enable Status from db
@@ -151,7 +148,6 @@ def manage_bot():
         # Deliver goodlist with a Cookie
         print("setting goodlist cookies?")
         resp.set_cookie("goodlist", words, path="/settings")
-        print(words)  # debug
 
         # Get blacklist from db
         db.cur.execute("SELECT words FROM trigger_bad WHERE user_id=?;", (user_id,))
@@ -159,7 +155,6 @@ def manage_bot():
         # Deliver badlist with a Cookie
         print("setting blacklist cookies?")
         resp.set_cookie("blacklist", words, path="/settings")
-        print(words)  # debug
 
         return resp
     else:

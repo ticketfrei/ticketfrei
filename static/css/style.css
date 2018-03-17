@@ -81,6 +81,7 @@ input[type=text], input[type=password] {
 .footer {
     padding: 2em;
     bottom: 0;
+    background-color: #fff;
     float: center;
     width: 540px;
     height: 30px;
