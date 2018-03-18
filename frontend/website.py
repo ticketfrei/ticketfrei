@@ -146,14 +146,12 @@ def manage_bot():
         db.cur.execute("SELECT words FROM trigger_good WHERE user_id=?;", (user_id,))
         words = db.cur.fetchone()[0]
         # Deliver goodlist with a Cookie
-        print("setting goodlist cookies?")
         resp.set_cookie("goodlist", words, path="/settings")
 
         # Get blacklist from db
         db.cur.execute("SELECT words FROM trigger_bad WHERE user_id=?;", (user_id,))
         words = db.cur.fetchone()[0]
         # Deliver badlist with a Cookie
-        print("setting blacklist cookies?")
         resp.set_cookie("blacklist", words, path="/settings")
 
         return resp
@@ -226,7 +224,7 @@ def disable():
     return bottle.redirect("/settings")
 
 
-@app.route('/login/twitter', method="POST")
+@app.route('/login/twitter')
 def login_twitter():
     """
     Starts the twitter OAuth authentication process.
@@ -251,7 +249,11 @@ def login_mastodon():
     Starts the mastodon OAuth authentication process.
     :return: redirect to twitter.
     """
-    # instance_url = bottle.request.forms.get('instance_url')
+    instance_url = bottle.request.forms.get('instance_url')
+    # if instance_url not in db.mastodon_instances: register app, save client_id & client_secret to db
+    # Mastodon_login() -> access token. write access token to db.mastodon_accounts
+    # set Cookie "logged in as $username" or so. js could also display disable button now
+    # redirect /settings
     return "logging in with mastodon is not implemented yet."
 
 
