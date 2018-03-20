@@ -9,6 +9,7 @@ import pytoml as toml
 import jwt
 import pylibscrypt
 import smtplib
+import tweepy
 # from bottle_auth import AuthPlugin
 
 
@@ -230,17 +231,49 @@ def login_twitter():
     Starts the twitter OAuth authentication process.
     :return: redirect to twitter.
     """
-    # twitter.redirect("no environ", "no cookie monster")
-    return "logging in with twitter is not implemented yet."
+    email = bottle.request.get_cookie("account", secret=secret)
+    consumer_key = config["tapp"]["consumer_key"]
+    consumer_secret = config["tapp"]["consumer_secret"]
+    callback_url = host + "/login/twitter/callback"
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+    try:
+        redirect_url = auth.get_authorization_url()
+    except tweepy.TweepError:
+        return 'Error! Failed to get request token.'
+    db.cur.execute("INSERT INTO twitter_request_tokens(user_id, request_token) VALUES(?, ?);", (get_user_id(email), auth.request_token))
+    db.conn.commit()
+    return bottle.redirect(redirect_url)
 
 
-@app.route('/login/twitter/callback', method="POST")
+@app.route('/login/twitter/callback')
 def twitter_callback():
     """
     Gets the callback
     :return:
     """
-    return "logging in with twitter is not implemented yet."
+    # twitter passes the verifier/oauth token secret in a GET request.
+    verifier = bottle.request.query('oauth_verifier')
+    email = bottle.request.get_cookie("account", secret=secret)
+    consumer_key = config["tapp"]["consumer_key"]
+    consumer_secret = config["tapp"]["consumer_secret"]
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    db.cur.execute("SELECT request_token FROM twitter_request_tokens WHERE user_id = ?;", (get_user_id(email)))
+    try:
+        request_token = db.cur.fetchone()[0]
+    except ValueError:
+        return "Could not get request token from db."  # but would anyone see this return value?
+    db.cur.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (get_user_id(email)))
+    db.conn.commit()
+    auth.request_token = { "oauth_token" : request_token,
+                           "oauth_token_secret" : verifier}
+    try:
+        auth.get_access_token(verifier)
+    except tweepy.TweepError:
+        print('Error! Failed to get access token.')
+    db.cur.execute("INSERT INTO twitter_accounts(user_id, access_token_key, access_token_secret) VALUES(?, ?, ?);",
+                   (get_user_id(email), auth.access_token, auth.access_token_secret))
+    db.conn.commit()
+    return bottle.redirect("/settings")
 
 
 @app.route('/login/mastodon', method="POST")
