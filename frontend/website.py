@@ -10,6 +10,7 @@ import jwt
 import pylibscrypt
 import smtplib
 import tweepy
+from mastodon import Mastodon
 # from bottle_auth import AuthPlugin
 
 
@@ -261,7 +262,7 @@ def twitter_callback():
     try:
         request_token = db.cur.fetchone()[0]
     except ValueError:
-        return "Could not get request token from db."  # but would anyone see this return value?
+        return "Could not get request token from db."
     db.cur.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (get_user_id(email)))
     db.conn.commit()
     auth.request_token = { "oauth_token" : request_token,
@@ -282,13 +283,34 @@ def login_mastodon():
     Starts the mastodon OAuth authentication process.
     :return: redirect to twitter.
     """
-    instance_url = bottle.request.forms.get('instance_url')
-    # if instance_url not in db.mastodon_instances: register app, save client_id & client_secret to db
-    # Mastodon_login() -> access token. write access token to db.mastodon_accounts
-    # set Cookie "logged in as $username" or so. js could also display disable button now
-    # redirect /settings
-    return "logging in with mastodon is not implemented yet."
+    email = bottle.request.get_cookie("account", secret=secret)
 
+    # get app tokens
+    instance_url = bottle.request.forms.get('instance_url')
+    db.cur.execute("SELECT client_id, client_secret FROM mastodon_instances WHERE instance = ?;", (instance_url))
+    try:
+        client_id, client_secret = db.cur.fetchone()[0]
+    except TypeError:
+        id = "ticketfrei" + str(secret)[0:4]
+        client_id, client_secret = Mastodon.create_app(id, api_base_url=instance_url)
+        db.cur.execute("INSERT INTO mastodon_instances(instance, client_id, client_secret) VALUES(?, ?, ?);",
+                       (instance_url, client_id, client_secret))
+        db.conn.commit()
+
+    # get access token and write it to db
+    uname = bottle.request.forms.get('uname')
+    psw = bottle.request.forms.get('psw')
+    mastodon = Mastodon(
+        client_id=client_id,
+        client_secret=client_secret,
+        api_base_url=instance_url
+    )
+    access_token = mastodon.log_in(uname, psw)
+    db.cur.execute("SELECT id FROM mastodon_instances WHERE instance = ?;", (instance_url))
+    instance_id = db.cur.fetchone()[0]
+    db.cur.execute("INSERT INTO mastodon_accounts(user_id, access_token, instance_id, active) VALUES(?, ?, ?, ?);",
+                   (get_user_id(email), access_token, instance_id, 1))
+    return bottle.redirect("/settings")
 
 @app.route('/static/<filename:path>')
 def static(filename):
