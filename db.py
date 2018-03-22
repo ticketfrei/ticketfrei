@@ -11,7 +11,7 @@ class DB(object):
     def __init__(self):
         dbfile = path.join(path.dirname(path.abspath(__file__)),
                            'ticketfrei.sqlite')
-        dbfile = ':memory:'
+        #dbfile = ':memory:'
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='user';")
@@ -113,7 +113,7 @@ class DB(object):
         row = self.cur.fetchone()
         if not row:
             return None
-        if not scrypt_mcf_check(row[1].encode('ascii'),
+        if not scrypt_mcf_check(row[1].decode('ascii').encode("utf-8"),
                                 password.encode('utf-8')):
             return None
         return User(self, row[0])
