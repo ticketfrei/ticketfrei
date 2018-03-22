@@ -110,6 +110,7 @@ class DB(object):
         # create user
         self.cur.execute("INSERT INTO user (email, passhash) VALUES(?, ?);",
                          (json['email'], json['passhash']))
+        self.conn.commit()
         return User(self, self.cur.lastrowid)
 
     def authenticate(self, email, password):
