@@ -5,6 +5,7 @@ __pycache__/
 last_mention
 last_mail
 ticketfrei.cfg
+ticketfrei.sqlite-journal
 ticketfrei.sqlite
 seen_toots.pickle
 seen_toots.pickle.part
