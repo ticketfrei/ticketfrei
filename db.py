@@ -20,11 +20,11 @@ class DB(object):
     def create(self):
         # init db
         self.cur.executescript('''
-            CREATE TABLE user (
-                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                email       TEXT,
-                passhash    TEXT,
-                enabled     INTEGER DEFAULT 1
+            CREATE TABLE "user" (
+                `id`          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `email`       TEXT,
+                `passhash`    TEXT,
+                `enabled`     INTEGER DEFAULT 1
             );
             CREATE TABLE "twitter_request_tokens" (
                 `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
