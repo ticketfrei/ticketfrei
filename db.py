@@ -5,6 +5,9 @@ import jwt
 from os import path, urandom
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 import sqlite3
+import pytoml as toml
+import sendmail
+import smtplib
 
 
 class DB(object):
@@ -15,9 +18,12 @@ class DB(object):
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.cur.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='user';")
-        if self.cur.fetchone()[0] != 'user':
+        if self.cur.fetchall() == []:
             self.create()
+            print("Initialized new sqlite database.")
         self.secret = urandom(32)
+        with open('config.toml') as configfile:
+            self.config = toml.load(configfile)
 
     def create(self):
         # init db
@@ -112,10 +118,10 @@ class DB(object):
                          (email, ))
         row = self.cur.fetchone()
         if not row:
-            return None
-        if not scrypt_mcf_check(row[1].decode('ascii').encode("utf-8"),
+            return None  # No user with this email
+        if not scrypt_mcf_check(row[1].encode("utf-8"),
                                 password.encode('utf-8')):
-            return None
+            return None  # Wrong passphrase
         return User(self, row[0])
 
     def by_email(self, email):
@@ -124,6 +130,13 @@ class DB(object):
         if not row:
             return None
         return User(self, row[0])
+
+    def send_confirmation_mail(self, confirm_link, email):
+        m = sendmail.Mailer(self.config)
+        try:
+            m.send("Complete your registration here: " + confirm_link, email, "[Ticketfrei] Confirm your account")
+        except smtplib.SMTPRecipientsRefused:
+            return "Please enter a valid E-Mail address."
 
     def close(self):
         self.conn.close()

@@ -6,9 +6,7 @@ from db import DBPlugin
 @get('/')
 @view('template/propaganda.tpl')
 def propaganda():
-    # clear auth cookie
-    response.set_cookie('uid', '', expires=0)
-
+    pass
 
 @post('/register', db='db')
 @view('template/register.tpl')
@@ -21,9 +19,9 @@ def register_post(db):
     if db.by_email(email):
         return dict(error='Email address already in use.')
     # send confirmation mail
-    # XXX
-    return dict(info='<a href="%s/../confirm/%s">Confirmation mail sent.</a>' %
-                (request.url, db.token(email, password)))
+    confirm_link = request.url + "/../confirm/" + db.token(email, password)
+    db.send_confirmation_mail(confirm_link, email)
+    return dict(info='Confirmation mail sent.')
 
 
 @get('/confirm/<token>', db='db')
@@ -31,6 +29,7 @@ def register_post(db):
 def confirm(db, token):
     # create db-entry
     if db.register(token):
+        # :todo show info "Account creation successful."
         return redirect('/settings')
     return dict(error='Account creation failed.')
 
@@ -59,6 +58,13 @@ def api_enable(user):
 @get('/static/<filename:path>')
 def static(filename):
     return bottle.static_file(filename, root='static')
+
+@get('/logout/')
+def logout():
+    # clear auth cookie
+    response.set_cookie('uid', '', expires=0, path="/")
+    # :todo show info "Logout successful."
+    return redirect('/')
 
 
 bottle.install(DBPlugin('/'))

@@ -12,7 +12,7 @@
 </head>
 <body>
     <div id="content">
-        <img src="/static/img/ticketfrei_logo.png" alt="Ticketfrei" id="logo">
+        <a href="/"><img src="/static/img/ticketfrei_logo.png" alt="<h1>Ticketfrei</h1>" id="logo"></a>
         % if defined('error'):
         <div class="ui-widget">
             <div class="ui-state-error ui-corner-all" style="padding: 0.7em;">

@@ -1,4 +1,6 @@
 % rebase('template/wrapper.tpl')
+<a href="/logout/"><button>Logout</button></a>
+
 <div id="enablebutton" style="float: right; padding: 2em;">asdf</div>
 
 <a class='button' style="padding: 1.5em;" href="/login/twitter">
