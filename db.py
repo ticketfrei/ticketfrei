@@ -26,6 +26,69 @@ class DB(object):
                 passhash    TEXT,
                 enabled     INTEGER DEFAULT 1
             );
+            CREATE TABLE "twitter_request_tokens" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `request_token`	TEXT,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` )
+            );
+            CREATE TABLE "twitter_accounts" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `client_id`	TEXT,
+                `client_secret`	TEXT,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` )
+            );
+            CREATE TABLE "trigger_good" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `words`	TEXT,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` )
+            );
+            CREATE TABLE "trigger_bad" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `words`	TEXT,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` )
+            );
+            CREATE TABLE "mastodon_instances" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `instance`	TEXT,
+                `client_id`	TEXT,
+                `client_secret`  TEXT
+            );
+            CREATE TABLE "mastodon_accounts" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `access_token`	TEXT,
+                `instance_id`	TEXT,
+                `active`     INTEGER,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` ),
+                FOREIGN KEY(`instance_id`) REFERENCES `mastodon_instances` ( `id` )
+            );
+            CREATE TABLE "seen_toots" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `mastodon_accounts_id`	INTEGER,
+                `toot_id`	TEXT,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` ),
+                FOREIGN KEY(`mastodon_accounts_id`) REFERENCES `mastodon_accounts` ( `id` )
+            );
+            CREATE TABLE "mail" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `email`	TEXT,
+                `active` INTEGER,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` )
+            );
+            CREATE TABLE "seen_tweets" (
+                `id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                `user_id`	INTEGER,
+                `twitter_accounts_id`	INTEGER,
+                `tweet_id` TEXT,
+                FOREIGN KEY(`user_id`) REFERENCES `user` ( `id` )
+                FOREIGN KEY(`twitter_accounts_id`) REFERENCES `twitter_accounts` ( `id` )
+            );
         ''')
 
     def token(self, email, password):
