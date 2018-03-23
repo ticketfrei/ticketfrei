@@ -1,65 +1,31 @@
 #!/usr/bin/env python3
 
 import mastodon
-import os
-import pickle
 import re
-import time
-import trigger
-import sendmail
+# import time
+# import trigger
+# import sendmail
 import report
-import backend
+from user import User
+
 
 class RetootBot(object):
-    def __init__(self, config):
+    def __init__(self, config, logger, uid, db):
         self.config = config
-        self.logger = backend.get_logger(config)
-        self.client_id = self.register()
-        self.m = self.login()
+        self.logger = logger
+        self.user = User(db, uid)
+        client_id, client_secret, access_token, instance_url = self.user.get_masto_credentials()
+        self.m = mastodon.Mastodon(client_id=client_id, client_secret=client_secret,
+                                   access_token=access_token, api_base_url=instance_url)
 
         # load state
         try:
-            with open('seen_toots.pickle', 'rb') as f:
-                self.seen_toots = pickle.load(f)
-        except IOError:
-            self.seen_toots = set()
-
-    def register(self):
-        client_id = os.path.join(
-            'appkeys',
-            self.config['mapp']['name'] +
-            '@' + self.config['muser']['server']
-        )
-
-        if not os.path.isfile(client_id):
-            mastodon.Mastodon.create_app(
-                self.config['mapp']['name'],
-                api_base_url=self.config['muser']['server'],
-                to_file=client_id
-            )
-        return client_id
-
-    def login(self):
-        m = mastodon.Mastodon(
-            client_id=self.client_id,
-            api_base_url=self.config['muser']['server']
-        )
-        m.log_in(
-            self.config['muser']['email'],
-            self.config['muser']['password']
-        )
-        return m
+            self.seen_toots = self.user.get_seen_toot()
+        except TypeError:
+            self.seen_toots = 0
 
     def save_last(self):
-        """ save the last seen toot """
-        try:
-            with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
-                pickle.dump(self.seen_toots, f)
-        except FileExistsError:
-            os.unlink('seen_toots.pickle.part')
-            with os.fdopen(os.open('seen_toots.pickle.part', os.O_WRONLY | os.O_EXCL | os.O_CREAT), 'wb') as f:
-                pickle.dump(self.seen_toots, f)
-        os.rename('seen_toots.pickle.part', 'seen_toots.pickle')
+        self.user.save_seen_toot(self.seen_toots)
 
     def crawl(self):
         """
@@ -74,9 +40,9 @@ class RetootBot(object):
             self.logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
         for status in all:
-            if (status['type'] == 'mention' and status['status']['id'] not in self.seen_toots):
+            if status['type'] == 'mention' and status['status']['id'] > self.seen_toots:
                 # save state
-                self.seen_toots.add(status['status']['id'])
+                self.seen_toots = status['status']['id']
                 self.save_last()
                 # add mention to mentions
                 text = re.sub(r'<[^>]*>', '', status['status']['content'])
@@ -124,7 +90,7 @@ class RetootBot(object):
         # return mentions for mirroring
         return retoots
 
-
+"""
 if __name__ == '__main__':
     config = backend.get_config()
 
@@ -146,3 +112,4 @@ if __name__ == '__main__':
                         attachment=config['logging']['logpath'])
         except:
             bot.logger.error('Mail sending failed', exc_info=True)
+"""

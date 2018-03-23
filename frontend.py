@@ -5,6 +5,7 @@ import tweepy
 import sendmail
 import smtplib
 from mastodon import Mastodon
+import prepare
 
 
 @get('/')
@@ -25,12 +26,12 @@ def register_post(db):
         return dict(error='Email address already in use.')
     # send confirmation mail
     confirm_link = request.url + "/../confirm/" + db.token(email, password)
-    db.send_confirmation_mail(confirm_link, email)
+    send_confirmation_mail(db.config, confirm_link, email)
     return dict(info='Confirmation mail sent.')
 
 
-def send_confirmation_mail(self, confirm_link, email):
-    m = sendmail.Mailer(self.config)
+def send_confirmation_mail(config, confirm_link, email):
+    m = sendmail.Mailer(config)
     try:
         m.send("Complete your registration here: " + confirm_link, email, "[Ticketfrei] Confirm your account")
     except smtplib.SMTPRecipientsRefused:
@@ -142,5 +143,6 @@ def login_mastodon(user):
         return dict(error='Login to Mastodon failed.')
 
 
+config = prepare.get_config()
 bottle.install(DBPlugin('/'))
-bottle.run(host='localhost', port=8080)
+bottle.run(host=config['web']['host'], port=8080)
