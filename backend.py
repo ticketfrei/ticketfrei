@@ -6,8 +6,8 @@ import time
 import sendmail
 from db import DB
 
-from retootbot import RetootBot
-from retweetbot import RetweetBot
+from mastodonbot import MastodonBot
+from twitterbot import TwitterBot
 from mailbot import Mailbot
 from trigger import Trigger
 
@@ -23,8 +23,8 @@ def get_users(db):
 def init_bots(config, logger, db, users):
     for uid in users:
         users[uid].append(Trigger(config, uid, db))
-        users[uid].append(RetootBot(config, logger, uid, db))
-        users[uid].append(RetweetBot(config, logger, uid, db))
+        users[uid].append(MastodonBot(config, logger, uid, db))
+        users[uid].append(TwitterBot(config, logger, uid, db))
         users[uid].append(Mailbot(config, logger, uid, db))
     return users
 
@@ -46,7 +46,7 @@ def run():
                 for bot in users[uid]:
                     reports = bot.crawl()
                     for status in reports:
-                        if not trigger.is_ok(status.text):
+                        if not users[uid][0].is_ok(status.text):
                             continue
                         for bot2 in users[uid]:
                             if bot == bot2:

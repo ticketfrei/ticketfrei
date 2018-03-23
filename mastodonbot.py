@@ -9,7 +9,7 @@ import report
 from user import User
 
 
-class RetootBot(object):
+class MastodonBot(object):
     def __init__(self, config, logger, uid, db):
         self.config = config
         self.logger = logger
@@ -35,11 +35,11 @@ class RetootBot(object):
         """
         mentions = []
         try:
-            all = self.m.notifications()
+            notifications = self.m.notifications()
         except:  # mastodon.Mastodon.MastodonAPIError is unfortunately not in __init__.py
             self.logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
-        for status in all:
+        for status in notifications:
             if status['type'] == 'mention' and status['status']['id'] > self.seen_toots:
                 # save state
                 self.seen_toots = status['status']['id']
@@ -94,7 +94,7 @@ if __name__ == '__main__':
     config = backend.get_config()
 
     trigger = trigger.Trigger(config)
-    bot = RetootBot(config)
+    bot = MastodonBot(config)
 
     try:
         while True:

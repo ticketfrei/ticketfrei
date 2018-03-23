@@ -8,7 +8,7 @@ import report
 from user import User
 
 
-class RetweetBot(object):
+class TwitterBot(object):
     """
     This bot retweets all tweets which
     1) mention him,
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     trigger = trigger.Trigger(config)
 
     # initialise twitter bot
-    bot = RetweetBot(config)
+    bot = TwitterBot(config)
 
     try:
         while True:
