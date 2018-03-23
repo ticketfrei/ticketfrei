@@ -27,6 +27,15 @@ class User(object):
         self.db.cur.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ?;",
                             (toot_id, self.uid))
 
+    def get_seen_tweet(self):
+        self.db.cur.execute("SELECT tweet_id FROM seen_tweets WHERE user_id = ?;",
+                            (self.uid, ))
+        return self.db.cur.fetchone()[0]
+
+    def save_seen_tweet(self, tweet_id):
+        self.db.cur.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
+                            (tweet_id, self.uid))
+
     def get_mail(self):
         self.db.cur.execute("SELECT email FROM mail WHERE user_id = ?;", (self.uid, ))
 
@@ -58,6 +67,11 @@ class User(object):
             "INSERT INTO twitter_accounts(user_id, access_token_key, access_token_secret) VALUES(?, ?, ?);",
             (id, access_token, access_token_secret))
         self.db.conn.commit()
+
+    def get_twitter_token(self):
+        self.db.cur.execute("SELECT access_token, access_token_secret FROM twitter_accouts WHERE user_id = ?;",
+                            (self.uid, ))
+        return self.db.cur.fetchall()
 
     def get_mastodon_app_keys(self, instance):
         self.db.cur.execute("SELECT client_id, client_secret FROM mastodon_instances WHERE instance = ?;", (instance, ))

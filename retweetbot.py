@@ -3,11 +3,10 @@
 import tweepy
 import re
 import requests
-import trigger
 from time import sleep
 import report
-import backend
-import sendmail
+from user import User
+
 
 class RetweetBot(object):
     """
@@ -20,7 +19,7 @@ class RetweetBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, config, history_path="last_mention"):
+    def __init__(self, config, logger, uid, db):
         """
         Initializes the bot and loads all the necessary data.
 
@@ -29,7 +28,9 @@ class RetweetBot(object):
             Tweet
         """
         self.config = config
-        self.logger = backend.get_logger(config)
+        self.logger = logger
+        self.db = db
+        self.user = User(db, uid)
 
         # initialize API access
         keys = self.get_api_keys()
@@ -39,8 +40,7 @@ class RetweetBot(object):
                               keys[3])  # access_token_secret
         self.api = tweepy.API(auth)
 
-        self.history_path = history_path
-        self.last_mention = self.get_history(self.history_path)
+        self.last_mention = self.user.get_seen_tweet()
         self.waitcounter = 0
 
     def get_api_keys(self):
@@ -58,31 +58,15 @@ class RetweetBot(object):
 
         :return: keys: list of these 4 strings.
         """
-        keys = [self.config['tapp']['consumer_key'], self.config['tapp']['consumer_secret'],
-                self.config['tuser']['access_token_key'], self.config['tuser']['access_token_secret']]
+        keys = [self.config['twitter']['consumer_key'], self.config['twitter']['consumer_secret']]
+        row = self.user.get_twitter_token()
+        keys.append(row[0])
+        keys.append(row[1])
         return keys
-
-    def get_history(self, path):
-        """ This counter is needed to keep track of your mentions, so you
-        don't double RT them
-
-        :param path: string: contains path to the file where the ID of the
-            last_mention is stored.
-        :return: last_mention: ID of the last tweet which mentioned the bot
-        """
-        try:
-            with open(path, "r+") as f:
-                last_mention = f.read()
-        except IOError:
-            with open(path, "w+") as f:
-                last_mention = "0"
-                f.write(last_mention)
-        return int(last_mention)
 
     def save_last(self):
         """ Saves the last retweeted tweet in last_mention. """
-        with open(self.history_path, "w") as f:
-            f.write(str(self.last_mention))
+        self.user.save_seen_tweet(self.last_mention)
 
     def waiting(self):
         """
@@ -198,7 +182,7 @@ class RetweetBot(object):
         # Return Retweets for posting on other bots
         return all_tweets
 
-
+"""
 if __name__ == "__main__":
     config = backend.get_config()
 
@@ -225,3 +209,4 @@ if __name__ == "__main__":
                         attachment=config['logging']['logpath'])
         except:
             bot.logger.error('Mail sending failed', exc_info=True)
+"""

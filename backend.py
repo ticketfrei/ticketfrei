@@ -7,7 +7,7 @@ import sendmail
 from db import DB
 
 from retootbot import RetootBot
-# from retweetbot import RetweetBot
+from retweetbot import RetweetBot
 from mailbot import Mailbot
 from trigger import Trigger
 
@@ -23,7 +23,7 @@ def get_users(db):
 def init_bots(config, logger, db, users):
     for uid in users:
         users[uid].append(RetootBot(config, logger, uid, db))
-        # users[uid].append(RetweetBot(config, uid, db))
+        users[uid].append(RetweetBot(config, logger, uid, db))
         users[uid].append(Mailbot(config, logger, uid, db))
     return users
 
