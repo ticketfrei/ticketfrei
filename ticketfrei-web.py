@@ -94,7 +94,8 @@ def login_twitter(user):
     try:
         redirect_url = auth.get_authorization_url()
     except tweepy.TweepError:
-        return 'Error! Failed to get request token.'
+        user.db.logger.error('Twitter OAuth Error: Failed to get request token.', exc_info=True)
+        return dict(error="Failed to get request token.")
     user.save_request_token(auth.request_token)
     return bottle.redirect(redirect_url)
 
@@ -127,7 +128,9 @@ def login_mastodon(user):
     # get app tokens
     instance_url = bottle.request.forms.get('instance_url')
     masto_email = bottle.request.forms.get('email')
-    masto_pass = bottle.request.forms.get('password')
+    print(masto_email)
+    masto_pass = bottle.request.forms.get('pass')
+    print(masto_pass)
     client_id, client_secret = user.get_mastodon_app_keys(instance_url)
     m = Mastodon(client_id=client_id, client_secret=client_secret, api_base_url=instance_url)
     try:
@@ -135,6 +138,7 @@ def login_mastodon(user):
         user.save_masto_token(access_token, instance_url)
         return dict(info='Thanks for supporting decentralized social networks!')
     except:
+        user.db.logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
 
 

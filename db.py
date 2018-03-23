@@ -11,13 +11,14 @@ from mastodon import Mastodon
 
 class DB(object):
     def __init__(self):
+        self.config = ticketfrei.get_config()
+        self.logger = ticketfrei.get_logger(self.config)
         dbfile = path.join(path.dirname(path.abspath(__file__)),
                            'ticketfrei.sqlite')
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
         self.secret = urandom(32)
-        self.config = ticketfrei.get_config()
 
     def create(self):
         # init db
@@ -163,7 +164,9 @@ class User(object):
     def get_mastodon_app_keys(self, instance):
         self.db.cur.execute("SELECT client_id, client_secret FROM mastodon_instances WHERE instance = ?;", (instance, ))
         try:
-            client_id, client_secret = self.db.cur.fetchone()[0]
+            row = self.db.cur.fetchone()
+            client_id = row[0]
+            client_secret = row[1]
             return client_id, client_secret
         except TypeError:
             app_name = "ticketfrei" + str(self.db.secret)[0:4]
@@ -176,9 +179,9 @@ class User(object):
     def save_masto_token(self, access_token, instance):
         self.db.cur.execute("SELECT id FROM mastodon_instances WHERE instance = ?;", (instance, ))
         instance_id = self.db.cur.fetchone()[0]
-        self.db.cur.execute("INSERT INTO mastodon_accounts(user_id, access_token, mastodon_instances_id, active) "
+        self.db.cur.execute("INSERT INTO mastodon_accounts(user_id, access_token, instance_id, active) "
                             "VALUES(?, ?, ?, ?);", (self.uid, access_token, instance_id, 1))
-        self.db.commit()
+        self.db.conn.commit()
 
 
 class DBPlugin(object):
