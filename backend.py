@@ -22,6 +22,7 @@ def get_users(db):
 
 def init_bots(config, logger, db, users):
     for uid in users:
+        users[uid].append(Trigger(config, uid, db))
         users[uid].append(RetootBot(config, logger, uid, db))
         users[uid].append(RetweetBot(config, logger, uid, db))
         users[uid].append(Mailbot(config, logger, uid, db))
@@ -32,9 +33,6 @@ def run():
     config = prepare.get_config()
     logger = prepare.get_logger(config)
     db = DB()
-
-    # set trigger
-    trigger = Trigger(config)
 
     while True:
         # get a dictionary { uid : [ Bot objects ] }

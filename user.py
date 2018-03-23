@@ -47,6 +47,10 @@ class User(object):
         self.db.cur.execute("UPDATE seen_mail SET mail_date = ? WHERE user_id = ?;",
                             (mail_date, self.uid))
 
+    def get_trigger_words(self, table):
+        self.db.cur.execute("SELECT words FROM ? WHERE user_id = ?;", (table, self.uid,))
+        return self.db.cur.fetchone()[0]
+
     def state(self):
         return dict(foo='bar')
 
