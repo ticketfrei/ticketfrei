@@ -6,11 +6,8 @@ import requests
 import trigger
 from time import sleep
 import report
-import logging
+import ticketfrei
 import sendmail
-
-logger = logging.getLogger(__name__)
-
 
 class RetweetBot(object):
     """
@@ -32,6 +29,7 @@ class RetweetBot(object):
             Tweet
         """
         self.config = config
+        self.logger = ticketfrei.get_logger(config)
 
         # initialize API access
         keys = self.get_api_keys()
@@ -120,13 +118,13 @@ class RetweetBot(object):
                 self.save_last()
                 return reports
         except tweepy.RateLimitError:
-            logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
+            self.logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
             self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
-            logger.error("Twitter API Error: Bad Connection", exc_info=True)
+            self.logger.error("Twitter API Error: Bad Connection", exc_info=True)
             self.waitcounter += 10
         except tweepy.TweepError:
-            logger.error("Twitter API Error: General Error", exc_info=True)
+            self.logger.error("Twitter API Error: General Error", exc_info=True)
         return []
 
     def repost(self, status):
@@ -139,17 +137,17 @@ class RetweetBot(object):
         while 1:
             try:
                 self.api.retweet(status.id)
-                logger.info("Retweeted: " + status.format())
+                self.logger.info("Retweeted: " + status.format())
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 self.save_last()
                 return status.format()
             except requests.exceptions.ConnectionError:
-                logger.error("Twitter API Error: Bad Connection", exc_info=True)
+                self.logger.error("Twitter API Error: Bad Connection", exc_info=True)
                 sleep(10)
             # maybe one day we get rid of this error:
             except tweepy.TweepError:
-                logger.error("Twitter Error", exc_info=True)
+                self.logger.error("Twitter Error", exc_info=True)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 self.save_last()
@@ -169,7 +167,7 @@ class RetweetBot(object):
                 self.api.update_status(status=text)
                 return
             except requests.exceptions.ConnectionError:
-                logger.error("Twitter API Error: Bad Connection", exc_info=True)
+                self.logger.error("Twitter API Error: Bad Connection", exc_info=True)
                 sleep(10)
 
     def flow(self, trigger, to_tweet=()):
@@ -202,13 +200,7 @@ class RetweetBot(object):
 
 
 if __name__ == "__main__":
-    import ticketfrei
     config = ticketfrei.get_config()
-
-    # set log file
-    fh = logging.FileHandler(config['logging']['logpath'])
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
 
     # initialise trigger
     trigger = trigger.Trigger(config)
@@ -224,7 +216,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        logger.error('Shutdown', exc_info=True)
+        bot.logger.error('Shutdown', exc_info=True)
         bot.save_last()
         try:
             mailer = sendmail.Mailer(config)
@@ -232,4 +224,4 @@ if __name__ == "__main__":
                         'Ticketfrei Crash Report',
                         attachment=config['logging']['logpath'])
         except:
-            logger.error('Mail sending failed', exc_info=True)
+            bot.logger.error('Mail sending failed', exc_info=True)

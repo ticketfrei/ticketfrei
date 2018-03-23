@@ -6,11 +6,9 @@ import time
 import trigger
 import datetime
 import email
-import logging
+import ticketfrei
 import imaplib
 import report
-
-logger = logging.getLogger(__name__)
 
 
 class Mailbot(object):
@@ -27,6 +25,7 @@ class Mailbot(object):
         :param config: (dictionary) config.toml as a dictionary of dictionaries
         """
         self.config = config
+        self.logger = ticketfrei.get_logger(config)
 
         self.history_path = history_path
         self.last_mail = self.get_history(self.history_path)
@@ -41,18 +40,18 @@ class Mailbot(object):
         try:
             self.mailbox.starttls(ssl_context=context)
         except:
-            logger.error('StartTLS failed', exc_info=True)
+            self.logger.error('StartTLS failed', exc_info=True)
         try:
             self.mailbox.login(self.config["mail"]["user"], self.config["mail"]["passphrase"])
         except imaplib.IMAP4.error:
-            logger.error("Login to mail server failed", exc_info=True)
+            self.logger.error("Login to mail server failed", exc_info=True)
             try:
                 mailer = sendmail.Mailer(config)
                 mailer.send('', config['mail']['contact'],
                             'Ticketfrei Crash Report',
                             attachment=config['logging']['logpath'])
             except:
-                logger.error('Mail sending failed', exc_info=True)
+                self.logger.error('Mail sending failed', exc_info=True)
 
     def repost(self, status):
         """
@@ -72,7 +71,7 @@ class Mailbot(object):
         try:
             rv, data = self.mailbox.select("Inbox")
         except imaplib.IMAP4.abort:
-            logger.error("Crawling Mail failed", exc_info=True)
+            self.logger.error("Crawling Mail failed", exc_info=True)
             rv = False
         msgs = []
         if rv == 'OK':
@@ -83,7 +82,7 @@ class Mailbot(object):
             for num in data[0].split():
                 rv, data = self.mailbox.fetch(num, '(RFC822)')
                 if rv != 'OK':
-                    logger.error("Couldn't fetch mail %s %s" % (rv, str(data)))
+                    self.logger.error("Couldn't fetch mail %s %s" % (rv, str(data)))
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
@@ -172,14 +171,7 @@ class Mailbot(object):
 
 
 if __name__ == "__main__":
-    import ticketfrei
     config = ticketfrei.get_config()
-
-    # set log file
-    logger = logging.getLogger()
-    fh = logging.FileHandler(config['logging']['logpath'])
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
 
     # initialise trigger
     trigger = trigger.Trigger(config)
@@ -195,7 +187,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("Good bye. Remember to restart the bot!")
     except:
-        logger.error('Shutdown', exc_info=True)
+        m.logger.error('Shutdown', exc_info=True)
         m.save_last()
         try:
             mailer = sendmail.Mailer(config)
@@ -203,4 +195,4 @@ if __name__ == "__main__":
                         'Ticketfrei Crash Report',
                         attachment=config['logging']['logpath'])
         except:
-            logger.error('Mail sending failed', exc_info=True)
+            m.logger.error('Mail sending failed', exc_info=True)

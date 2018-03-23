@@ -10,10 +10,10 @@ from retweetbot import RetweetBot
 from mailbot import Mailbot
 from trigger import Trigger
 
-def set_logfile(config):
-    logfile = config['logging']['logpath']
+def get_logger(config):
+    logpath = config['logging']['logpath']
     logger = logging.getLogger()
-    fh = logging.FileHandler(logfile)
+    fh = logging.FileHandler(logpath)
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
     return logger
@@ -25,11 +25,8 @@ def get_config():
     return config
 
 def run():
-    # get config
     config = get_config()
-
-    # set log file
-    logger = set_logfile(config)
+    logger = get_logger(config)
 
     # set trigger
     trigger = Trigger(config)
@@ -63,8 +60,8 @@ def run():
         logger.error('Shutdown', exc_info=True)
         for bot in bots:
             bot.save_last()
+        mailer = sendmail.Mailer(config)
         try:
-            mailer = sendmail.Mailer(config)
             mailer.send('', config['mail']['contact'],
                         'Ticketfrei Crash Report',
                         attachment=config['logging']['logpath'])

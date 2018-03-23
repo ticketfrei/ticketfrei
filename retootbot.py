@@ -6,16 +6,14 @@ import pickle
 import re
 import time
 import trigger
-import logging
 import sendmail
 import report
-
-logger = logging.getLogger(__name__)
-
+import ticketfrei
 
 class RetootBot(object):
     def __init__(self, config):
         self.config = config
+        self.logger = ticketfrei.get_logger(config)
         self.client_id = self.register()
         self.m = self.login()
 
@@ -73,7 +71,7 @@ class RetootBot(object):
         try:
             all = self.m.notifications()
         except:  # mastodon.Mastodon.MastodonAPIError is unfortunately not in __init__.py
-            logger.error("Unknown Mastodon API Error.", exc_info=True)
+            self.logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
         for status in all:
             if (status['type'] == 'mention' and status['status']['id'] not in self.seen_toots):
@@ -96,7 +94,7 @@ class RetootBot(object):
 
         :param mention: (report.Report object)
         """
-        logger.info('Boosting toot from %s' % (
+        self.logger.info('Boosting toot from %s' % (
             mention.format()))
         self.m.status_reblog(mention.id)
 
@@ -128,12 +126,7 @@ class RetootBot(object):
 
 
 if __name__ == '__main__':
-    import ticketfrei
     config = ticketfrei.get_config()
-
-    fh = logging.FileHandler(config['logging']['logpath'])
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
 
     trigger = trigger.Trigger(config)
     bot = RetootBot(config)
@@ -145,11 +138,11 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
             print("Good bye. Remember to restart the bot!")
     except:
-        logger.error('Shutdown', exc_info=True)
+        bot.logger.error('Shutdown', exc_info=True)
         try:
             mailer = sendmail.Mailer(config)
             mailer.send('', config['mail']['contact'],
                         'Ticketfrei Crash Report',
                         attachment=config['logging']['logpath'])
         except:
-            logger.error('Mail sending failed', exc_info=True)
+            bot.logger.error('Mail sending failed', exc_info=True)
