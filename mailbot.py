@@ -2,11 +2,8 @@
 
 import sendmail
 import ssl
-import time
-import trigger
 import datetime
 import email
-import prepare
 import imaplib
 import report
 from user import User
@@ -101,17 +98,6 @@ class Mailbot(object):
                         msgs.append(self.make_report(msg))
         return msgs
 
-    def get_history(self):
-        """
-        This counter is needed to keep track of your mails, so you
-        don't double parse them
-
-        :param path: string: contains path to the file where the ID of the
-            last_mail is stored.
-        :return: last_mail: ID of the last mail the bot parsed
-        """
-        pass
-
     def save_last(self):
         """ Saves the last retweeted tweet in the db. """
         self.user.save_seen_mail(self.last_mail)
@@ -164,9 +150,9 @@ class Mailbot(object):
                 statuses.append(msg)
         return statuses
 
-
+"""
 if __name__ == "__main__":
-    config = backend.get_config()
+    config = prepare.get_config()
 
     # initialise trigger
     trigger = trigger.Trigger(config)
@@ -191,3 +177,4 @@ if __name__ == "__main__":
                         attachment=config['logging']['logpath'])
         except:
             m.logger.error('Mail sending failed', exc_info=True)
+"""
