@@ -8,12 +8,12 @@ import time
 import trigger
 import sendmail
 import report
-import ticketfrei
+import backend
 
 class RetootBot(object):
     def __init__(self, config):
         self.config = config
-        self.logger = ticketfrei.get_logger(config)
+        self.logger = backend.get_logger(config)
         self.client_id = self.register()
         self.m = self.login()
 
@@ -126,7 +126,7 @@ class RetootBot(object):
 
 
 if __name__ == '__main__':
-    config = ticketfrei.get_config()
+    config = backend.get_config()
 
     trigger = trigger.Trigger(config)
     bot = RetootBot(config)

@@ -6,7 +6,7 @@ import time
 import trigger
 import datetime
 import email
-import ticketfrei
+import backend
 import imaplib
 import report
 
@@ -25,7 +25,7 @@ class Mailbot(object):
         :param config: (dictionary) config.toml as a dictionary of dictionaries
         """
         self.config = config
-        self.logger = ticketfrei.get_logger(config)
+        self.logger = backend.get_logger(config)
 
         self.history_path = history_path
         self.last_mail = self.get_history(self.history_path)
@@ -56,7 +56,7 @@ class Mailbot(object):
     def repost(self, status):
         """
         E-Mails don't have to be reposted - they already reached everyone on the mailing list.
-        The function still needs to be here because ticketfrei.py assumes it, and take the
+        The function still needs to be here because backend.py assumes it, and take the
         report object they want to give us.
 
         :param status: (report.Report object)
@@ -171,7 +171,7 @@ class Mailbot(object):
 
 
 if __name__ == "__main__":
-    config = ticketfrei.get_config()
+    config = backend.get_config()
 
     # initialise trigger
     trigger = trigger.Trigger(config)

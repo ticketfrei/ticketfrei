@@ -66,8 +66,8 @@ class Mailer(object):
 
 # For testing:
 if __name__ == '__main__':
-    import ticketfrei
-    config = ticketfrei.get_config()
+    import backend
+    config = backend.get_config()
 
     m = Mailer(config)
     print(m.send("This is a test mail.", m.fromaddr, "Test"))

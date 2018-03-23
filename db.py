@@ -5,14 +5,14 @@ import jwt
 from os import path, urandom
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 import sqlite3
-import ticketfrei
+import backend
 from mastodon import Mastodon
 
 
 class DB(object):
     def __init__(self):
-        self.config = ticketfrei.get_config()
-        self.logger = ticketfrei.get_logger(self.config)
+        self.config = backend.get_config()
+        self.logger = backend.get_logger(self.config)
         dbfile = path.join(path.dirname(path.abspath(__file__)),
                            'ticketfrei.sqlite')
         self.conn = sqlite3.connect(dbfile)

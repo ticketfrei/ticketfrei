@@ -57,8 +57,8 @@ class Trigger(object):
 
 
 if __name__ == "__main__":
-    import ticketfrei
-    config = ticketfrei.get_config()
+    import backend
+    config = backend.get_config()
 
     print("testing the trigger")
     trigger = Trigger(config)

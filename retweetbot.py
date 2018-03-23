@@ -6,7 +6,7 @@ import requests
 import trigger
 from time import sleep
 import report
-import ticketfrei
+import backend
 import sendmail
 
 class RetweetBot(object):
@@ -29,7 +29,7 @@ class RetweetBot(object):
             Tweet
         """
         self.config = config
-        self.logger = ticketfrei.get_logger(config)
+        self.logger = backend.get_logger(config)
 
         # initialize API access
         keys = self.get_api_keys()
@@ -200,7 +200,7 @@ class RetweetBot(object):
 
 
 if __name__ == "__main__":
-    config = ticketfrei.get_config()
+    config = backend.get_config()
 
     # initialise trigger
     trigger = trigger.Trigger(config)

@@ -5,7 +5,7 @@ import base64
 import bottle
 import sqlite3
 import sendmail
-import ticketfrei
+import backend
 import jwt
 import pylibscrypt
 import smtplib
@@ -345,7 +345,7 @@ class StripPathMiddleware(object):
 
 if __name__ == "__main__":
     global config
-    config = ticketfrei.get_config()
+    config = backend.get_config()
 
     global db
     global secret
