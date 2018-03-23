@@ -10,21 +10,32 @@ from retweetbot import RetweetBot
 from mailbot import Mailbot
 from trigger import Trigger
 
-if __name__ == '__main__':
+def set_logfile(config):
+    logfile = config['logging']['logpath']
+    logger = logging.getLogger()
+    fh = logging.FileHandler(logfile)
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
+    return logger
+
+def get_config():
     # read config in TOML format (https://github.com/toml-lang/toml#toml)
     with open('config.toml') as configfile:
         config = toml.load(configfile)
+    return config
+
+def run():
+    # get config
+    config = get_config()
 
     # set log file
-    logger = logging.getLogger()
-    fh = logging.FileHandler(config['logging']['logpath'])
-    fh.setLevel(logging.DEBUG)
-    logger.addHandler(fh)
+    logger = set_logfile(config)
 
+    # set trigger
     trigger = Trigger(config)
 
+    # initialize bots
     bots = []
-
     if config["muser"]["enabled"] != "false":
         bots.append(RetootBot(config))
     if config["tuser"]["enabled"] != "false":
@@ -59,3 +70,7 @@ if __name__ == '__main__':
                         attachment=config['logging']['logpath'])
         except:
             logger.error('Mail sending failed', exc_info=True)
+
+
+if __name__ == '__main__':
+    run()

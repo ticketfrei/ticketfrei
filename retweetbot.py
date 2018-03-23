@@ -3,7 +3,6 @@
 import tweepy
 import re
 import requests
-import pytoml as toml
 import trigger
 from time import sleep
 import report
@@ -203,9 +202,8 @@ class RetweetBot(object):
 
 
 if __name__ == "__main__":
-    # get the config dict of dicts
-    with open('config.toml') as configfile:
-        config = toml.load(configfile)
+    import ticketfrei
+    config = ticketfrei.get_config()
 
     # set log file
     fh = logging.FileHandler(config['logging']['logpath'])

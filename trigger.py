@@ -1,8 +1,6 @@
 #!/usr/bin/env python
-import pytoml as toml
 import os
 import re
-
 
 class Trigger(object):
     """
@@ -59,8 +57,8 @@ class Trigger(object):
 
 
 if __name__ == "__main__":
-    with open("config.toml", "r") as configfile:
-        config = toml.load(configfile)
+    import ticketfrei
+    config = ticketfrei.get_config()
 
     print("testing the trigger")
     trigger = Trigger(config)

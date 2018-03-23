@@ -2,7 +2,6 @@
 
 import smtplib
 import ssl
-import pytoml as toml
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -67,9 +66,8 @@ class Mailer(object):
 
 # For testing:
 if __name__ == '__main__':
-    # read config in TOML format (https://github.com/toml-lang/toml#toml)
-    with open('config.toml') as configfile:
-        config = toml.load(configfile)
+    import ticketfrei
+    config = ticketfrei.get_config()
 
     m = Mailer(config)
     print(m.send("This is a test mail.", m.fromaddr, "Test"))

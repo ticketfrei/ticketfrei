@@ -7,7 +7,6 @@ import trigger
 import datetime
 import email
 import logging
-import pytoml as toml
 import imaplib
 import report
 
@@ -173,9 +172,8 @@ class Mailbot(object):
 
 
 if __name__ == "__main__":
-    # read config in TOML format (https://github.com/toml-lang/toml#toml)
-    with open('config.toml') as configfile:
-        config = toml.load(configfile)
+    import ticketfrei
+    config = ticketfrei.get_config()
 
     # set log file
     logger = logging.getLogger()

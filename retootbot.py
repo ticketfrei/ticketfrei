@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-import pytoml as toml
 import mastodon
 import os
 import pickle
@@ -129,9 +128,8 @@ class RetootBot(object):
 
 
 if __name__ == '__main__':
-    # read config in TOML format (https://github.com/toml-lang/toml#toml)
-    with open('config.toml') as configfile:
-        config = toml.load(configfile)
+    import ticketfrei
+    config = ticketfrei.get_config()
 
     fh = logging.FileHandler(config['logging']['logpath'])
     fh.setLevel(logging.DEBUG)

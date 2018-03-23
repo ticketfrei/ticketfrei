@@ -5,7 +5,7 @@ import jwt
 from os import path, urandom
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 import sqlite3
-import pytoml as toml
+import ticketfrei
 from mastodon import Mastodon
 
 
@@ -20,8 +20,7 @@ class DB(object):
             self.create()
             print("Initialized new sqlite database.")
         self.secret = urandom(32)
-        with open('config.toml') as configfile:
-            self.config = toml.load(configfile)
+        self.config = ticketfrei.get_config()
 
     def create(self):
         # init db

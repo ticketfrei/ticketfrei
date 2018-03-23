@@ -5,7 +5,7 @@ import base64
 import bottle
 import sqlite3
 import sendmail
-import pytoml as toml
+import ticketfrei
 import jwt
 import pylibscrypt
 import smtplib
@@ -345,8 +345,7 @@ class StripPathMiddleware(object):
 
 if __name__ == "__main__":
     global config
-    with open('../config.toml') as configfile:
-        config = toml.load(configfile)
+    config = ticketfrei.get_config()
 
     global db
     global secret
