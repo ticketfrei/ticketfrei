@@ -16,6 +16,12 @@
     <h2>Log in with Mastodon</h2>
     <p>
         <form action="/login/mastodon" method='post'>
+            <label for="email">E-Mail of your Mastodon-Account</label>
+            <input type="text" placeholder="Enter Email" name="email" id="email" required>
+
+            <label for="pass">Mastodon Password</label>
+            <input type="password" placeholder="Enter Password" name="pass" id="pass" required>
+
             <label>Mastodon instance:
                 <input type='text' name='instance_url' list='instances' placeholder='social.example.net'/>
             </label>

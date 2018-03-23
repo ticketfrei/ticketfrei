@@ -1,12 +1,17 @@
 import bottle
 from bottle import get, post, redirect, request, response, view
 from db import DBPlugin
+import tweepy
+import sendmail
+import smtplib
+from mastodon import Mastodon
 
 
 @get('/')
 @view('template/propaganda.tpl')
 def propaganda():
     pass
+
 
 @post('/register', db='db')
 @view('template/register.tpl')
@@ -22,6 +27,14 @@ def register_post(db):
     confirm_link = request.url + "/../confirm/" + db.token(email, password)
     db.send_confirmation_mail(confirm_link, email)
     return dict(info='Confirmation mail sent.')
+
+
+def send_confirmation_mail(self, confirm_link, email):
+    m = sendmail.Mailer(self.config)
+    try:
+        m.send("Complete your registration here: " + confirm_link, email, "[Ticketfrei] Confirm your account")
+    except smtplib.SMTPRecipientsRefused:
+        return "Please enter a valid E-Mail address."
 
 
 @get('/confirm/<token>', db='db')
@@ -59,12 +72,70 @@ def api_enable(user):
 def static(filename):
     return bottle.static_file(filename, root='static')
 
+
 @get('/logout/')
 def logout():
     # clear auth cookie
     response.set_cookie('uid', '', expires=0, path="/")
     # :todo show info "Logout successful."
     return redirect('/')
+
+
+@get('/login/twitter', user='user')
+def login_twitter(user):
+    """
+    Starts the twitter OAuth authentication process.
+    :return: redirect to twitter.
+    """
+    consumer_key = user.db.config["tapp"]["consumer_key"]
+    consumer_secret = user.db.config["tapp"]["consumer_secret"]
+    callback_url = bottle.request.get_header('host') + "/login/twitter/callback"
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+    try:
+        redirect_url = auth.get_authorization_url()
+    except tweepy.TweepError:
+        return 'Error! Failed to get request token.'
+    user.save_request_token(auth.request_token)
+    return bottle.redirect(redirect_url)
+
+
+@get('/login/twitter/callback', user="user")
+def twitter_callback(user):
+    """
+    Gets the callback
+    :return:
+    """
+    # twitter passes the verifier/oauth token secret in a GET request.
+    verifier = bottle.request.query('oauth_verifier')
+    consumer_key = user.db.config["tapp"]["consumer_key"]
+    consumer_secret = user.db.config["tapp"]["consumer_secret"]
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+    request_token = user.get_request_token
+    auth.request_token = {"oauth_token": request_token,
+                          "oauth_token_secret": verifier}
+    auth.get_access_token(verifier)
+    user.save_twitter_token(auth.access_token, auth.access_token_secret)
+    return bottle.redirect("/settings")
+
+
+@post('/login/mastodon', user="user")
+def login_mastodon(user):
+    """
+    Starts the mastodon OAuth authentication process.
+    :return: redirect to twitter.
+    """
+    # get app tokens
+    instance_url = bottle.request.forms.get('instance_url')
+    masto_email = bottle.request.forms.get('email')
+    masto_pass = bottle.request.forms.get('password')
+    client_id, client_secret = user.get_mastodon_app_keys(instance_url)
+    m = Mastodon(client_id=client_id, client_secret=client_secret, api_base_url=instance_url)
+    try:
+        access_token = m.log_in(masto_email, masto_pass)
+        user.save_masto_token(access_token, instance_url)
+        return dict(info='Thanks for supporting decentralized social networks!')
+    except:
+        return dict(error='Login to Mastodon failed.')
 
 
 bottle.install(DBPlugin('/'))
