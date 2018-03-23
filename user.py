@@ -18,18 +18,25 @@ class User(object):
         instance = self.db.cur.fetchone()
         return instance[1], instance[2], row[0], instance[0]
 
-    def get_mastodon_account_id(self):
-        self.db.cur.execute("SELECT id FROM mastodon_accounts WHERE user_id = ?;", (self.uid, ))
-        return self.db.cur.fetchone()[0]
-
     def get_seen_toot(self):
-        self.db.cur.execute("SELECT toot_id FROM seen_toots WHERE user_id = ? AND mastodon_accounts_id = ?;",
-                            (self.uid, self.get_mastodon_account_id()))
+        self.db.cur.execute("SELECT toot_id FROM seen_toots WHERE user_id = ?;",
+                            (self.uid, ))
         return self.db.cur.fetchone()[0]
 
     def save_seen_toot(self, toot_id):
-        self.db.cur.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ? AND mastodon_accounts_id = ?;",
-                            (toot_id, self.uid, self.get_mastodon_account_id()))
+        self.db.cur.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ?;",
+                            (toot_id, self.uid))
+
+    def get_mail(self):
+        self.db.cur.execute("SELECT email FROM mail WHERE user_id = ?;", (self.uid, ))
+
+    def get_seen_mail(self):
+        self.db.cur.execute("SELECT mail_date FROM seen_mails WHERE user_id = ?;", (self.uid, ))
+        return self.db.cur.fetchone()[0]
+
+    def save_seen_mail(self, mail_date):
+        self.db.cur.execute("UPDATE seen_mail SET mail_date = ? WHERE user_id = ?;",
+                            (mail_date, self.uid))
 
     def state(self):
         return dict(foo='bar')

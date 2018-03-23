@@ -46,7 +46,7 @@ class RetootBot(object):
                 self.save_last()
                 # add mention to mentions
                 text = re.sub(r'<[^>]*>', '', status['status']['content'])
-                text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", text)
+                text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", text)
                 mentions.append(report.Report(status['account']['acct'],
                                               "mastodon",
                                               text,
@@ -63,7 +63,6 @@ class RetootBot(object):
         self.logger.info('Boosting toot from %s' % (
             mention.format()))
         self.m.status_reblog(mention.id)
-
 
     def post(self, report):
         """

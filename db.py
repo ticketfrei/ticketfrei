@@ -14,7 +14,7 @@ class DB(object):
         self.config = prepare.get_config()
         self.logger = prepare.get_logger(self.config)
         dbfile = path.join(path.dirname(path.abspath(__file__)),
-                           'ticketfrei.sqlite')
+                           self.config['database']['db_path'])
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
@@ -84,6 +84,14 @@ class DB(object):
                 email	    TEXT,
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
+            );
+            CREATE TABLE IF NOT EXISTS seen_mails (
+                id	    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id	    INTEGER,
+                mail_id    INTEGER,
+                mail_date	    INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(mail_id) REFERENCES mail(id)
             );
             CREATE TABLE IF NOT EXISTS seen_tweets (
                 id	    INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,

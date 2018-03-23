@@ -6,9 +6,10 @@ import time
 import trigger
 import datetime
 import email
-import backend
+import prepare
 import imaplib
 import report
+from user import User
 
 
 class Mailbot(object):
@@ -17,7 +18,7 @@ class Mailbot(object):
     other bots that it received mails.
     """
 
-    def __init__(self, config, history_path="last_mail"):
+    def __init__(self, config, logger, uid, db):
         """
         Creates a Bot who listens to mails and forwards them to other
         bots.
@@ -25,14 +26,17 @@ class Mailbot(object):
         :param config: (dictionary) config.toml as a dictionary of dictionaries
         """
         self.config = config
-        self.logger = backend.get_logger(config)
-
-        self.history_path = history_path
-        self.last_mail = self.get_history(self.history_path)
+        self.logger = logger
+        self.user = User(db, uid)
 
         try:
-            self.mailinglist = self.config["mail"]["list"]
-        except KeyError:
+            self.last_mail = self.user.get_seen_mail()
+        except TypeError:
+            self.last_mail = 0
+
+        try:
+            self.mailinglist = self.user.get_mail()
+        except TypeError:
             self.mailinglist = None
 
         self.mailbox = imaplib.IMAP4_SSL(self.config["mail"]["imapserver"])
@@ -86,19 +90,18 @@ class Mailbot(object):
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
-                if not self.config['mail']['user'] + "@" + \
-                        self.config["mail"]["mailserver"].partition(".")[2] in msg['From']:
+                if not self.user.get_mail() in msg['From']:
                     # get a comparable date out of the email
                     date_tuple = email.utils.parsedate_tz(msg['Date'])
                     date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-                    date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
-                    if date > self.get_history(self.history_path):
+                    date = int((date_tuple - datetime.datetime(1970, 1, 1)).total_seconds())
+                    if date > self.user.get_seen_mail():
                         self.last_mail = date
                         self.save_last()
                         msgs.append(self.make_report(msg))
         return msgs
 
-    def get_history(self, path):
+    def get_history(self):
         """
         This counter is needed to keep track of your mails, so you
         don't double parse them
@@ -107,19 +110,11 @@ class Mailbot(object):
             last_mail is stored.
         :return: last_mail: ID of the last mail the bot parsed
         """
-        try:
-            with open(path, "r+") as f:
-                last_mail = f.read()
-        except IOError:
-            with open(path, "w+") as f:
-                last_mail = "0"
-                f.write(last_mail)
-        return float(last_mail)
+        pass
 
     def save_last(self):
-        """ Saves the last retweeted tweet in last_mention. """
-        with open(self.history_path, "w") as f:
-            f.write(str(self.last_mail))
+        """ Saves the last retweeted tweet in the db. """
+        self.user.save_seen_mail(self.last_mail)
 
     def post(self, status):
         """

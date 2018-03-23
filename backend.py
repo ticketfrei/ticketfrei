@@ -8,7 +8,7 @@ from db import DB
 
 from retootbot import RetootBot
 # from retweetbot import RetweetBot
-# from mailbot import Mailbot
+from mailbot import Mailbot
 from trigger import Trigger
 
 
@@ -24,7 +24,7 @@ def init_bots(config, logger, db, users):
     for uid in users:
         users[uid].append(RetootBot(config, logger, uid, db))
         # users[uid].append(RetweetBot(config, uid, db))
-        # users[uid].append(Mailbot(config, uid, db))
+        users[uid].append(Mailbot(config, logger, uid, db))
     return users
 
 
@@ -65,7 +65,7 @@ def run():
                     bot.save_last()
             mailer = sendmail.Mailer(config)
             try:
-                mailer.send('', config['mail']['contact'],
+                mailer.send('', config['web']['contact'],
                             'Ticketfrei Crash Report',
                             attachment=config['logging']['logpath'])
             except:
