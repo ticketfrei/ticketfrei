@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from config import config
+import logging
 import sendmail
 import ssl
 import datetime
@@ -9,21 +11,22 @@ import report
 from user import User
 
 
+logger = logging.getLogger(__name__)
+
+
 class Mailbot(object):
     """
     Bot which sends Mails if mentioned via twitter/mastodon, and tells
     other bots that it received mails.
     """
 
-    def __init__(self, config, logger, uid, db):
+    def __init__(self, uid, db):
         """
         Creates a Bot who listens to mails and forwards them to other
         bots.
 
         :param config: (dictionary) config.toml as a dictionary of dictionaries
         """
-        self.config = config
-        self.logger = logger
         self.user = User(db, uid)
 
         try:
@@ -36,23 +39,24 @@ class Mailbot(object):
         except TypeError:
             self.mailinglist = None
 
-        self.mailbox = imaplib.IMAP4_SSL(self.config["mail"]["imapserver"])
+        self.mailbox = imaplib.IMAP4_SSL(config["mail"]["imapserver"])
         context = ssl.create_default_context()
         try:
             self.mailbox.starttls(ssl_context=context)
         except:
-            self.logger.error('StartTLS failed', exc_info=True)
+            logger.error('StartTLS failed', exc_info=True)
         try:
-            self.mailbox.login(self.config["mail"]["user"], self.config["mail"]["passphrase"])
+            self.mailbox.login(config["mail"]["user"],
+                               config["mail"]["passphrase"])
         except imaplib.IMAP4.error:
-            self.logger.error("Login to mail server failed", exc_info=True)
+            logger.error("Login to mail server failed", exc_info=True)
             try:
-                mailer = sendmail.Mailer(config)
+                mailer = sendmail.Mailer()
                 mailer.send('', config['web']['contact'],
                             'Ticketfrei Crash Report',
                             attachment=config['logging']['logpath'])
             except:
-                self.logger.error('Mail sending failed', exc_info=True)
+                logger.error('Mail sending failed', exc_info=True)
 
     def repost(self, status):
         """
@@ -72,7 +76,7 @@ class Mailbot(object):
         try:
             rv, data = self.mailbox.select("Inbox")
         except imaplib.IMAP4.abort:
-            self.logger.error("Crawling Mail failed", exc_info=True)
+            logger.error("Crawling Mail failed", exc_info=True)
             rv = False
         msgs = []
         if rv == 'OK':
@@ -83,15 +87,18 @@ class Mailbot(object):
             for num in data[0].split():
                 rv, data = self.mailbox.fetch(num, '(RFC822)')
                 if rv != 'OK':
-                    self.logger.error("Couldn't fetch mail %s %s" % (rv, str(data)))
+                    logger.error("Couldn't fetch mail %s %s" % (rv, str(data)))
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
                 if not self.user.get_mail() in msg['From']:
                     # get a comparable date out of the email
                     date_tuple = email.utils.parsedate_tz(msg['Date'])
-                    date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-                    date = int((date_tuple - datetime.datetime(1970, 1, 1)).total_seconds())
+                    date_tuple = datetime.datetime.fromtimestamp(
+                            email.utils.mktime_tz(date_tuple)
+                        )
+                    date = int((date_tuple -
+                                datetime.datetime(1970, 1, 1)).total_seconds())
                     if date > self.user.get_seen_mail():
                         self.last_mail = date
                         self.save_last()
@@ -108,8 +115,9 @@ class Mailbot(object):
 
         :param status: (report.Report object)
         """
-        mailer = sendmail.Mailer(self.config)
-        mailer.send(status.format(), self.mailinglist, "Warnung: Kontrolleure gesehen")
+        mailer = sendmail.Mailer(config)
+        mailer.send(status.format(), self.mailinglist,
+                    "Warnung: Kontrolleure gesehen")
 
     def make_report(self, msg):
         """
@@ -120,8 +128,10 @@ class Mailbot(object):
         """
         # get a comparable date out of the email
         date_tuple = email.utils.parsedate_tz(msg['Date'])
-        date_tuple = datetime.datetime.fromtimestamp(email.utils.mktime_tz(date_tuple))
-        date = (date_tuple-datetime.datetime(1970,1,1)).total_seconds()
+        date_tuple = datetime.datetime.fromtimestamp(
+                email.utils.mktime_tz(date_tuple)
+            )
+        date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
 
         author = msg.get("From")  # get mail author from email header
         # :todo take only the part before the @
@@ -149,32 +159,3 @@ class Mailbot(object):
             if trigger.is_ok(msg.get_payload()):
                 statuses.append(msg)
         return statuses
-
-"""
-if __name__ == "__main__":
-    config = prepare.get_config()
-
-    # initialise trigger
-    trigger = trigger.Trigger(config)
-
-    # initialise mail bot
-    m = Mailbot(config)
-
-    statuses = []
-    try:
-        while 1:
-            print("Received Reports: " + str(m.flow(trigger, statuses)))
-            time.sleep(1)
-    except KeyboardInterrupt:
-        print("Good bye. Remember to restart the bot!")
-    except:
-        m.logger.error('Shutdown', exc_info=True)
-        m.save_last()
-        try:
-            mailer = sendmail.Mailer(config)
-            mailer.send('', config['mail']['contact'],
-                        'Ticketfrei Crash Report',
-                        attachment=config['logging']['logpath'])
-        except:
-            m.logger.error('Mail sending failed', exc_info=True)
-"""

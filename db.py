@@ -2,17 +2,18 @@ from bottle import redirect, request
 from functools import wraps
 from inspect import Signature
 import jwt
+import logging
 from os import urandom
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 import sqlite3
-import prepare
 from user import User
+
+
+logger = logging.getLogger(__name__)
 
 
 class DB(object):
     def __init__(self, dbfile):
-        self.config = prepare.get_config()
-        self.logger = prepare.get_logger(self.config)
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
