@@ -48,7 +48,7 @@ class Mailbot(object):
             self.logger.error("Login to mail server failed", exc_info=True)
             try:
                 mailer = sendmail.Mailer(config)
-                mailer.send('', config['mail']['contact'],
+                mailer.send('', config['web']['contact'],
                             'Ticketfrei Crash Report',
                             attachment=config['logging']['logpath'])
             except:

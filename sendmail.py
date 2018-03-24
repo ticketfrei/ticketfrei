@@ -22,13 +22,13 @@ class Mailer(object):
         """
         # This generates the From address by stripping the part until the first
         # period from the mail server address and won't work always.
-        self.fromaddr = config["web"]["user"] + "@" + config["web"]["mailserver"].partition(".")[2]
+        self.fromaddr = config["mail"]["user"] + "@" + config["mail"]["mailserver"].partition(".")[2]
 
         # starts a client session with the SMTP server
-        self.s = smtplib.SMTP(config["web"]["mailserver"])
+        self.s = smtplib.SMTP(config["mail"]["mailserver"])
         context = ssl.create_default_context()
         self.s.starttls(context=context)
-        self.s.login(config["web"]["user"], config["web"]["passphrase"])
+        self.s.login(config["mail"]["user"], config["mail"]["passphrase"])
 
     def send(self, text, recipient, subject, attachment=None):
         """

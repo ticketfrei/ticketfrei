@@ -1,48 +1,24 @@
-[mapp]
-# The bot registers a mastodon app automatically to acquire OAuth keys.
-name = 'yourcity_ticketfrei'    # What you want the app to be called
-
-[muser]
-enabled = 'false'  # set to true if you want to use Mastodon
-email = 'youremail@server.tld'  # E-mail address of your Mastodon account
-password = 'yourpassword'       # Password of your Mastodon account
-server = 'yourmastodoninstance' # Instance where you have your Mastodon account
-
-[tapp]
+[twitter]
 # You get those keys when you follow these steps:
 # https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
 consumer_key = "your_consumer_key"
 consumer_secret = "your_consumer_secret"
 
-[tuser]
-enabled = 'false'  # set to true if you want to use Twitter
-# You get those keys when you follow these steps:
-# https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
-access_token_key = "your_access_token_key"
-access_token_secret = "your_acces_token_secret"
+[web]
+host = "0.0.0.0"  # will be used by bottle as a host.
+contact = "b3yond@riseup.net"
 
 [mail]
-enabled = 'false'  # set to true if you want to use Mail notifications
-# This is the mail the bot uses to send emails.
 mailserver = "smtp.riseup.net"
-user = "ticketfrei"
-passphrase = "sup3rs3cur3"
-# If you want to receive crash reports (so you can restart the bot
-# when it breaks down), you should specify a contact email address:
-#contact = "your_mail@riseup.net"
-# Mailing list where you want to send warnings to
-list = "yourcity_ticketfrei@lists.links-tech.org"
+user = "nbgticketfrei"
+passphrase = "5MUIGw,GmSj)t@xW!jixq=b0U+@SJ{K{"
 
 [logging]
 # The directory where logs should be stored.
 logpath = "logs/ticketfrei.log"
 
-# [trigger]
-# goodlists are one regex per line.
-# badlists are one badword per line.
-# a message musst match at least one regex in goodlist and contain none of the badwords.
-# the variables mention the directory where the lists are located, not the filenames.
-# These are the default folders. If you want to specify differents folders, uncomment
-# those lines and enter relative paths.
-#goodlist_path = 'goodlists'
-#blacklist_path = 'blacklists'
+[database]
+db_path = "ticketfrei.sqlite"
+# when migrating to mysql:
+# username = "username"
+# password = "password"
