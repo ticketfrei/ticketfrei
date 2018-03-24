@@ -143,6 +143,11 @@ def login_mastodon(user):
         return dict(error='Login to Mastodon failed.')
 
 
-config = prepare.get_config()
-bottle.install(DBPlugin('/'))
-bottle.run(host=config['web']['host'], port=8080)
+if __name__ == '__main__':
+    # testing only
+    bottle.install(DBPlugin(':memory:', '/'))
+    bottle.run(host='localhost', port=8080)
+else:
+    config = prepare.get_config()
+    bottle.install(DBPlugin(config['database']['db_path'], '/'))
+    application = bottle.default_app()

@@ -2,7 +2,7 @@ from bottle import redirect, request
 from functools import wraps
 from inspect import Signature
 import jwt
-from os import path, urandom
+from os import urandom
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 import sqlite3
 import prepare
@@ -10,11 +10,9 @@ from user import User
 
 
 class DB(object):
-    def __init__(self):
+    def __init__(self, dbfile):
         self.config = prepare.get_config()
         self.logger = prepare.get_logger(self.config)
-        dbfile = path.join(path.dirname(path.abspath(__file__)),
-                           self.config['database']['db_path'])
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
@@ -149,8 +147,8 @@ class DBPlugin(object):
     name = 'DBPlugin'
     api = 2
 
-    def __init__(self, loginpage):
-        self.db = DB()
+    def __init__(self, dbfile, loginpage):
+        self.db = DB(dbfile)
         self.loginpage = loginpage
 
     def close(self):
