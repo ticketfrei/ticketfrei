@@ -115,8 +115,8 @@ def twitter_callback(user):
     """
     # twitter passes the verifier/oauth token secret in a GET request.
     verifier = request.query('oauth_verifier')
-    consumer_key = config["tapp"]["consumer_key"]
-    consumer_secret = config["tapp"]["consumer_secret"]
+    consumer_key = config["twitter"]["consumer_key"]
+    consumer_secret = config["twitter"]["consumer_secret"]
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     request_token = user.get_request_token
     auth.request_token = {"oauth_token": request_token,
