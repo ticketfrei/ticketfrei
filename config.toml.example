@@ -10,8 +10,8 @@ contact = "b3yond@riseup.net"
 
 [mail]
 mailserver = "smtp.riseup.net"
-user = "nbgticketfrei"
-passphrase = "5MUIGw,GmSj)t@xW!jixq=b0U+@SJ{K{"
+user = "user"
+passphrase = "sup3rs3cur3"
 
 [logging]
 # The directory where logs should be stored.
