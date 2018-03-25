@@ -35,17 +35,18 @@
 % include('template/register-plain.tpl')
 <h2>Our Mission</h2>
 <p>
-    Public transportation's meant to provide be an easy &
+    Public transportation's meant to provide an easy \&
     time-saving way to move within a region while being
     affordable for everybody. Unfortunately, that ain't the
     case. Ticketfrei's approach is to enable people to
     reclaim public transportation. On short term by helping
-    users to avoid controles & fines - on long term by
+    users to avoid controles \& fines - on long term by
     pressuring public transportation companies to grant
-    their services free of charge, because wia using
-    Ticketfrei your able to use trains & subways for free,
-    anyways. Take part & create a new understanding of
+    their services free of charge, because via using
+    Ticketfrei your able to use trains \& subways for free,
+    anyways. Take part \& create a new understanding of
     what public transportation should look like!
+<p>
     
     
     
