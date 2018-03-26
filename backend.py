@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
-import prepare
+import logging
 import time
 
 import sendmail
 from db import DB
+from config import config
 
 from mastodonbot import MastodonBot
 from twitterbot import TwitterBot
@@ -20,18 +21,22 @@ def get_users(db):
     return users
 
 
-def init_bots(config, logger, db, users):
+def init_bots(config, db, users):
     for uid in users:
         users[uid].append(Trigger(config, uid, db))
-        users[uid].append(MastodonBot(config, logger, uid, db))
-        users[uid].append(TwitterBot(config, logger, uid, db))
-        users[uid].append(Mailbot(config, logger, uid, db))
+        users[uid].append(MastodonBot(config, uid, db))
+        users[uid].append(TwitterBot(config, uid, db))
+        users[uid].append(Mailbot(config, uid, db))
     return users
 
 
-def run():
-    config = prepare.get_config()
-    logger = prepare.get_logger(config)
+if __name__ == '__main__':
+    logpath = config['logging']['logpath']
+    logger = logging.getLogger()
+    fh = logging.FileHandler(logpath)
+    fh.setLevel(logging.DEBUG)
+    logger.addHandler(fh)
+
     db = DB()
 
     while True:
@@ -68,7 +73,3 @@ def run():
                             attachment=config['logging']['logpath'])
             except:
                 logger.error('Mail sending failed', exc_info=True)
-
-
-if __name__ == '__main__':
-    run()

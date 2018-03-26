@@ -1,11 +1,15 @@
 import bottle
 from bottle import get, post, redirect, request, response, view
+from config import config
 from db import DBPlugin
+import logging
 import tweepy
 import sendmail
 import smtplib
 from mastodon import Mastodon
-import prepare
+
+
+logger = logging.getLogger(__name__)
 
 
 @get('/')
@@ -26,14 +30,15 @@ def register_post(db):
         return dict(error='Email address already in use.')
     # send confirmation mail
     confirm_link = request.url + "/../confirm/" + db.token(email, password)
-    send_confirmation_mail(db.config, confirm_link, email)
+    send_confirmation_mail(confirm_link, email)
     return dict(info='Confirmation mail sent.')
 
 
-def send_confirmation_mail(config, confirm_link, email):
-    m = sendmail.Mailer(config)
+def send_confirmation_mail(confirm_link, email):
+    m = sendmail.Mailer()
     try:
-        m.send("Complete your registration here: " + confirm_link, email, "[Ticketfrei] Confirm your account")
+        m.send("Complete your registration here: " + confirm_link, email,
+               "[Ticketfrei] Confirm your account")
     except smtplib.SMTPRecipientsRefused:
         return "Please enter a valid E-Mail address."
 
@@ -88,14 +93,15 @@ def login_twitter(user):
     Starts the twitter OAuth authentication process.
     :return: redirect to twitter.
     """
-    consumer_key = user.db.config["tapp"]["consumer_key"]
-    consumer_secret = user.db.config["tapp"]["consumer_secret"]
-    callback_url = bottle.request.get_header('host') + "/login/twitter/callback"
+    consumer_key = config["tapp"]["consumer_key"]
+    consumer_secret = config["tapp"]["consumer_secret"]
+    callback_url = request.get_header('host') + "/login/twitter/callback"
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     try:
         redirect_url = auth.get_authorization_url()
     except tweepy.TweepError:
-        user.db.logger.error('Twitter OAuth Error: Failed to get request token.', exc_info=True)
+        logger.error('Twitter OAuth Error: Failed to get request token.',
+                     exc_info=True)
         return dict(error="Failed to get request token.")
     user.save_request_token(auth.request_token)
     return bottle.redirect(redirect_url)
@@ -108,9 +114,9 @@ def twitter_callback(user):
     :return:
     """
     # twitter passes the verifier/oauth token secret in a GET request.
-    verifier = bottle.request.query('oauth_verifier')
-    consumer_key = user.db.config["tapp"]["consumer_key"]
-    consumer_secret = user.db.config["tapp"]["consumer_secret"]
+    verifier = request.query('oauth_verifier')
+    consumer_key = config["twitter"]["consumer_key"]
+    consumer_secret = config["twitter"]["consumer_secret"]
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     request_token = user.get_request_token
     auth.request_token = {"oauth_token": request_token,
@@ -127,22 +133,29 @@ def login_mastodon(user):
     :return: redirect to twitter.
     """
     # get app tokens
-    instance_url = bottle.request.forms.get('instance_url')
-    masto_email = bottle.request.forms.get('email')
+    instance_url = request.forms.get('instance_url')
+    masto_email = request.forms.get('email')
     print(masto_email)
-    masto_pass = bottle.request.forms.get('pass')
+    masto_pass = request.forms.get('pass')
     print(masto_pass)
     client_id, client_secret = user.get_mastodon_app_keys(instance_url)
-    m = Mastodon(client_id=client_id, client_secret=client_secret, api_base_url=instance_url)
+    m = Mastodon(client_id=client_id, client_secret=client_secret,
+                 api_base_url=instance_url)
     try:
         access_token = m.log_in(masto_email, masto_pass)
         user.save_masto_token(access_token, instance_url)
-        return dict(info='Thanks for supporting decentralized social networks!')
+        return dict(
+                info='Thanks for supporting decentralized social networks!'
+            )
     except:
-        user.db.logger.error('Login to Mastodon failed.', exc_info=True)
+        logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
 
 
-config = prepare.get_config()
-bottle.install(DBPlugin('/'))
-bottle.run(host=config['web']['host'], port=8080)
+if __name__ == '__main__':
+    # testing only
+    bottle.install(DBPlugin(':memory:', '/'))
+    bottle.run(host='localhost', port=8080)
+else:
+    bottle.install(DBPlugin(config['database']['db_path'], '/'))
+    application = bottle.default_app()

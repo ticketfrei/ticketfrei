@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 
+from config import config
+import logging
 import tweepy
 import re
 import requests
 from time import sleep
 import report
 from user import User
+
+
+logger = logging.getLogger(__name__)
 
 
 class TwitterBot(object):
@@ -19,7 +24,7 @@ class TwitterBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, config, logger, uid, db):
+    def __init__(self, uid, db):
         """
         Initializes the bot and loads all the necessary data.
 
@@ -27,8 +32,6 @@ class TwitterBot(object):
         :param history_path: Path to the file with ID of the last retweeted
             Tweet
         """
-        self.config = config
-        self.logger = logger
         self.db = db
         self.user = User(db, uid)
 
@@ -58,7 +61,8 @@ class TwitterBot(object):
 
         :return: keys: list of these 4 strings.
         """
-        keys = [self.config['twitter']['consumer_key'], self.config['twitter']['consumer_secret']]
+        keys = [config['twitter']['consumer_key'],
+                config['twitter']['consumer_secret']]
         row = self.user.get_twitter_token()
         keys.append(row[0])
         keys.append(row[1])
@@ -91,9 +95,12 @@ class TwitterBot(object):
                 if self.last_mention == 0:
                     mentions = self.api.mentions_timeline()
                 else:
-                    mentions = self.api.mentions_timeline(since_id=self.last_mention)
+                    mentions = self.api.mentions_timeline(
+                            since_id=self.last_mention)
                 for status in mentions:
-                    text = re.sub("(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)", "", status.text)
+                    text = re.sub(
+                            "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                            "", status.text)
                     reports.append(report.Report(status.author.screen_name,
                                                  "twitter",
                                                  text,
@@ -102,13 +109,14 @@ class TwitterBot(object):
                 self.save_last()
                 return reports
         except tweepy.RateLimitError:
-            self.logger.error("Twitter API Error: Rate Limit Exceeded", exc_info=True)
+            logger.error("Twitter API Error: Rate Limit Exceeded",
+                         exc_info=True)
             self.waitcounter += 60*15 + 1
         except requests.exceptions.ConnectionError:
-            self.logger.error("Twitter API Error: Bad Connection", exc_info=True)
+            logger.error("Twitter API Error: Bad Connection", exc_info=True)
             self.waitcounter += 10
         except tweepy.TweepError:
-            self.logger.error("Twitter API Error: General Error", exc_info=True)
+            logger.error("Twitter API Error: General Error", exc_info=True)
         return []
 
     def repost(self, status):
@@ -121,17 +129,18 @@ class TwitterBot(object):
         while 1:
             try:
                 self.api.retweet(status.id)
-                self.logger.info("Retweeted: " + status.format())
+                logger.info("Retweeted: " + status.format())
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 self.save_last()
                 return status.format()
             except requests.exceptions.ConnectionError:
-                self.logger.error("Twitter API Error: Bad Connection", exc_info=True)
+                logger.error("Twitter API Error: Bad Connection",
+                             exc_info=True)
                 sleep(10)
             # maybe one day we get rid of this error:
             except tweepy.TweepError:
-                self.logger.error("Twitter Error", exc_info=True)
+                logger.error("Twitter Error", exc_info=True)
                 if status.id > self.last_mention:
                     self.last_mention = status.id
                 self.save_last()
@@ -151,7 +160,8 @@ class TwitterBot(object):
                 self.api.update_status(status=text)
                 return
             except requests.exceptions.ConnectionError:
-                self.logger.error("Twitter API Error: Bad Connection", exc_info=True)
+                logger.error("Twitter API Error: Bad Connection",
+                             exc_info=True)
                 sleep(10)
 
     def flow(self, trigger, to_tweet=()):
@@ -181,32 +191,3 @@ class TwitterBot(object):
 
         # Return Retweets for posting on other bots
         return all_tweets
-
-"""
-if __name__ == "__main__":
-    config = backend.get_config()
-
-    # initialise trigger
-    trigger = trigger.Trigger(config)
-
-    # initialise twitter bot
-    bot = TwitterBot(config)
-
-    try:
-        while True:
-            # :todo separate into small functions
-            bot.flow(trigger)
-            sleep(60)
-    except KeyboardInterrupt:
-        print("Good bye. Remember to restart the bot!")
-    except:
-        bot.logger.error('Shutdown', exc_info=True)
-        bot.save_last()
-        try:
-            mailer = sendmail.Mailer(config)
-            mailer.send('', config['mail']['contact'],
-                        'Ticketfrei Crash Report',
-                        attachment=config['logging']['logpath'])
-        except:
-            bot.logger.error('Mail sending failed', exc_info=True)
-"""
