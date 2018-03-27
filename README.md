@@ -74,7 +74,7 @@ We wrote these installation notes, so you can set up the website easily:
 To Do:
 
 ```shell
-sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python nginx 
+sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx 
 ```
 
 * set up nginx
@@ -92,7 +92,7 @@ virtualenv -p python3 .
 Install the dependencies:
 
 ```shell
-pip install tweepy pytoml requests Mastodon.py bottle pyjwt 
+pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt
 ```
 
 Configure the bot:
@@ -105,3 +105,23 @@ vim config.toml
 This configuration is only for the admin. Users can log into
 twitter/mastodon/mail and configure their personal bot on the settings page.
 
+Deploy ticketfrei with uwsgi:
+
+```shell
+echo "Enter your domain name into the following prompt:" && read DOMAIN
+
+# configure nginx
+sudo sed -r "s/example.org/$DOMAIN/g" deployment/example.org.conf > /etc/nginx/sites-enabled/$DOMAIN.conf
+
+# create folder for socket
+sudo mkdir /var/run/ticketfrei
+sudo chown tech:www-data -R /var/run/ticketfrei
+
+# start up nginx
+sudo service nginx restart
+
+# create and start the frontend systemd service
+sudo cp deployment/ticketfrei-web.service /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl start ticketfrei-web.service
+```
