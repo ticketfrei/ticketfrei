@@ -29,8 +29,9 @@ class Report(object):
         Format the report for bot.post()
 
         :rtype: string
-        :return: toot: text to be tooted, e.g. "_b3yond: There are
+        :return: toot: text to be tooted, e.g. "There are
             uniformed controllers in the U2 at Opernhaus."
         """
-        strng = self.author + ": " + self.text
-        return strng
+        # strng = self.author + ": " + self.text  # deprecated;
+        # we don't want to put the names of people too public.
+        return self.text
