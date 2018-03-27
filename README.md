@@ -74,13 +74,11 @@ We wrote these installation notes, so you can set up the website easily:
 To Do:
 
 ```shell
-sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx 
+sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx git
+cd /srv
+sudo git clone https://github.com/b3yond/ticketfrei
+cd ticketfrei
 ```
-
-* set up nginx
-* set up LetsEncrypt https://certbot.eff.org/
-* set up mariadb
-* set up uwsgi
 
 Install the necessary packages, create and activate virtualenv:
 
@@ -105,6 +103,12 @@ vim config.toml
 This configuration is only for the admin. Users can log into
 twitter/mastodon/mail and configure their personal bot on the settings page.
 
+Set up LetsEncrypt:
+```shell
+sudo apt-get install python-certbot-nginx -t stretch-backports
+sudo certbot --authenticator webroot --installer nginx --agree-tos --redirect --hsts 
+```
+
 Deploy ticketfrei with uwsgi:
 
 ```shell
@@ -115,7 +119,8 @@ sudo sed -r "s/example.org/$DOMAIN/g" deployment/example.org.conf > /etc/nginx/s
 
 # create folder for socket
 sudo mkdir /var/run/ticketfrei
-sudo chown tech:www-data -R /var/run/ticketfrei
+sudo chown www-data:www-data -R /var/run/ticketfrei
+sudo chown www-data:www-data -R /var/log/ticketfrei
 
 # start up nginx
 sudo service nginx restart
@@ -124,4 +129,19 @@ sudo service nginx restart
 sudo cp deployment/ticketfrei-web.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl start ticketfrei-web.service
+```
+
+### Logs
+
+There are several logfiles which you can look at:
+
+```
+# for the uwsgi deployment:
+less /var/log/ticketfrei/uwsgi.log
+
+# for the systemd service:
+less /var/log/syslog
+
+# for the nginx web server:
+less /var/log/nginx/example.org_error.log
 ```

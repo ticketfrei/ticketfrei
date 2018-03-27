@@ -3,6 +3,7 @@ Description=Ticketfrei Web Application
 After=syslog.target network.target
 
 [Service]
+WorkingDirectory=/srv/ticketfrei
 ExecStart=/usr/bin/uwsgi --ini /srv/ticketfrei/deployment/uwsgi.ini
 # Requires systemd version 211 or newer
 RuntimeDirectory=uwsgi
