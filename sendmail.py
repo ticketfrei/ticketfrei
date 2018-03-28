@@ -8,13 +8,7 @@ from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
 import logging
 
-
-logpath = config['logging']['logpath']
-logger = logging.getLogger()
-fh = logging.FileHandler(logpath)
-fh.setLevel(logging.DEBUG)
-logger.addHandler(fh)
-
+logger = logging.getLogger(__name__)
 
 class Mailer(object):
     """
