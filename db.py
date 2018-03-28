@@ -97,7 +97,7 @@ class DB(object):
                 tweet_id    TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
-            CREATE TABLE IF NOT EXISTS mail (
+            CREATE TABLE IF NOT EXISTS mailinglist (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
                 email       TEXT,
@@ -105,14 +105,6 @@ class DB(object):
                 FOREIGN KEY(user_id) REFERENCES user(id)
                 FOREIGN KEY(twitter_accounts_id)
                     REFERENCES twitter_accounts(id)
-            );
-            CREATE TABLE IF NOT EXISTS seen_mails (
-                id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id            INTEGER,
-                mail_id    INTEGER,
-                mail_date          INTEGER,
-                FOREIGN KEY(user_id) REFERENCES user(id)
-                FOREIGN KEY(mail_id) REFERENCES mail(id)
             );
         ''')
 

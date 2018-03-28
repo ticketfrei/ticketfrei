@@ -9,12 +9,13 @@ import email
 import imaplib
 import report
 from user import User
+from bot import Bot
 
 
 logger = logging.getLogger(__name__)
 
 
-class Mailbot(object):
+class Mailbot(Bot):
     """
     Bot which sends Mails if mentioned via twitter/mastodon, and tells
     other bots that it received mails.
@@ -26,15 +27,8 @@ class Mailbot(object):
         bots.
 
         """
-        self.user = User(uid)
-
         try:
-            self.last_mail = self.user.get_seen_mail()
-        except TypeError:
-            self.last_mail = 0
-
-        try:
-            self.mailinglist = self.user.get_mail()
+            self.mailinglist = self.user.get_mailinglist()
         except TypeError:
             self.mailinglist = None
 
@@ -67,11 +61,12 @@ class Mailbot(object):
         """
         pass
 
-    def crawl(self):
+    def crawl(self, user):
         """
         crawl for new mails.
         :return: msgs: (list of report.Report objects)
         """
+        mailinglist = user.get_mailinglist()
         try:
             rv, data = self.mailbox.select("Inbox")
         except imaplib.IMAP4.abort:
@@ -90,7 +85,7 @@ class Mailbot(object):
                     return msgs
                 msg = email.message_from_bytes(data[0][1])
 
-                if not self.user.get_mail() in msg['From']:
+                if not self.user.get_mailinglist() in msg['From']:
                     # get a comparable date out of the email
                     date_tuple = email.utils.parsedate_tz(msg['Date'])
                     date_tuple = datetime.datetime.fromtimestamp(

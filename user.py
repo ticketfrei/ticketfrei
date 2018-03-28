@@ -108,8 +108,9 @@ class User(object):
         db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
 
-    def get_mail(self):
-        db.execute("SELECT email FROM mail WHERE user_id = ?;", (self.uid, ))
+    def get_mailinglist(self):
+        db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
+        return db.cur.fetchone()[0]
 
     def get_seen_mail(self):
         db.execute("SELECT mail_date FROM seen_mails WHERE user_id = ?;", (self.uid, ))
