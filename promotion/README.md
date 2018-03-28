@@ -8,6 +8,7 @@ Students: usually already have a ticket, but may be solidaric
 Leftist scene
 * Flyers in alternative centers
 * Graffitis in alternative neighbourhoods
+* Posters in social centers
 
 Schools: 
 * especially trade schools

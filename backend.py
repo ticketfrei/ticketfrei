@@ -33,7 +33,7 @@ if __name__ == '__main__':
             time.sleep(60)  # twitter rate limit >.<
     except:
         logger.error('Shutdown', exc_info=True)
-        mailer = sendmail.Mailer(config)
+        mailer = sendmail.Mailer()
         try:
             mailer.send('', config['web']['contact'],
                         'Ticketfrei Crash Report',
