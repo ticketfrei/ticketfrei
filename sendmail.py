@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-
-import smtplib
-import ssl
 from config import config
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
+from getpass import getuser
+import smtplib
+from socket import getfqdn
+import ssl
 
 
 class Mailer(object):
@@ -61,6 +62,17 @@ class Mailer(object):
         self.s.close()
 
         return "Sent mail to " + recipient + ": " + subject
+
+
+def sendmail(to, subject, body):
+    msg = MIMEMultipart()
+    msg['From'] = '%s@%s' % (getuser(), getfqdn())
+    msg['To'] = to
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body))
+
+    with smtplib.SMTP('localhost') as smtp:
+        smtp.send_message(msg)
 
 
 # For testing:

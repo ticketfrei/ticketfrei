@@ -5,9 +5,8 @@ from config import config
 from db import db
 import logging
 import tweepy
-import sendmail
+from sendmail import sendmail
 from session import SessionPlugin
-import smtplib
 from mastodon import Mastodon
 
 
@@ -28,18 +27,16 @@ def register_post():
     if db.by_email(email):
         return dict(error='Email address already in use.')
     # send confirmation mail
-    confirm_link = request.url + "/../confirm/" + db.user_token(email, password)
-    send_confirmation_mail(confirm_link, email)
+    sendmail(
+            email,
+            "[Ticketfrei] Confirm your account",
+            "Complete your registration here: %s://%s/confirm/%s" % (
+                    request.urlparts.scheme,
+                    request.urlparts.netloc,
+                    db.user_token(email, password)
+                )
+        )
     return dict(info='Confirmation mail sent.')
-
-
-def send_confirmation_mail(confirm_link, email):
-    m = sendmail.Mailer()
-    try:
-        m.send("Complete your registration here: " + confirm_link, email,
-               "[Ticketfrei] Confirm your account")
-    except smtplib.SMTPRecipientsRefused:
-        return "Please enter a valid E-Mail address."
 
 
 @get('/confirm/<token>')
