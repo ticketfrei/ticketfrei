@@ -6,6 +6,14 @@ from config import config
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
+import logging
+
+
+logpath = config['logging']['logpath']
+logger = logging.getLogger()
+fh = logging.FileHandler(logpath)
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 
 class Mailer(object):
@@ -26,7 +34,10 @@ class Mailer(object):
 
         # starts a client session with the SMTP server
         self.s = smtplib.SMTP(config["mail"]["mailserver"])
-        context = ssl.create_default_context()
+        try:
+            context = ssl.create_default_context()
+        except:
+            logger.error('Creating SSL Context failed.', exc_info=True)
         self.s.starttls(context=context)
         self.s.login(config["mail"]["user"], config["mail"]["passphrase"])
 
