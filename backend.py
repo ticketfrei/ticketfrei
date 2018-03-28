@@ -4,7 +4,7 @@ import active_bots
 from config import config
 from db import db
 import logging
-import sendmail
+from sendmail import sendmail
 import time
 
 
@@ -30,12 +30,9 @@ if __name__ == '__main__':
                         for bot2 in bots:
                             bot2.post(user, status)
             time.sleep(60)  # twitter rate limit >.<
-    except:
-        logger.error('Shutdown', exc_info=True)
-        mailer = sendmail.Mailer()
-        try:
-            mailer.send('', config['web']['contact'],
-                        'Ticketfrei Crash Report',
-                        attachment=config['logging']['logpath'])
-        except:
-            logger.error('Mail sending failed', exc_info=True)
+    except Exception:
+        logger.error('Shutdown.', exc_info=True)
+    try:
+        sendmail(config['web']['contact'], 'Ticketfrei Shutdown')
+    except Exception:
+        logger.error('Could not inform admin.', exc_info=True)

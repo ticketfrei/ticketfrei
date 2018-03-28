@@ -150,7 +150,7 @@ def login_mastodon(user):
         return dict(
                 info='Thanks for supporting decentralized social networks!'
             )
-    except:
+    except Exception:
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
 

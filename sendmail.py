@@ -64,7 +64,7 @@ class Mailer(object):
         return "Sent mail to " + recipient + ": " + subject
 
 
-def sendmail(to, subject, body):
+def sendmail(to, subject, body=''):
     msg = MIMEMultipart()
     msg['From'] = '%s@%s' % (getuser(), getfqdn())
     msg['To'] = to
