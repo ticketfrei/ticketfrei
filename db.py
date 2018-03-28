@@ -123,7 +123,7 @@ class DB(object):
             return None  # invalid token
         if 'passhash' in json.keys():
             # create user
-            self.execute("INSERT INTO user (passhash) VALUES(?, ?);",
+            self.execute("INSERT INTO user (passhash) VALUES(?);",
                          (json['passhash'], ))
             uid = self.cur.lastrowid
         else:
