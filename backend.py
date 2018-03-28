@@ -28,8 +28,8 @@ if __name__ == '__main__':
                     for status in reports:
                         if not user.is_appropriate(status):
                             continue
-                        for bot in bots:
-                            bot.post(user, status)
+                        for bot2 in bots:
+                            bot2.post(user, status)
             time.sleep(60)  # twitter rate limit >.<
     except:
         logger.error('Shutdown', exc_info=True)
