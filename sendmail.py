@@ -30,9 +30,9 @@ class Mailer(object):
         self.s = smtplib.SMTP(config["mail"]["mailserver"])
         try:
             context = ssl.create_default_context()
+            self.s.starttls(context=context)
         except:
-            logger.error('Creating SSL Context failed.', exc_info=True)
-        self.s.starttls(context=context)
+            logger.error('StartTLS failed.', exc_info=True)
         self.s.login(config["mail"]["user"], config["mail"]["passphrase"])
 
     def send(self, text, recipient, subject, attachment=None):
