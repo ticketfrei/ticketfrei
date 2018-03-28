@@ -9,9 +9,8 @@ import time
 
 
 if __name__ == '__main__':
-    logpath = config['logging']['logpath']
     logger = logging.getLogger()
-    fh = logging.FileHandler(logpath)
+    fh = logging.StreamHandler()
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
