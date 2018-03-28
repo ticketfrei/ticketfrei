@@ -10,9 +10,6 @@ import smtplib
 from mastodon import Mastodon
 
 
-logger = logging.getLogger(__name__)
-
-
 @get('/')
 @view('template/propaganda.tpl')
 def propaganda():
@@ -152,6 +149,12 @@ def login_mastodon(user):
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
 
+
+logpath = config['logging']['logpath']
+logger = logging.getLogger()
+fh = logging.FileHandler(logpath)
+fh.setLevel(logging.DEBUG)
+logger.addHandler(fh)
 
 application = bottle.default_app()
 bottle.install(SessionPlugin('/'))
