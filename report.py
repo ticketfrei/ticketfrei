@@ -23,15 +23,3 @@ class Report(object):
         self.text = text
         self.timestamp = timestamp
         self.id = id
-
-    def format(self):
-        """
-        Format the report for bot.post()
-
-        :rtype: string
-        :return: toot: text to be tooted, e.g. "There are
-            uniformed controllers in the U2 at Opernhaus."
-        """
-        # strng = self.author + ": " + self.text  # deprecated;
-        # we don't want to put the names of people too public.
-        return self.text
