@@ -1,10 +1,11 @@
 import bottle
 from bottle import get, post, redirect, request, response, view
 from config import config
-from db import DBPlugin
+from db import db
 import logging
 import tweepy
 import sendmail
+from session import SessionPlugin
 import smtplib
 from mastodon import Mastodon
 
@@ -18,9 +19,9 @@ def propaganda():
     pass
 
 
-@post('/register', db='db')
+@post('/register')
 @view('template/register.tpl')
-def register_post(db):
+def register_post():
     email = request.forms.get('email', '')
     password = request.forms.get('pass', '')
     password_repeat = request.forms.get('pass-repeat', '')
@@ -29,7 +30,7 @@ def register_post(db):
     if db.by_email(email):
         return dict(error='Email address already in use.')
     # send confirmation mail
-    confirm_link = request.url + "/../confirm/" + db.token(email, password)
+    confirm_link = request.url + "/../confirm/" + db.user_token(email, password)
     send_confirmation_mail(confirm_link, email)
     return dict(info='Confirmation mail sent.')
 
@@ -43,33 +44,33 @@ def send_confirmation_mail(confirm_link, email):
         return "Please enter a valid E-Mail address."
 
 
-@get('/confirm/<token>', db='db')
+@get('/confirm/<token>')
 @view('template/propaganda.tpl')
-def confirm(db, token):
+def confirm(token):
     # create db-entry
-    if db.register(token):
+    if db.confirm(token):
         # :todo show info "Account creation successful."
         return redirect('/settings')
-    return dict(error='Account creation failed.')
+    return dict(error='Email confirmation failed.')
 
 
-@post('/login', db='db')
+@post('/login')
 @view('template/login.tpl')
-def login_post(db):
+def login_post():
     # check login
-    if db.authenticate(request.forms.get('email', ''),
-                       request.forms.get('pass', '')):
+    if db.by_email(request.forms.get('email', '')) \
+         .check_password(request.forms.get('pass', '')):
         return redirect('/settings')
     return dict(error='Authentication failed.')
 
 
-@get('/settings', user='user')
+@get('/settings')
 @view('template/settings.tpl')
 def settings(user):
     return user.state()
 
 
-@get('/api/state', user='user')
+@get('/api/state')
 def api_enable(user):
     return user.state()
 
@@ -87,7 +88,7 @@ def logout():
     return redirect('/')
 
 
-@get('/login/twitter', user='user')
+@get('/login/twitter')
 def login_twitter(user):
     """
     Starts the twitter OAuth authentication process.
@@ -107,7 +108,7 @@ def login_twitter(user):
     return bottle.redirect(redirect_url)
 
 
-@get('/login/twitter/callback', user="user")
+@get('/login/twitter/callback')
 def twitter_callback(user):
     """
     Gets the callback
@@ -126,7 +127,7 @@ def twitter_callback(user):
     return bottle.redirect("/settings")
 
 
-@post('/login/mastodon', user="user")
+@post('/login/mastodon')
 def login_mastodon(user):
     """
     Starts the mastodon OAuth authentication process.
@@ -152,10 +153,9 @@ def login_mastodon(user):
         return dict(error='Login to Mastodon failed.')
 
 
+application = bottle.default_app()
+bottle.install(SessionPlugin('/'))
+
 if __name__ == '__main__':
     # testing only
-    bottle.install(DBPlugin(':memory:', '/'))
     bottle.run(host='localhost', port=8080)
-else:
-    bottle.install(DBPlugin(config['database']['db_path'], '/'))
-    application = bottle.default_app()
