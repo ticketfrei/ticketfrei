@@ -13,12 +13,8 @@ mailserver = "smtp.riseup.net"
 user = "user"
 passphrase = "sup3rs3cur3"
 
-[logging]
-# The directory where logs should be stored.
-logpath = "logs/ticketfrei.log"
-
 [database]
-db_path = "ticketfrei.sqlite"
+db_path = "/var/run/ticketfrei/db.sqlite"
 # when migrating to mysql:
 # username = "username"
 # password = "password"
