@@ -1,8 +1,8 @@
 class Bot(object):
     # returns a list of Report objects
-    def crawl(user):
+    def crawl(self, user):
         pass
 
     # post/boost Report object
-    def post(user, report):
+    def post(self, user, report):
         pass

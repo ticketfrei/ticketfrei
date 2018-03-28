@@ -1,3 +1,4 @@
+from config import config
 from bottle import response
 from db import db
 import jwt
@@ -53,7 +54,7 @@ class User(object):
         return jwt.encode({
                 'email': email,
                 'uid': self.uid
-            }, self.secret).decode('ascii')
+            }, db.secret).decode('ascii')
 
     def is_appropriate(self, report):
         db.execute("SELECT pattern FROM triggerpatterns WHERE user_id=?;",
@@ -80,6 +81,14 @@ class User(object):
                    (row[1], ))
         instance = db.cur.fetchone()
         return instance[1], instance[2], row[0], instance[0]
+
+    def get_twitter_credentials(self):
+        keys = [config['twitter']['consumer_key'],
+                config['twitter']['consumer_secret']]
+        row = self.get_twitter_token()
+        keys.append(row[0])
+        keys.append(row[1])
+        return keys
 
     def get_seen_toot(self):
         db.execute("SELECT toot_id FROM seen_toots WHERE user_id = ?;",

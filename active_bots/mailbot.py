@@ -20,14 +20,13 @@ class Mailbot(object):
     other bots that it received mails.
     """
 
-    def __init__(self, uid, db):
+    def __init__(self, uid):
         """
         Creates a Bot who listens to mails and forwards them to other
         bots.
 
-        :param config: (dictionary) config.toml as a dictionary of dictionaries
         """
-        self.user = User(db, uid)
+        self.user = User(uid)
 
         try:
             self.last_mail = self.user.get_seen_mail()
@@ -115,7 +114,7 @@ class Mailbot(object):
 
         :param status: (report.Report object)
         """
-        mailer = sendmail.Mailer(config)
+        mailer = sendmail.Mailer()
         mailer.send(status.format(), self.mailinglist,
                     "Warnung: Kontrolleure gesehen")
 

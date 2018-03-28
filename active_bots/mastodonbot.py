@@ -26,10 +26,9 @@ class MastodonBot(Bot):
             return mentions
         for status in notifications:
             if (status['type'] == 'mention' and
-                    status['status']['id'] > self.seen_toots):
+                    status['status']['id'] > user.get_seen_toot()):
                 # save state
-                self.seen_toots = status['status']['id']
-                self.save_last()
+                user.save_seen_toot(status['status']['id'])
                 # add mention to mentions
                 text = re.sub(r'<[^>]*>', '', status['status']['content'])
                 text = re.sub(
