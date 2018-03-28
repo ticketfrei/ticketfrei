@@ -24,16 +24,13 @@ class TwitterBot(object):
     last_mention: the ID of the last tweet which mentioned you
     """
 
-    def __init__(self, uid, db):
+    def __init__(self, uid):
         """
         Initializes the bot and loads all the necessary data.
 
-        :param config: (dictionary) config.toml as a dictionary of dictionaries
-        :param history_path: Path to the file with ID of the last retweeted
             Tweet
         """
-        self.db = db
-        self.user = User(db, uid)
+        self.user = User(uid)
 
         # initialize API access
         keys = self.get_api_keys()

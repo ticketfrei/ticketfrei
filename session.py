@@ -20,7 +20,7 @@ class SessionPlugin(object):
                 uid = request.get_cookie('uid', secret=db.secret)
                 if uid is None:
                     return redirect(self.loginpage)
-                kwargs[self.keyword] = User(db, uid)
+                kwargs[self.keyword] = User(uid)
                 return callback(*args, **kwargs)
 
             return wrapper

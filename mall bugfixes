@@ -1,0 +1,104 @@
+[1mdiff --git a/active_bots/mailbot.py b/active_bots/mailbot.py[m
+[1mindex a98872a..a11231f 100644[m
+[1m--- a/active_bots/mailbot.py[m
+[1m+++ b/active_bots/mailbot.py[m
+[36m@@ -20,14 +20,13 @@[m [mclass Mailbot(object):[m
+     other bots that it received mails.[m
+     """[m
+ [m
+[31m-    def __init__(self, uid, db):[m
+[32m+[m[32m    def __init__(self, uid):[m
+         """[m
+         Creates a Bot who listens to mails and forwards them to other[m
+         bots.[m
+ [m
+[31m-        :param config: (dictionary) config.toml as a dictionary of dictionaries[m
+         """[m
+[31m-        self.user = User(db, uid)[m
+[32m+[m[32m        self.user = User(uid)[m
+ [m
+         try:[m
+             self.last_mail = self.user.get_seen_mail()[m
+[36m@@ -115,7 +114,7 @@[m [mclass Mailbot(object):[m
+ [m
+         :param status: (report.Report object)[m
+         """[m
+[31m-        mailer = sendmail.Mailer(config)[m
+[32m+[m[32m        mailer = sendmail.Mailer()[m
+         mailer.send(status.format(), self.mailinglist,[m
+                     "Warnung: Kontrolleure gesehen")[m
+ [m
+[1mdiff --git a/active_bots/twitterbot.py b/active_bots/twitterbot.py[m
+[1mindex 787cdfb..065da45 100755[m
+[1m--- a/active_bots/twitterbot.py[m
+[1m+++ b/active_bots/twitterbot.py[m
+[36m@@ -24,16 +24,13 @@[m [mclass TwitterBot(object):[m
+     last_mention: the ID of the last tweet which mentioned you[m
+     """[m
+ [m
+[31m-    def __init__(self, uid, db):[m
+[32m+[m[32m    def __init__(self, uid):[m
+         """[m
+         Initializes the bot and loads all the necessary data.[m
+ [m
+[31m-        :param config: (dictionary) config.toml as a dictionary of dictionaries[m
+[31m-        :param history_path: Path to the file with ID of the last retweeted[m
+             Tweet[m
+         """[m
+[31m-        self.db = db[m
+[31m-        self.user = User(db, uid)[m
+[32m+[m[32m        self.user = User(uid)[m
+ [m
+         # initialize API access[m
+         keys = self.get_api_keys()[m
+[1mdiff --git a/sendmail.py b/sendmail.py[m
+[1mindex df91d1d..93028d9 100755[m
+[1m--- a/sendmail.py[m
+[1m+++ b/sendmail.py[m
+[36m@@ -2,6 +2,7 @@[m
+ [m
+ import smtplib[m
+ import ssl[m
+[32m+[m[32mfrom config import config[m
+ from email.mime.text import MIMEText[m
+ from email.mime.application import MIMEApplication[m
+ from email.mime.multipart import MIMEMultipart[m
+[36m@@ -12,13 +13,12 @@[m [mclass Mailer(object):[m
+     Maintains the connection to the mailserver and sends text to users.[m
+     """[m
+ [m
+[31m-    def __init__(self, config):[m
+[32m+[m[32m    def __init__(self):[m
+         """[m
+         Creates an SMTP client to send a mail. Is called only once[m
+         when you actually want to send a mail. After you sent the[m
+         mail, the SMTP client is shut down again.[m
+ [m
+[31m-        :param config: The config file generated from config.toml[m
+         """[m
+         # This generates the From address by stripping the part until the first[m
+         # period from the mail server address and won't work always.[m
+[36m@@ -65,9 +65,5 @@[m [mclass Mailer(object):[m
+ [m
+ # For testing:[m
+ if __name__ == '__main__':[m
+[31m-    import prepare[m
+[31m-[m
+[31m-    config = prepare.get_config()[m
+[31m-[m
+[31m-    m = Mailer(config)[m
+[32m+[m[32m    m = Mailer()[m
+     print(m.send("This is a test mail.", m.fromaddr, "Test"))[m
+[1mdiff --git a/user.py b/user.py[m
+[1mindex c4e99e4..ce95cd3 100644[m
+[1m--- a/user.py[m
+[1m+++ b/user.py[m
+[36m@@ -53,7 +53,7 @@[m [mclass User(object):[m
+         return jwt.encode({[m
+                 'email': email,[m
+                 'uid': self.uid[m
+[31m-            }, self.secret).decode('ascii')[m
+[32m+[m[32m            }, db.secret).decode('ascii')[m
+ [m
+     def is_appropriate(self, report):[m
+         db.execute("SELECT pattern FROM triggerpatterns WHERE user_id=?;",[m

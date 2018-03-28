@@ -2,6 +2,7 @@
 
 import smtplib
 import ssl
+from config import config
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 from email.mime.multipart import MIMEMultipart
@@ -12,13 +13,12 @@ class Mailer(object):
     Maintains the connection to the mailserver and sends text to users.
     """
 
-    def __init__(self, config):
+    def __init__(self):
         """
         Creates an SMTP client to send a mail. Is called only once
         when you actually want to send a mail. After you sent the
         mail, the SMTP client is shut down again.
 
-        :param config: The config file generated from config.toml
         """
         # This generates the From address by stripping the part until the first
         # period from the mail server address and won't work always.
@@ -65,9 +65,5 @@ class Mailer(object):
 
 # For testing:
 if __name__ == '__main__':
-    import prepare
-
-    config = prepare.get_config()
-
-    m = Mailer(config)
+    m = Mailer()
     print(m.send("This is a test mail.", m.fromaddr, "Test"))

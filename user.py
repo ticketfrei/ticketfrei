@@ -53,7 +53,7 @@ class User(object):
         return jwt.encode({
                 'email': email,
                 'uid': self.uid
-            }, self.secret).decode('ascii')
+            }, db.secret).decode('ascii')
 
     def is_appropriate(self, report):
         db.execute("SELECT pattern FROM triggerpatterns WHERE user_id=?;",
