@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import bottle
 from bottle import get, post, redirect, request, response, view
 from config import config

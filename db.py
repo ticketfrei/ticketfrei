@@ -4,7 +4,6 @@ import logging
 from os import urandom
 from pylibscrypt import scrypt_mcf
 import sqlite3
-from user import User
 
 
 logger = logging.getLogger(__name__)
@@ -96,6 +95,8 @@ class DB(object):
                 twitter_accounts_id INTEGER,
                 tweet_id    TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
+                FOREIGN KEY(twitter_accounts_id)
+                    REFERENCES twitter_accounts(id)
             );
             CREATE TABLE IF NOT EXISTS mailinglist (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -103,8 +104,6 @@ class DB(object):
                 email       TEXT,
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
-                FOREIGN KEY(twitter_accounts_id)
-                    REFERENCES twitter_accounts(id)
             );
         ''')
 
@@ -117,6 +116,7 @@ class DB(object):
             }, self.secret).decode('ascii')
 
     def confirm(self, token):
+        from user import User
         try:
             json = jwt.decode(token, self.secret)
         except jwt.DecodeError:
@@ -134,6 +134,7 @@ class DB(object):
         return User(uid)
 
     def by_email(self, email):
+        from user import User
         self.execute("SELECT user_id FROM email WHERE email=?;", (email, ))
         try:
             uid, = self.cur.fetchone()
@@ -143,6 +144,7 @@ class DB(object):
 
     @property
     def active_users(self):
+        from user import User
         self.execute("SELECT id FROM user WHERE enabled=1;")
         return [User(uid) for uid, in self.cur.fetchall()]
 
