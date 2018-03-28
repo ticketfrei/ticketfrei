@@ -27,16 +27,19 @@ def register_post():
     if db.by_email(email):
         return dict(error='Email address already in use.')
     # send confirmation mail
-    sendmail(
-            email,
-            "[Ticketfrei] Confirm your account",
-            "Complete your registration here: %s://%s/confirm/%s" % (
-                    request.urlparts.scheme,
-                    request.urlparts.netloc,
-                    db.user_token(email, password)
-                )
-        )
-    return dict(info='Confirmation mail sent.')
+    try:
+        sendmail(
+                email,
+                "[Ticketfrei] Confirm your account",
+                "Complete your registration here: %s://%s/confirm/%s" % (
+                        request.urlparts.scheme,
+                        request.urlparts.netloc,
+                        db.user_token(email, password)
+                    )
+            )
+        return dict(info='Confirmation mail sent.')
+    except Exception:
+        return dict(error='Could not send confirmation mail.')
 
 
 @get('/confirm/<token>')
@@ -53,10 +56,14 @@ def confirm(token):
 @view('template/login.tpl')
 def login_post():
     # check login
-    if db.by_email(request.forms.get('email', '')) \
-         .check_password(request.forms.get('pass', '')):
-        return redirect('/settings')
-    return dict(error='Authentication failed.')
+    try:
+        if db.by_email(request.forms.get('email', '')) \
+             .check_password(request.forms.get('pass', '')):
+            return redirect('/settings')
+    except AttributeError:
+        pass
+    finally:
+        return dict(error='Authentication failed.')
 
 
 @get('/settings')
