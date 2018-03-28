@@ -151,9 +151,8 @@ def login_mastodon(user):
         return dict(error='Login to Mastodon failed.')
 
 
-logpath = config['logging']['logpath']
 logger = logging.getLogger()
-fh = logging.FileHandler(logpath)
+fh = logging.StreamHandler()
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
