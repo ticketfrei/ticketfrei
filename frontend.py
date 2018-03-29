@@ -10,6 +10,10 @@ from session import SessionPlugin
 from mastodon import Mastodon
 
 
+def url(route):
+    '%s://%s/%s' % (request.urlparts.scheme, request.urlparts.netloc, route)
+
+
 @get('/')
 @view('template/propaganda.tpl')
 def propaganda():
@@ -30,11 +34,9 @@ def register_post():
     try:
         sendmail(
                 email,
-                "[Ticketfrei] Confirm your account",
-                "Complete your registration here: %s://%s/confirm/%s" % (
-                        request.urlparts.scheme,
-                        request.urlparts.netloc,
-                        db.user_token(email, password)
+                "Confirm your account",
+                "Complete your registration here: %s" % (
+                        url('confirm/%s' % db.user_token(email, password))
                     )
             )
         return dict(info='Confirmation mail sent.')

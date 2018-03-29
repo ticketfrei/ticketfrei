@@ -9,7 +9,9 @@ import smtplib
 from socket import getfqdn
 import ssl
 
+
 logger = logging.getLogger(__name__)
+
 
 class Mailer(object):
     """
@@ -71,9 +73,9 @@ class Mailer(object):
 
 def sendmail(to, subject, body=''):
     msg = MIMEMultipart()
-    msg['From'] = '%s@%s' % (getuser(), getfqdn())
+    msg['From'] = 'Ticketfrei <%s@%s>' % (getuser(), getfqdn())
     msg['To'] = to
-    msg['Subject'] = subject
+    msg['Subject'] = '[Ticketfrei] %s' % (subject, )
     msg.attach(MIMEText(body))
 
     with smtplib.SMTP('localhost') as smtp:
