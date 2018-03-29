@@ -11,7 +11,10 @@ from mastodon import Mastodon
 
 
 def url(route):
-    '%s://%s/%s' % (request.urlparts.scheme, request.urlparts.netloc, route)
+    return '%s://%s/%s' % (
+            request.urlparts.scheme,
+            request.urlparts.netloc,
+            route)
 
 
 @get('/')
@@ -64,8 +67,7 @@ def login_post():
             return redirect('/settings')
     except AttributeError:
         pass
-    finally:
-        return dict(error='Authentication failed.')
+    return dict(error='Authentication failed.')
 
 
 @get('/settings')
