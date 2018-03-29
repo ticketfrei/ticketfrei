@@ -5,9 +5,8 @@ from config import config
 from db import db
 import logging
 import tweepy
-import sendmail
+from sendmail import sendmail
 from session import SessionPlugin
-import smtplib
 from mastodon import Mastodon
 
 
@@ -28,18 +27,19 @@ def register_post():
     if db.by_email(email):
         return dict(error='Email address already in use.')
     # send confirmation mail
-    confirm_link = request.url + "/../confirm/" + db.user_token(email, password)
-    send_confirmation_mail(confirm_link, email)
-    return dict(info='Confirmation mail sent.')
-
-
-def send_confirmation_mail(confirm_link, email):
-    m = sendmail.Mailer()
     try:
-        m.send("Complete your registration here: " + confirm_link, email,
-               "[Ticketfrei] Confirm your account")
-    except smtplib.SMTPRecipientsRefused:
-        return "Please enter a valid E-Mail address."
+        sendmail(
+                email,
+                "[Ticketfrei] Confirm your account",
+                "Complete your registration here: %s://%s/confirm/%s" % (
+                        request.urlparts.scheme,
+                        request.urlparts.netloc,
+                        db.user_token(email, password)
+                    )
+            )
+        return dict(info='Confirmation mail sent.')
+    except Exception:
+        return dict(error='Could not send confirmation mail.')
 
 
 @get('/confirm/<token>')
@@ -56,10 +56,14 @@ def confirm(token):
 @view('template/login.tpl')
 def login_post():
     # check login
-    if db.by_email(request.forms.get('email', '')) \
-         .check_password(request.forms.get('pass', '')):
-        return redirect('/settings')
-    return dict(error='Authentication failed.')
+    try:
+        if db.by_email(request.forms.get('email', '')) \
+             .check_password(request.forms.get('pass', '')):
+            return redirect('/settings')
+    except AttributeError:
+        pass
+    finally:
+        return dict(error='Authentication failed.')
 
 
 @get('/settings')
@@ -146,7 +150,7 @@ def login_mastodon(user):
         return dict(
                 info='Thanks for supporting decentralized social networks!'
             )
-    except:
+    except Exception:
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
 

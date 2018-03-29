@@ -21,7 +21,7 @@ class MastodonBot(Bot):
         m = Mastodon(*user.get_masto_credentials())
         try:
             notifications = m.notifications()
-        except:  # mastodon.Mastodon.MastodonAPIError is unfortunately not in __init__.py
+        except Exception:
             logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
         for status in notifications:
