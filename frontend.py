@@ -44,6 +44,7 @@ def register_post():
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
+        logger.error("Could not send confirmation mail.", exc_info=True)
         return dict(error='Could not send confirmation mail.')
 
 
@@ -100,18 +101,21 @@ def login_twitter(user):
     Starts the twitter OAuth authentication process.
     :return: redirect to twitter.
     """
-    consumer_key = config["tapp"]["consumer_key"]
-    consumer_secret = config["tapp"]["consumer_secret"]
-    callback_url = request.get_header('host') + "/login/twitter/callback"
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     try:
-        redirect_url = auth.get_authorization_url()
-    except tweepy.TweepError:
-        logger.error('Twitter OAuth Error: Failed to get request token.',
-                     exc_info=True)
-        return dict(error="Failed to get request token.")
-    user.save_request_token(auth.request_token)
-    return bottle.redirect(redirect_url)
+        consumer_key = config["tapp"]["consumer_key"]
+        consumer_secret = config["tapp"]["consumer_secret"]
+        callback_url = request.get_header('host') + "/login/twitter/callback"
+        auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
+        try:
+            redirect_url = auth.get_authorization_url()
+        except tweepy.TweepError:
+            logger.error('Twitter OAuth Error: Failed to get request token.',
+                         exc_info=True)
+            return dict(error="Failed to get request token.")
+        user.save_request_token(auth.request_token)
+        return bottle.redirect(redirect_url)
+    except Exception:
+        logger.error("Error with Sign in with Twitter.", exc_info= True)
 
 
 @get('/login/twitter/callback')
