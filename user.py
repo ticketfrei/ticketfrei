@@ -133,9 +133,9 @@ class User(object):
         db.commit()
 
     def get_request_token(self):
-        db.execute("SELECT request_token, request_token_secret FROM twitter_request_tokens WHERE user_id = ?;", (id,))
+        db.execute("SELECT request_token, request_token_secret FROM twitter_request_tokens WHERE user_id = ?;", (self.uid,))
         request_token = db.cur.fetchone()
-        db.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (id,))
+        db.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (self.uid,))
         db.commit()
         return {"oauth_token" : request_token[0],
                 "oauth_token_secret" : request_token[1]}
@@ -143,7 +143,7 @@ class User(object):
     def save_twitter_token(self, access_token, access_token_secret):
         db.execute(
             "INSERT INTO twitter_accounts(user_id, access_token_key, access_token_secret) VALUES(?, ?, ?);",
-            (id, access_token, access_token_secret))
+            (self.uid, access_token, access_token_secret))
         db.commit()
 
     def get_twitter_token(self):
