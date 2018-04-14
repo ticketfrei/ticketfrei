@@ -127,8 +127,7 @@ def twitter_callback(user):
     consumer_secret = config["twitter"]["consumer_secret"]
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     request_token = user.get_request_token()
-    auth.request_token = {"oauth_token": request_token,
-                          "oauth_token_secret": verifier}
+    auth.request_token = request_token
     auth.get_access_token(verifier)
     user.save_twitter_token(auth.access_token, auth.access_token_secret)
     return bottle.redirect("/settings")
