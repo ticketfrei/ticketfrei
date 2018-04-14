@@ -126,6 +126,10 @@ class DB(object):
             self.execute("INSERT INTO user (passhash) VALUES(?);",
                          (json['passhash'], ))
             uid = self.cur.lastrowid
+            self.execute("""
+                    INSERT INTO triggerpatterns (user_id, pattern)
+                        VALUES(?, ?);
+                    """, (uid, '.*'))
         else:
             uid = json['uid']
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",
