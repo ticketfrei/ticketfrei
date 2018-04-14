@@ -128,16 +128,17 @@ class User(object):
         return dict(foo='bar')
 
     def save_request_token(self, token):
-        db.execute("INSERT INTO twitter_request_tokens(user_id, request_token) VALUES(?, ?);",
-                   (self.uid, token))
+        db.execute("INSERT INTO twitter_request_tokens(user_id, request_token, request_token_secret) VALUES(?, ?, ?);",
+                   (self.uid, token["oauth_token"], token["oauth_token_secret"]))
         db.commit()
 
     def get_request_token(self):
-        db.execute("SELECT request_token FROM twitter_request_tokens WHERE user_id = ?;", (id,))
-        request_token = db.cur.fetchone()[0]
+        db.execute("SELECT request_token, request_token_secret FROM twitter_request_tokens WHERE user_id = ?;", (id,))
+        request_token = db.cur.fetchone()
         db.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (id,))
         db.commit()
-        return request_token
+        return {"oauth_token" : request_token[0],
+                "oauth_token_secret" : request_token[1]}
 
     def save_twitter_token(self, access_token, access_token_secret):
         db.execute(
