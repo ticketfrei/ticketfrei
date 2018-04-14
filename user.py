@@ -142,7 +142,7 @@ class User(object):
 
     def save_twitter_token(self, access_token, access_token_secret):
         db.execute(
-            "INSERT INTO twitter_accounts(user_id, access_token_key, access_token_secret) VALUES(?, ?, ?);",
+            "INSERT INTO twitter_accounts(user_id, client_id, client_secret) VALUES(?, ?, ?);",
             (self.uid, access_token, access_token_secret))
         db.commit()
 
