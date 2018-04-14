@@ -160,7 +160,7 @@ def login_mastodon(user):
 
 
 logger = logging.getLogger()
-fh = logging.StreamHandler()
+fh = logging.FileHandler('/var/log/ticketfrei/error.log')
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
@@ -169,4 +169,7 @@ bottle.install(SessionPlugin('/'))
 
 if __name__ == '__main__':
     # testing only
-    bottle.run(host='localhost', port=8080)
+    try:
+        bottle.run(host='localhost', port=8080)
+    except Exception:
+        logger.error('Unspecified Error.', exc_info=True)
