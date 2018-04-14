@@ -26,9 +26,12 @@ def propaganda():
 @post('/register')
 @view('template/register.tpl')
 def register_post():
-    email = request.forms.get('email', '')
-    password = request.forms.get('pass', '')
-    password_repeat = request.forms.get('pass-repeat', '')
+    try:
+        email = request.forms['email']
+        password = request.forms['pass']
+        password_repeat = request.forms['pass-repeat']
+    except KeyError:
+        return dict(error='Please, fill the form.')
     if password != password_repeat:
         return dict(error='Passwords do not match.')
     if db.by_email(email):
@@ -63,9 +66,11 @@ def confirm(token):
 def login_post():
     # check login
     try:
-        if db.by_email(request.forms.get('email', '')) \
-             .check_password(request.forms.get('pass', '')):
+        if db.by_email(request.forms['email']) \
+             .check_password(request.forms['pass']):
             redirect('/settings')
+    except KeyError:
+        return dict(error='Please, fill the form.')
     except AttributeError:
         pass
     return dict(error='Authentication failed.')
