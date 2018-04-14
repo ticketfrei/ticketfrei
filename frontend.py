@@ -102,8 +102,8 @@ def login_twitter(user):
     :return: redirect to twitter.
     """
     try:
-        consumer_key = config["tapp"]["consumer_key"]
-        consumer_secret = config["tapp"]["consumer_secret"]
+        consumer_key = config["twitter"]["consumer_key"]
+        consumer_secret = config["twitter"]["consumer_secret"]
         callback_url = request.get_header('host') + "/login/twitter/callback"
         auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
         try:
