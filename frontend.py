@@ -101,21 +101,18 @@ def login_twitter(user):
     Starts the twitter OAuth authentication process.
     :return: redirect to twitter.
     """
+    consumer_key = config["twitter"]["consumer_key"]
+    consumer_secret = config["twitter"]["consumer_secret"]
+    callback_url = url("login/twitter/callback")
+    auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     try:
-        consumer_key = config["twitter"]["consumer_key"]
-        consumer_secret = config["twitter"]["consumer_secret"]
-        callback_url = url("login/twitter/callback")
-        auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
-        try:
-            redirect_url = auth.get_authorization_url()
-        except tweepy.TweepError:
-            logger.error('Twitter OAuth Error: Failed to get request token.',
-                         exc_info=True)
-            return dict(error="Failed to get request token.")
-        user.save_request_token(auth.request_token)
-        return bottle.redirect(redirect_url)
-    except Exception:
-        logger.error("Error with Sign in with Twitter.", exc_info= True)
+        redirect_url = auth.get_authorization_url()
+    except tweepy.TweepError:
+        logger.error('Twitter OAuth Error: Failed to get request token.',
+                     exc_info=True)
+        return dict(error="Failed to get request token.")
+    user.save_request_token(auth.request_token)
+    return bottle.redirect(redirect_url)
 
 
 @get('/login/twitter/callback')
@@ -174,3 +171,5 @@ bottle.install(SessionPlugin('/'))
 if __name__ == '__main__':
     # testing only
     bottle.run(host='localhost', port=8080)
+else:
+    application.catchall = False
