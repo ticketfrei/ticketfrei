@@ -100,6 +100,15 @@ class DB(object):
                 FOREIGN KEY(twitter_accounts_id)
                     REFERENCES twitter_accounts(id)
             );
+            CREATE TABLE IF NOT EXISTS seen_dms (
+                id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id            INTEGER,
+                twitter_accounts_id INTEGER,
+                message_id    TEXT,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+                FOREIGN KEY(twitter_accounts_id)
+                    REFERENCES twitter_accounts(id)
+            );
             CREATE TABLE IF NOT EXISTS mailinglist (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,

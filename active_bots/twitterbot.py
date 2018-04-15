@@ -39,7 +39,7 @@ class TwitterBot(Bot):
                         "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
                         "", status.text)
                 reports.append(report.Report(status.author.screen_name,
-                                             "twitter",
+                                             self,
                                              text,
                                              status.id,
                                              status.created_at))

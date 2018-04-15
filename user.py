@@ -108,6 +108,15 @@ class User(object):
         db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
 
+    def get_seen_dm(self):
+        db.execute("SELECT message_id FROM seen_dms WHERE user_id = ?;",
+                   (self.uid, ))
+        return db.cur.fetchone()
+
+    def save_seen_dm(self, tweet_id):
+        db.execute("UPDATE seen_dms SET message_id = ? WHERE user_id = ?;",
+                   (tweet_id, self.uid))
+
     def get_mailinglist(self):
         db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
         return db.cur.fetchone()[0]
