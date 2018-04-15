@@ -139,6 +139,9 @@ There are several logfiles which you can look at:
 # for the uwsgi deployment:
 less /var/log/ticketfrei/uwsgi.log
 
+# for the backend:
+less /var/log/ticketfrei/backend.log
+
 # for the systemd service:
 less /var/log/syslog
 

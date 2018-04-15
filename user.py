@@ -172,3 +172,7 @@ class User(object):
         db.execute("INSERT INTO mastodon_accounts(user_id, access_token, instance_id, active) "
                    "VALUES(?, ?, ?, ?);", (self.uid, access_token, instance_id, 1))
         db.commit()
+
+    def get_city(self):
+        db.execute("SELECT city FROM user WHERE id == ?;", (self.uid, ))
+        return db.cur.fetchone()[0]

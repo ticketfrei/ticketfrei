@@ -31,6 +31,7 @@ class DB(object):
             CREATE TABLE IF NOT EXISTS user (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 passhash    TEXT,
+                city        TEXT,
                 enabled     INTEGER DEFAULT 1
             );
             CREATE TABLE IF NOT EXISTS email (

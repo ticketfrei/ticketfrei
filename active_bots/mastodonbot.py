@@ -34,16 +34,29 @@ class MastodonBot(Bot):
                 text = re.sub(
                         "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
                         "", text)
-                mentions.append(Report(status['account']['acct'],
-                                       self,
-                                       text,
-                                       status['status']['id'],
-                                       status['status']['created_at']))
+                if status['status']['visibility'] == 'public':
+                    mentions.append(Report(status['account']['acct'],
+                                           self,
+                                           text,
+                                           status['status']['id'],
+                                           status['status']['created_at']))
+                else:
+                    mentions.append(Report(status['account']['acct'],
+                                           'mastodonPrivate',
+                                           text,
+                                           status['status']['id'],
+                                           status['status']['created_at']))
         return mentions
 
     def post(self, user, report):
         m = Mastodon(*user.get_masto_credentials())
         if report.source == self:
-            m.status_reblog(report.id)
+            try:
+                m.status_reblog(report.id)
+            except Exception:
+                logger.error('Error boosting: ' + report.id, exc_info=True)
         else:
-            m.toot(report.text)
+            try:
+                m.toot(report.text)
+            except Exception:
+                logger.error('Error tooting: ' + user.get_city() + ': ' + report.id, exc_info=True)
