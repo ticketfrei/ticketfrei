@@ -56,7 +56,10 @@ class MastodonBot(Bot):
             except Exception:
                 logger.error('Error boosting: ' + report.id, exc_info=True)
         else:
+            text = report.text
+            if len(text) > 500:
+                text = text[:500 - 4] + u' ...'
             try:
-                m.toot(report.text)
+                m.toot(text)
             except Exception:
                 logger.error('Error tooting: ' + user.get_city() + ': ' + report.id, exc_info=True)

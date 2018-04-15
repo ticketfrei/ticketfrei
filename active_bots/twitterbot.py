@@ -33,8 +33,7 @@ class TwitterBot(Bot):
             if last_mention == 0:
                 mentions = api.mentions_timeline()
             else:
-                mentions = api.mentions_timeline(
-                        since_id=last_mention)
+                mentions = api.mentions_timeline(since_id=last_mention)
             for status in mentions:
                 text = re.sub(
                         "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
@@ -62,9 +61,10 @@ class TwitterBot(Bot):
             if report.source == self:
                 api.retweet(report.id)
             else:
-                # text = report.format()
-                if len(report.text) > 280:
-                    text = report.text[:280 - 4] + u' ...'
+                text = report.text
+                if len(text) > 280:
+                    text = text[:280 - 4] + u' ...'
+                api.update_status(status=text)
         except requests.exceptions.ConnectionError:
             logger.error("Twitter API Error: Bad Connection",
                          exc_info=True)
