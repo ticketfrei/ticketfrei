@@ -47,7 +47,7 @@ def register_post():
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
-        logger.error("Could not send confirmation mail.", exc_info=True)
+        logger.error("Could not send confirmation mail to " + email, exc_info=True)
         return dict(error='Could not send confirmation mail.')
 
 
