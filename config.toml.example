@@ -14,7 +14,4 @@ user = "user"
 passphrase = "sup3rs3cur3"
 
 [database]
-db_path = "/var/run/ticketfrei/db.sqlite"
-# when migrating to mysql:
-# username = "username"
-# password = "password"
+db_path = "/var/ticketfrei/db.sqlite"

@@ -118,8 +118,8 @@ echo "Enter your domain name into the following prompt:" && read DOMAIN
 sudo sed -r "s/example.org/$DOMAIN/g" deployment/example.org.conf > /etc/nginx/sites-enabled/$DOMAIN.conf
 
 # create folder for socket
-sudo mkdir /var/run/ticketfrei
-sudo chown www-data:www-data -R /var/run/ticketfrei
+sudo mkdir /var/ticketfrei
+sudo chown www-data:www-data -R /var/ticketfrei
 sudo chown www-data:www-data -R /var/log/ticketfrei
 
 # start up nginx
