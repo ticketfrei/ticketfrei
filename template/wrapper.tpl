@@ -2,7 +2,7 @@
     <title>Ticketfrei - {{get('title', 'A bot against control society!')}}</title>
     <meta name='og:title' content='Ticketfrei'/>
     <meta name='og:description' content='A bot against control society! Nobody should have to pay for public transport. Find out where ticket controllers are!'/>
-    <meta name='og:image' content="https://ticketfrei.links-tech.org/static/img/ticketfrei-og-image.png"/>
+    <meta name='og:image' content="https://ticketfrei.links-tech.org/static/img/ticketfrei-og-image.jpg"/>
     <meta name='og:image:alt' content='Ticketfrei'/>
     <meta name='og:type' content='website' />
     <link rel='stylesheet' href='/static/css/style.css'>
