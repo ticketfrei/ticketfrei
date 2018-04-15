@@ -26,9 +26,12 @@ def propaganda():
 @post('/register')
 @view('template/register.tpl')
 def register_post():
-    email = request.forms.get('email', '')
-    password = request.forms.get('pass', '')
-    password_repeat = request.forms.get('pass-repeat', '')
+    try:
+        email = request.forms['email']
+        password = request.forms['pass']
+        password_repeat = request.forms['pass-repeat']
+    except KeyError:
+        return dict(error='Please, fill the form.')
     if password != password_repeat:
         return dict(error='Passwords do not match.')
     if db.by_email(email):
@@ -54,7 +57,7 @@ def confirm(token):
     # create db-entry
     if db.confirm(token):
         # :todo show info "Account creation successful."
-        return redirect('/settings')
+        redirect('/settings')
     return dict(error='Email confirmation failed.')
 
 
@@ -63,9 +66,11 @@ def confirm(token):
 def login_post():
     # check login
     try:
-        if db.by_email(request.forms.get('email', '')) \
-             .check_password(request.forms.get('pass', '')):
-            return redirect('/settings')
+        if db.by_email(request.forms['email']) \
+             .check_password(request.forms['pass']):
+            redirect('/settings')
+    except KeyError:
+        return dict(error='Please, fill the form.')
     except AttributeError:
         pass
     return dict(error='Authentication failed.')
@@ -92,7 +97,7 @@ def logout():
     # clear auth cookie
     response.set_cookie('uid', '', expires=0, path="/")
     # :todo show info "Logout successful."
-    return redirect('/')
+    redirect('/')
 
 
 @get('/login/twitter')
@@ -112,7 +117,7 @@ def login_twitter(user):
                      exc_info=True)
         return dict(error="Failed to get request token.")
     user.save_request_token(auth.request_token)
-    return bottle.redirect(redirect_url)
+    redirect(redirect_url)
 
 
 @get('/login/twitter/callback')
@@ -130,7 +135,7 @@ def twitter_callback(user):
     auth.request_token = request_token
     auth.get_access_token(verifier)
     user.save_twitter_token(auth.access_token, auth.access_token_secret)
-    return bottle.redirect("/settings")
+    redirect("/settings")
 
 
 @post('/login/mastodon')
