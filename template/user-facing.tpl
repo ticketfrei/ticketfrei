@@ -68,6 +68,7 @@
     erzählen?
 </h2>
 <p>Aber natürlich! Wir haben Katzenbilder!</p>
+<img src="https://placekitten.com/400/200" />
 <p>
     Glaubt besser nicht, wenn jemand postet, dass die Luft da und da gerade
     rein ist. Das ist vielleicht sogar gut gemeint - aber klar könnte die VAG
