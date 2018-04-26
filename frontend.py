@@ -76,6 +76,13 @@ def login_post():
     return dict(error='Authentication failed.')
 
 
+@get('/city/<city>')
+@view('/template/user-facing.tpl')
+def city_page(city):
+    # :todo how can we transfer the city name to the wrapper template?
+    pass
+
+
 @get('/settings')
 @view('template/settings.tpl')
 def settings(user):
@@ -90,6 +97,11 @@ def api_enable(user):
 @get('/static/<filename:path>')
 def static(filename):
     return bottle.static_file(filename, root='static')
+
+
+@get('/guides/<filename:path>')
+def guides(filename):
+    return bottle.static_file(filename, root='guides')
 
 
 @get('/logout/')
