@@ -31,7 +31,6 @@ class DB(object):
             CREATE TABLE IF NOT EXISTS user (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 passhash    TEXT,
-                city        TEXT,
                 enabled     INTEGER DEFAULT 1
             );
             CREATE TABLE IF NOT EXISTS email (
@@ -116,6 +115,15 @@ class DB(object):
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
+            CREATE TABLE IF NOT EXISTS cities (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                city        TEXT,
+                markdown    TEXT,
+                masto_link  TEXT,
+                twit_link   TEXT,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
         ''')
 
     def user_token(self, email, password):
@@ -156,6 +164,19 @@ class DB(object):
         except TypeError:
             return None
         return User(uid)
+
+    def user_facing_properties(self, city):
+        self.execute("""SELECT city, markdown, masto_link, twit_link 
+                            FROM cities
+                            WHERE city=?;""", (city, ))
+        try:
+            city, markdown, masto_link, twit_link = self.cur.fetchone()
+            return dict(city=city,
+                        markdown=markdown,
+                        masto_link=masto_link,
+                        twit_link=twit_link)
+        except TypeError:
+            return None
 
     @property
     def active_users(self):

@@ -9,7 +9,6 @@ from sendmail import sendmail
 from session import SessionPlugin
 from mastodon import Mastodon
 
-
 def url(route):
     return '%s://%s/%s' % (
             request.urlparts.scheme,
@@ -79,8 +78,7 @@ def login_post():
 @get('/city/<city>')
 @view('template/user-facing.tpl')
 def city_page(city):
-    # :todo how can we transfer the city name to the wrapper template?
-    return dict(title=city)
+    return db.user_facing_properties(city)
 
 
 @get('/settings')
