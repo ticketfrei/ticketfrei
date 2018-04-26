@@ -77,7 +77,7 @@ def login_post():
 
 
 @get('/city/<city>')
-@view('/template/user-facing.tpl')
+@view('template/user-facing.tpl')
 def city_page(city):
     # :todo how can we transfer the city name to the wrapper template?
     pass
