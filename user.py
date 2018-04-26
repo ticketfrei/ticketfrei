@@ -108,6 +108,15 @@ class User(object):
         db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
 
+    def get_seen_dm(self):
+        db.execute("SELECT message_id FROM seen_dms WHERE user_id = ?;",
+                   (self.uid, ))
+        return db.cur.fetchone()
+
+    def save_seen_dm(self, tweet_id):
+        db.execute("UPDATE seen_dms SET message_id = ? WHERE user_id = ?;",
+                   (tweet_id, self.uid))
+
     def get_mailinglist(self):
         db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
         return db.cur.fetchone()[0]
@@ -128,21 +137,22 @@ class User(object):
         return dict(foo='bar')
 
     def save_request_token(self, token):
-        db.execute("INSERT INTO twitter_request_tokens(user_id, request_token) VALUES(?, ?);",
-                   (self.uid, token))
+        db.execute("INSERT INTO twitter_request_tokens(user_id, request_token, request_token_secret) VALUES(?, ?, ?);",
+                   (self.uid, token["oauth_token"], token["oauth_token_secret"]))
         db.commit()
 
     def get_request_token(self):
-        db.execute("SELECT request_token FROM twitter_request_tokens WHERE user_id = ?;", (id,))
-        request_token = db.cur.fetchone()[0]
-        db.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (id,))
+        db.execute("SELECT request_token, request_token_secret FROM twitter_request_tokens WHERE user_id = ?;", (self.uid,))
+        request_token = db.cur.fetchone()
+        db.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (self.uid,))
         db.commit()
-        return request_token
+        return {"oauth_token" : request_token[0],
+                "oauth_token_secret" : request_token[1]}
 
     def save_twitter_token(self, access_token, access_token_secret):
         db.execute(
-            "INSERT INTO twitter_accounts(user_id, access_token_key, access_token_secret) VALUES(?, ?, ?);",
-            (id, access_token, access_token_secret))
+            "INSERT INTO twitter_accounts(user_id, client_id, client_secret) VALUES(?, ?, ?);",
+            (self.uid, access_token, access_token_secret))
         db.commit()
 
     def get_twitter_token(self):
@@ -171,3 +181,7 @@ class User(object):
         db.execute("INSERT INTO mastodon_accounts(user_id, access_token, instance_id, active) "
                    "VALUES(?, ?, ?, ?);", (self.uid, access_token, instance_id, 1))
         db.commit()
+
+    def get_city(self):
+        db.execute("SELECT city FROM user WHERE id == ?;", (self.uid, ))
+        return db.cur.fetchone()[0]

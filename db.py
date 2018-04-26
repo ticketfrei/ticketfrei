@@ -31,6 +31,7 @@ class DB(object):
             CREATE TABLE IF NOT EXISTS user (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 passhash    TEXT,
+                city        TEXT,
                 enabled     INTEGER DEFAULT 1
             );
             CREATE TABLE IF NOT EXISTS email (
@@ -79,6 +80,7 @@ class DB(object):
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
                 request_token   TEXT,
+                request_token_secret TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS twitter_accounts (
@@ -94,6 +96,15 @@ class DB(object):
                 user_id            INTEGER,
                 twitter_accounts_id INTEGER,
                 tweet_id    TEXT,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+                FOREIGN KEY(twitter_accounts_id)
+                    REFERENCES twitter_accounts(id)
+            );
+            CREATE TABLE IF NOT EXISTS seen_dms (
+                id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id            INTEGER,
+                twitter_accounts_id INTEGER,
+                message_id    TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
                 FOREIGN KEY(twitter_accounts_id)
                     REFERENCES twitter_accounts(id)
@@ -126,6 +137,10 @@ class DB(object):
             self.execute("INSERT INTO user (passhash) VALUES(?);",
                          (json['passhash'], ))
             uid = self.cur.lastrowid
+            self.execute("""
+                    INSERT INTO triggerpatterns (user_id, pattern)
+                        VALUES(?, ?);
+                    """, (uid, '.*'))
         else:
             uid = json['uid']
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",

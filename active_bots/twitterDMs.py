@@ -28,22 +28,22 @@ class TwitterBot(Bot):
         """
         reports = []
         api = self.get_api(user)
-        last_mention = user.get_seen_tweet()
+        last_dm = user.get_seen_dm()
         try:
-            if last_mention == 0:
-                mentions = api.mentions_timeline()
+            if last_dm == None:
+                mentions = api.direct_messages()
             else:
-                mentions = api.mentions_timeline(since_id=last_mention)
+                mentions = api.mentions_timeline(since_id=last_dm[0])
             for status in mentions:
                 text = re.sub(
                         "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
                         "", status.text)
                 reports.append(report.Report(status.author.screen_name,
-                                             self,
+                                             "twitterDM",
                                              text,
                                              status.id,
                                              status.created_at))
-            user.save_seen_tweet(last_mention)
+            user.save_seen_dm(last_dm)
             return reports
         except tweepy.RateLimitError:
             logger.error("Twitter API Error: Rate Limit Exceeded",
@@ -56,16 +56,4 @@ class TwitterBot(Bot):
         return []
 
     def post(self, user, report):
-        api = self.get_api(user)
-        try:
-            if report.source == self:
-                api.retweet(report.id)
-            else:
-                text = report.text
-                if len(text) > 280:
-                    text = text[:280 - 4] + u' ...'
-                api.update_status(status=text)
-        except requests.exceptions.ConnectionError:
-            logger.error("Twitter API Error: Bad Connection",
-                         exc_info=True)
-            # :todo implement rate limiting
+        pass

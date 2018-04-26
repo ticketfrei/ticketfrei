@@ -8,9 +8,17 @@ from sendmail import sendmail
 import time
 
 
+def shutdown():
+    try:
+        sendmail(config['web']['contact'], 'Ticketfrei Shutdown')
+    except Exception:
+        logger.error('Could not inform admin.', exc_info=True)
+    exit(1)
+
+
 if __name__ == '__main__':
     logger = logging.getLogger()
-    fh = logging.FileHandler('/var/log/ticketfrei/error.log')
+    fh = logging.FileHandler('/var/log/ticketfrei/backend.log')
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
@@ -32,7 +40,4 @@ if __name__ == '__main__':
             time.sleep(60)  # twitter rate limit >.<
     except Exception:
         logger.error('Shutdown.', exc_info=True)
-    try:
-        sendmail(config['web']['contact'], 'Ticketfrei Shutdown')
-    except Exception:
-        logger.error('Could not inform admin.', exc_info=True)
+        shutdown()

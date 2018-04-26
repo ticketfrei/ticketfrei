@@ -13,7 +13,7 @@ class Report(object):
         Constructor of a ticketfrei report
 
         :param author: username of the author
-        :param source: mastodon, twitter, or email
+        :param source: mastodon, twitter, or email bot object
         :param text: the text of the report
         :param id: id in the network
         :param timestamp: time of the report

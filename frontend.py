@@ -26,9 +26,12 @@ def propaganda():
 @post('/register')
 @view('template/register.tpl')
 def register_post():
-    email = request.forms.get('email', '')
-    password = request.forms.get('pass', '')
-    password_repeat = request.forms.get('pass-repeat', '')
+    try:
+        email = request.forms['email']
+        password = request.forms['pass']
+        password_repeat = request.forms['pass-repeat']
+    except KeyError:
+        return dict(error='Please, fill the form.')
     if password != password_repeat:
         return dict(error='Passwords do not match.')
     if db.by_email(email):
@@ -44,6 +47,7 @@ def register_post():
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
+        logger.error("Could not send confirmation mail to " + email, exc_info=True)
         return dict(error='Could not send confirmation mail.')
 
 
@@ -53,7 +57,7 @@ def confirm(token):
     # create db-entry
     if db.confirm(token):
         # :todo show info "Account creation successful."
-        return redirect('/settings')
+        redirect('/settings')
     return dict(error='Email confirmation failed.')
 
 
@@ -62,12 +66,21 @@ def confirm(token):
 def login_post():
     # check login
     try:
-        if db.by_email(request.forms.get('email', '')) \
-             .check_password(request.forms.get('pass', '')):
-            return redirect('/settings')
+        if db.by_email(request.forms['email']) \
+             .check_password(request.forms['pass']):
+            redirect('/settings')
+    except KeyError:
+        return dict(error='Please, fill the form.')
     except AttributeError:
         pass
     return dict(error='Authentication failed.')
+
+
+@get('/city/<city>')
+@view('/template/user-facing.tpl')
+def city_page(city):
+    # :todo how can we transfer the city name to the wrapper template?
+    pass
 
 
 @get('/settings')
@@ -86,12 +99,17 @@ def static(filename):
     return bottle.static_file(filename, root='static')
 
 
+@get('/guides/<filename:path>')
+def guides(filename):
+    return bottle.static_file(filename, root='guides')
+
+
 @get('/logout/')
 def logout():
     # clear auth cookie
     response.set_cookie('uid', '', expires=0, path="/")
     # :todo show info "Logout successful."
-    return redirect('/')
+    redirect('/')
 
 
 @get('/login/twitter')
@@ -100,9 +118,9 @@ def login_twitter(user):
     Starts the twitter OAuth authentication process.
     :return: redirect to twitter.
     """
-    consumer_key = config["tapp"]["consumer_key"]
-    consumer_secret = config["tapp"]["consumer_secret"]
-    callback_url = request.get_header('host') + "/login/twitter/callback"
+    consumer_key = config["twitter"]["consumer_key"]
+    consumer_secret = config["twitter"]["consumer_secret"]
+    callback_url = url("login/twitter/callback")
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret, callback_url)
     try:
         redirect_url = auth.get_authorization_url()
@@ -111,7 +129,7 @@ def login_twitter(user):
                      exc_info=True)
         return dict(error="Failed to get request token.")
     user.save_request_token(auth.request_token)
-    return bottle.redirect(redirect_url)
+    redirect(redirect_url)
 
 
 @get('/login/twitter/callback')
@@ -121,16 +139,15 @@ def twitter_callback(user):
     :return:
     """
     # twitter passes the verifier/oauth token secret in a GET request.
-    verifier = request.query('oauth_verifier')
+    verifier = request.query['oauth_verifier']
     consumer_key = config["twitter"]["consumer_key"]
     consumer_secret = config["twitter"]["consumer_secret"]
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    request_token = user.get_request_token
-    auth.request_token = {"oauth_token": request_token,
-                          "oauth_token_secret": verifier}
+    request_token = user.get_request_token()
+    auth.request_token = request_token
     auth.get_access_token(verifier)
     user.save_twitter_token(auth.access_token, auth.access_token_secret)
-    return bottle.redirect("/settings")
+    redirect("/settings")
 
 
 @post('/login/mastodon')
@@ -169,7 +186,6 @@ bottle.install(SessionPlugin('/'))
 
 if __name__ == '__main__':
     # testing only
-    try:
-        bottle.run(host='localhost', port=8080)
-    except Exception:
-        logger.error('Unspecified Error.', exc_info=True)
+    bottle.run(host='localhost', port=8080)
+else:
+    application.catchall = False
