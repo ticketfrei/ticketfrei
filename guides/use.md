@@ -25,12 +25,13 @@ That's easy. You only need an Mastodon account, for example at
 * https://kitty.town/about
 * https://social.coop/about
 * https://awoo.space/about
-* or a Twitter account.
+
+Using a twitter account or sending a mail is also possible!
 
 
-Just write a toot or a tweet, mentioning the bot, and tell it
+Just write a toot/tweet/mail, mentioning the bot, and tell it
 * Where you saw the ticket controllers
-* Which line they are using, into which directions
+* Which line they are using, into which direction
 
 For example like this:
 
@@ -38,6 +39,6 @@ For example like this:
 
 ![A toot ready to be boosted](toot_screenshot.png)
 
-The bot will soon boost your toot, so other people will be able to look at it and be safe.
+The bot will soon share your message, so other people will be able to look at it and be safe.
 
 Thanks for helping to provide public transport for everyone!
