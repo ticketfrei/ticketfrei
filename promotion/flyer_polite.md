@@ -1,4 +1,4 @@
-# Neues Konzept für ein Sozialticket – Wie können auch Sie Ticketfrei fahren?
+# Neues Konzept für ein Sozialticket – Wie können auch Sie ticketfrei fahren?
 
 Die VAG stellt ein neues Konzept als Alternative zu unerwünschten
 Fahrkartenkontrollen vor. Immer mehr Beschwerden über aufdringliche
