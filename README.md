@@ -68,17 +68,17 @@ To this date, we have never heard of this happening though.
 
 ### blacklisting
 
-You also need to edit the goodlist and the blacklist. They are in the
+You also need to edit the goodlist and blacklist. They are in the
 "goodlists" and "blacklists" folders. All text files in those
-directories will be used, so you should delete our templates; but
+directories will be used, so you should delete our templates. But
 feel free to use them as an orientation.
 
 Just add the words to the goodlist, which you want to require. A
-report is only spread, if it contains at least one of them. If you
+report is only spread if it contains at least one of them. If you
 want to RT everything, just add a ```*```.
 
 There is also a blacklist, which you can use to automatically sort
-out malicious tweets. Be careful though, our filter can't read the
+out malicious messages. Be careful though, our filter can't read the
 intention with which a word was used. Maybe you wanted it there.
 
 ### screen
