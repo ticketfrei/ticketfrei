@@ -1,38 +1,35 @@
-# Neues Konzept für ein Sozialticket - wie können auch sie Ticketfrei fahren?
+# Neues Konzept für ein Sozialticket - Wie können auch Sie Ticketfrei fahren?
 
 Die VAG stellt ein neues Konzept als Alternative zu unerwünschten
 Fahrkartenkontrollen vor. Immer mehr Beschwerden über aufdringliche
-Kontrolleure und Kontrollerinnen erreichen uns; und weil wir Wert auf
-Userfreundlichkeit legen, haben wir ein neues Konzept entwickelt, das
-Ihnen helfen soll, Fahrkartenkontrollen zu vermeiden. Ganz im Sinne
-der Digitalisierung nutzen wir Soziale Medien, um Ihr Leben zu
-erleichtern - ein Twitterbot soll Ihnen dabei helfen, Kontrollen
-zu umgehen.
+Kontrolleure und Kontrolleurinnen erreichen uns. Da wir Wert auf
+Nutzerfreundlichkeit legen, haben wir ein neues Konzept entwickelt, das Ihnen
+helfen soll, Fahrkartenkontrollen zu vermeiden. Ganz im Sinne der
+Digitalisierung nutzen wir Soziale Medien, um Ihr Leben zu erleichtern - ein
+Twitterbot soll Ihnen dabei helfen, Kontrollen zu umgehen.
 
-Sie als Fahrgast können davon profitieren, indem Sie einen Blick auf
-das @nbg_ticketfrei-Twitterprofil werfen. Dort tragen andere User und
-Userinnen Informationen darüber zusammen, wo gerade Kontrolleure
-unterwegs sind.
+Sie als Fahrgast können davon profitieren, indem Sie einen Blick auf das
+Twitterprofil @nbg_ticketfrei werfen. Dort tragen andere Nutzer und Nutzerinnen
+Informationen darüber zusammen, wo gerade Kontrolleure unterwegs sind.
 
-Wenn auf einer Linie, die Sie benutzen wollen, gerade Kontrolleure
-und Kontrolleurinnen gesichtet wurden, kaufen Sie besser eine
-Fahrkarte. Wenn die Luft aber rein ist, können Sie sich die Kosten
-sparen und unser Angebot auch ohne Ticket nutzen. Wenn Sie viel
-unterwegs sind, sollten sie auch in Erwägung ziehen, unsere
-E-Mail-Notifications zu abonnieren.
+Wenn auf einer Linie, die Sie benutzen wollen, gerade Kontrolleure oder
+Kontrolleurinnen gesichtet wurden, kaufen Sie sich besser eine Fahrkarte. Wenn
+die Luft aber rein ist, können Sie sich die Kosten sparen und unser Angebot
+auch ohne Ticket nutzen. Wenn Sie viel unterwegs sind, sollten sie auch in
+Erwägung ziehen, unsere E-Mail-Benachrichtigungen zu abonnieren.
 
-Wenn Sie als User oder Userin zu dem Konzept beitragen wollen, geht
-das ganz einfach - immer, wenn Sie Kontrollpersonen bei ihrer Arbeit
-sehen, schreiben Sie einfach einen Tweet an @nbg_ticketfrei, wo und
-in welcher Richtung diese gerade unterwegs sind. Unser Bot retweetet
-das dann, damit auch alle anderen über die Bedrohung Bescheid wissen.
+Wenn Sie als Nutzer oder Nutzerin zu dem Konzept beitragen wollen, geht das
+ganz einfach - immer, wenn Sie Kontrollpersonen bei ihrer Arbeit sehen,
+schreiben Sie einfach einen Tweet an @nbg_ticketfrei, wo und in welcher
+Richtung diese gerade unterwegs sind. Unser Bot retweetet das dann, damit auch
+alle anderen über die Bedrohung Bescheid wissen.
 
-Damit wollen wir dass ÖPNV endlich für alle möglich wird. Zu viele
-Menschen können sich VAG-Tickets leider nicht leisten - gerade die,
-die ihre MobiCard am Ende des Monats kaufen, müssen oft zwischen der
-MobiCard und dem letzten Wocheneinkauf abwägen. Damit endlich alle
-Menschen in Nürnberg/Fürth/Erlangen U-Bahn fahren können, soll
-@nbg_ticketfrei ihnen helfen, Kontrollen zu vermeiden.
+Damit wollen wir dass ÖPNV endlich für alle zugänglich wird. Zu viele Menschen
+können sich VAG-Tickets leider nicht leisten - gerade die, die ihre MobiCard am
+Ende des Monats kaufen, müssen oft zwischen der MobiCard und dem letzten
+Wocheneinkauf abwägen. Damit endlich alle Menschen in Nürnberg/Fürth/Erlangen
+U-Bahn fahren können, soll @nbg_ticketfrei ihnen helfen, Kontrollen zu
+vermeiden.
 
 Weitere Informationen, wie Sie mitmachen können, finden Sie unter
 [Wiki-Page auf Deutsch, Englisch, Türkisch, Russisch, Spanisch]
@@ -70,7 +67,7 @@ statt plötzlich hastig davonwatscheln zu müssen."
 
 Mehmet Müller, Kindergärtner (34): "Ich finde es schade, dass nicht
 alle Menschen sich U-Bahnen leisten können. Mit meinem sozialen
-Beruf wäre das auch schwierig, zum Glück verdient meine Frau genug,
+Beruf wäre das auch schwierig. Zum Glück verdient meine Frau genug,
 darum gönnen wir uns dieses Privileg. Aber ich sehe nicht ein, warum
 man die U-Bahn dann nicht auch voll packen soll! Bringt doch nichts,
 wenn manche auf dem Bahnsteig stehen bleiben und laufen müssen, wenn
@@ -81,19 +78,19 @@ können, nicht mitfahren?"
 
 ## Slogan für 1 Werbeanzeige oder so:
 
-WENN Sie Ihre Ziele jeden Tag risikolos & kostenfrei erreichen,
-DANN nur weil sie den Ticketfrei-Service der VGN nutzen und nicht
-auf gut Glück schwarzfahren.
+WENN Sie Ihre Ziele jeden Tag risikolos & kostenfrei erreichen, DANN nur weil
+sie den Ticketfrei-Service der VAG nutzen und nicht auf gut Glück
+schwarzfahren.
 
 WENN
 HEIMAT scheiße ist,
 DANN ist
-SÖDER dafür Verantwortlich
+SÖDER dafür verantwortlich
 (eine Anzeige von Ihrem Heimatministerium und verehrten Ministerpräsidenten (fast))
 
 WENN du beim
 SCHWARZFAHREN erwischt wirst,
-DANN nur weil Du noch nicht den Ticketfrei-Service deiner
+DANN nur, weil du noch nicht den Ticketfrei-Service deiner
 VGN nutzt.
 
 WENN
@@ -103,12 +100,12 @@ VAG öffentlich ist
 
 # Eine Zukunft ohne Ticketautomaten und Kontrolleure
 
-Ticketfrei ist nicht nur ein Ansatz für Userfreundlichkeit, es ist
+Ticketfrei ist nicht nur ein Ansatz für Nutzerfreundlichkeit, es ist
 gleichzeitig ein Modellprojekt für die Zukunft. Ticketfreier ÖPNV
 ist ein unkomplizierter Ansatz, Mobilität für alle zu finanzieren.
 
 Dabei werden Busse und Bahnen vollständig aus Steuern bezahlt. Das
-derzeitige Ticketsystem ist unnötig kompliziert - oft ist es unklar,
+derzeitige Ticketsystem ist unnötig kompliziert. Oft ist es unklar,
 welche Tickets wo gelten, wie lange, und was man für sein Geld
 bekommt. Wenn der ÖPNV komplett durch Steuern finanziert wäre,
 bräuchte man keine Kontrolleure und Kontrolleurinnen, keine Automaten
@@ -118,10 +115,10 @@ dafür benutzt, Sie und alle anderen von A nach B zu bringen.
 Wenn man die U-Bahn sozusagen bereits bezahlt hat, gibt es auch
 weniger Gründe, im Alltag noch mit dem Auto zu fahren. Es ist nicht
 nur gut für die Umwelt, wenn mehr Leute die Bahnen nutzen. Es
-entlastet auch die Innenstädte, weniger Smog, Lärm, Hektik, und
+entlastet auch die Innenstädte: Weniger Smog, Lärm, Hektik, und
 weniger Verkehrsunfälle tragen zu einem guten Miteinander bei.
 
-Das ist auch für Leute aus dem Umland gut: kein Verkehrschaos und
+Das ist auch für Leute aus dem Umland gut: Kein Verkehrschaos und
 keine nervenaufreibende Parkplatzsuche in der Innenstadt mehr. Man
 kann einfach am Stadtrand parken und entspannt die U-Bahn nehmen, um
 seine Einkäufe zu tätigen und Verwandte zu besuchen.
@@ -139,10 +136,10 @@ U-Bahnen einen kostenlos überall hin mitnehmen. Tourismuseinnahmen
 kommen der breiten Bevölkerung zu Gute. Neben den fahrerlosen
 U-Bahnen, dem Doku-Zentrum, der Burg, den Nürnberger Prozessen und
 natürlich dem Christkindelsmarkt kann ticketfreier ÖPNV dazu
-beitragen, Nürnberg als Weltstadt bekannt zu machen - hier wird
+beitragen, Nürnberg als Weltstadt bekannt zu machen - Hier wird
 nicht nur Geschichte, sondern auch die Zukunft geschrieben.
 
 Denn in der Zukunft fahren die U-Bahnen nicht nur fahrerlos, sondern
-auch ohne Tickets!
+auch ticketfrei!
 
 
