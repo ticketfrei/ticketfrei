@@ -6,4 +6,4 @@ import markdown2 as md
 html = md.markdown(markdown)
 %>
 
-{{html}}
+{{!html}}

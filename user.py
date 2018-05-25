@@ -287,8 +287,7 @@ Dann können andere Leute das lesen und sicher vor Kontis sein.
 Danke, dass du mithilfst, öffentlichen Verkehr für alle 
 sicherzustellen!
 
-## Kann ich darauf vertrauen, was random stranger from the 
-Internet mir da erzählen?
+## Kann ich darauf vertrauen, was random stranger from the Internet mir da erzählen?
 
 Aber natürlich! Wir haben Katzenbilder!
 
