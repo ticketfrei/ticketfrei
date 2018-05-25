@@ -235,8 +235,7 @@ schlitz
         masto_link = "example.mastodon.social/@" + city # get masto_link
         twit_link = "example.twitter.com/" + city # get twit_link
         mailinglist = city + "@" + config['web']['host']
-        markdown = """
-# Wie funktioniert Ticketfrei?
+        markdown = """# Wie funktioniert Ticketfrei?
 
 Willst du mithelfen, Ticketkontrolleure zu überwachen?
 Willst du einen Fahrscheinfreien ÖPNV erkämpfen?
@@ -265,10 +264,10 @@ Kontrolleur sieht:
 
 Ganz einfach, du schreibst es den anderen. Das geht entweder
 
-<!-- * mit Mastodon: """ + masto_link + """ -->
-<!-- * über Twitter: """ + twit_link + """ -->
-* Oder per Mail an """ + mailinglist + """, wenn ihr kein
-  Social Media benutzen wollt.
+* mit Mastodon [""" + masto_link + """](Link zu unserem Profil)
+* über Twitter: [""" + twit_link + """](Link zu unserem Profil)
+* Oder per Mail an [mailto:""" + mailinglist + "](" + mailinglist + """, wenn 
+  ihr kein Social Media benutzen wollt.
 
 Schreibe einfach einen Toot oder einen Tweet, der den Bot 
 mentioned, und gib an
@@ -277,9 +276,9 @@ mentioned, und gib an
 
 Zum Beispiel so:
 
-[[https://github.com/b3yond/ticketfrei/blob/master/guides/tooting_screenshot.png|Screenshot of writing a toot]]
+!(Screenshot of writing a Toot)[https://github.com/b3yond/ticketfrei/blob/master/guides/tooting_screenshot.png]
 
-[[https://github.com/b3yond/ticketfrei/blob/master/guides/toot_screenshot.png|A toot ready to be boosted]]
+!(A toot ready to be shared)[https://github.com/b3yond/ticketfrei/blob/master/guides/toot_screenshot.png|A toot ready to be boosted]
 
 Der Bot wird die Nachricht dann weiterverbreiten, auch zu den 
 anderen Netzwerken.
@@ -293,7 +292,7 @@ Internet mir da erzählen?
 
 Aber natürlich! Wir haben Katzenbilder!
 
-[[https://lorempixel.com/550/300/cats|Katzenbilder...]]
+!(Katzenbilder!)[https://lorempixel.com/550/300/cats]
 
 Glaubt besser nicht, wenn jemand postet, dass die Luft da und 
 da gerade rein ist.
@@ -320,7 +319,7 @@ Mastodon ist Open Source, Privatsphäre-freundlich und relativ
 sicher vor Zensur.
 
 Um Mastodon zu benutzen, besucht diese Seite: 
-https://joinmastodon.org/
+[https://joinmastodon.org/]
         """
         db.execute("""INSERT INTO cities(user_id, city, markdown, masto_link, 
                         twit_link) VALUES(?,?,?,?,?)""",
