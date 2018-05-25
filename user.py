@@ -236,8 +236,8 @@ schlitz
         return db.cur.fetchone()[0]
 
     def set_city(self, city):
-        masto_link = "example.mastodon.social/@" + city # get masto_link
-        twit_link = "example.twitter.com/" + city # get twit_link
+        masto_link = "https://example.mastodon.social/@" + city # get masto_link
+        twit_link = "https://example.twitter.com/" + city # get twit_link
         mailinglist = city + "@" + config['web']['host']
         markdown = """# Wie funktioniert Ticketfrei?
 
@@ -249,12 +249,12 @@ Willst du einen Fahrscheinfreien ÖPNV erkämpfen?
 Schau einfach auf das Profil unseres Bots: """ + twit_link + """
 
 Hat jemand vor kurzem etwas über Kontrolleur*innen gepostet?
-* Wenn ja, dann kauf dir vllt lieber ein Ticket. In Nürnberg 
- haben wir die Erfahrung gemacht, dass Kontis normalerweile 
- ungefähr ne Woche aktiv sind, ein paar Stunden am Tag. Wenn es 
- also in den letzten Stunden einen Bericht gab, pass lieber 
- auf.
-* Wenn nicht, ist es wahrscheinlich kein Problem :)
+*   Wenn ja, dann kauf dir vllt lieber ein Ticket. In Nürnberg 
+    haben wir die Erfahrung gemacht, dass Kontis normalerweile 
+    ungefähr ne Woche aktiv sind, ein paar Stunden am Tag. Wenn es 
+    also in den letzten Stunden einen Bericht gab, pass lieber 
+    auf.
+*   Wenn nicht, ist es wahrscheinlich kein Problem :)
 
 Wir können natürlich nicht garantieren, dass es sicher ist, 
 also pass trotzdem auf, wer auf dem Bahnsteig steht.
@@ -268,9 +268,9 @@ Kontrolleur sieht:
 
 Ganz einfach, du schreibst es den anderen. Das geht entweder
 
-* mit Mastodon [""" + masto_link + """](Link zu unserem Profil)
-* über Twitter: [""" + twit_link + """](Link zu unserem Profil)
-* Oder per Mail an [mailto:""" + mailinglist + "](" + mailinglist + """, wenn 
+* mit Mastodon [Link zu unserem Profil](""" + masto_link + """)
+* über Twitter: [Link zu unserem Profil](""" + twit_link + """)
+* Oder per Mail an [""" + mailinglist + "](mailto:" + mailinglist + """), wenn 
   ihr kein Social Media benutzen wollt.
 
 Schreibe einfach einen Toot oder einen Tweet, der den Bot 
@@ -280,9 +280,9 @@ mentioned, und gib an
 
 Zum Beispiel so:
 
-!(Screenshot of writing a Toot)[https://github.com/b3yond/ticketfrei/blob/master/guides/tooting_screenshot.png]
+![Screenshot of writing a Toot](https://github.com/b3yond/ticketfrei/raw/master/guides/tooting_screenshot.png)
 
-!(A toot ready to be shared)[https://github.com/b3yond/ticketfrei/blob/master/guides/toot_screenshot.png|A toot ready to be boosted]
+![A toot ready to be shared](https://github.com/b3yond/ticketfrei/raw/master/guides/toot_screenshot.png)
 
 Der Bot wird die Nachricht dann weiterverbreiten, auch zu den 
 anderen Netzwerken.
@@ -295,7 +295,7 @@ sicherzustellen!
 
 Aber natürlich! Wir haben Katzenbilder!
 
-!(Katzenbilder!)[https://lorempixel.com/550/300/cats]
+![Katzenbilder!](https://lorempixel.com/550/300/cats)
 
 Glaubt besser nicht, wenn jemand postet, dass die Luft da und 
 da gerade rein ist.
@@ -322,7 +322,7 @@ Mastodon ist Open Source, Privatsphäre-freundlich und relativ
 sicher vor Zensur.
 
 Um Mastodon zu benutzen, besucht diese Seite: 
-[https://joinmastodon.org/]
+[https://joinmastodon.org/](https://joinmastodon.org/)
         """
         db.execute("""INSERT INTO cities(user_id, city, markdown, masto_link, 
                         twit_link) VALUES(?,?,?,?,?)""",
