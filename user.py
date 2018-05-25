@@ -241,20 +241,20 @@ schlitz
         mailinglist = city + "@" + config['web']['host']
         markdown = """# Wie funktioniert Ticketfrei?
 
-Willst du mithelfen, Ticketkontrolleure zu überwachen?
+Willst du mithelfen, Ticketkontrolleur\*innen zu überwachen?
 Willst du einen Fahrscheinfreien ÖPNV erkämpfen?
 
 ## Ist es gerade sicher, schwarz zu fahren?
 
 Schau einfach auf das Profil unseres Bots: """ + twit_link + """
 
-Hat jemand vor kurzem etwas über Kontrolleur*innen gepostet?
-*   Wenn ja, dann kauf dir vllt lieber ein Ticket. In Nürnberg 
-    haben wir die Erfahrung gemacht, dass Kontis normalerweile 
-    ungefähr ne Woche aktiv sind, ein paar Stunden am Tag. Wenn es 
-    also in den letzten Stunden einen Bericht gab, pass lieber 
-    auf.
-*   Wenn nicht, ist es wahrscheinlich kein Problem :)
+Hat jemand vor kurzem etwas über Kontrolleur\*innen gepostet?
+* Wenn ja, dann kauf dir vllt lieber ein Ticket. In Nürnberg 
+  haben wir die Erfahrung gemacht, dass Kontis normalerweile
+  ungefähr ne Woche aktiv sind, ein paar Stunden am Tag. Wenn es 
+  also in den letzten Stunden einen Bericht gab, pass lieber 
+  auf.
+* Wenn nicht, ist es wahrscheinlich kein Problem :)
 
 Wir können natürlich nicht garantieren, dass es sicher ist, 
 also pass trotzdem auf, wer auf dem Bahnsteig steht.
@@ -275,6 +275,7 @@ Ganz einfach, du schreibst es den anderen. Das geht entweder
 
 Schreibe einfach einen Toot oder einen Tweet, der den Bot 
 mentioned, und gib an
+
 * Wo du die Kontis gesehen hast
 * Welche Linie sie benutzen und in welche Richtung sie fahren.
 
