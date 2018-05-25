@@ -13,7 +13,7 @@ class User(object):
         self.uid = uid
 
     def check_password(self, password):
-        db.execute("SELECT passhash FROM user WHERE id=?;", (self.uid, ))
+        db.execute("SELECT passhash FROM user WHERE id=?;", (self.uid,))
         passhash, = db.cur.fetchone()
         return scrypt_mcf_check(passhash.encode('ascii'),
                                 password.encode('utf-8'))
@@ -23,11 +23,12 @@ class User(object):
         db.execute("UPDATE user SET passhash=? WHERE id=?;",
                    (passhash, self.uid))
         db.commit()
+
     password = property(None, password)  # setter only, can't read back
 
     @property
     def enabled(self):
-        db.execute("SELECT enabled FROM user WHERE user_id=?;", (self.uid, ))
+        db.execute("SELECT enabled FROM user WHERE user_id=?;", (self.uid,))
         return bool(db.cur.fetchone()[0])
 
     @enabled.setter
@@ -38,11 +39,11 @@ class User(object):
 
     @property
     def emails(self):
-        db.execute("SELECT email FROM email WHERE user_id=?;", (self.uid, ))
-        return (*db.cur.fetchall(), )
+        db.execute("SELECT email FROM email WHERE user_id=?;", (self.uid,))
+        return (*db.cur.fetchall(),)
 
     def delete_email(self, email):
-        db.execute("SELECT COUNT(*) FROM email WHERE user_id=?", (self.uid, ))
+        db.execute("SELECT COUNT(*) FROM email WHERE user_id=?", (self.uid,))
         if db.cur.fetchone()[0] == 1:
             return False  # don't allow to delete last email
         db.execute("DELETE FROM email WHERE user_id=? AND email=?;",
@@ -52,13 +53,13 @@ class User(object):
 
     def email_token(self, email):
         return jwt.encode({
-                'email': email,
-                'uid': self.uid
-            }, db.secret).decode('ascii')
+            'email': email,
+            'uid': self.uid
+        }, db.secret).decode('ascii')
 
     def is_appropriate(self, report):
         db.execute("SELECT pattern FROM triggerpatterns WHERE user_id=?;",
-                   (self.uid, ))
+                   (self.uid,))
         for pattern, in db.cur.fetchall():
             if pattern.search(report.text) is not None:
                 break
@@ -66,19 +67,60 @@ class User(object):
             # no pattern matched
             return False
         db.execute("SELECT word FROM badwords WHERE user_id=?;",
-                   (self.uid, ))
+                   (self.uid,))
         badwords = [word.lower() for word, in db.cur.fetchall()]
         for word in report.text.lower().split():
             if word in badwords:
                 return False
         return True
 
-    def get_masto_credentials(self):
-        db.execute("SELECT access_token, instance_id FROM mastodon_accounts WHERE user_id = ? AND active = 1;",
-                   (self.uid, ))
+    def get_telegram_credentials(self):
+        db.execute("""SELECT api_token 
+                          FROM telegram_accounts 
+                          WHERE user_id = ? AND active = 1;""",
+                   (self.uid,))
         row = db.cur.fetchone()
-        db.execute("SELECT instance, client_id, client_secret FROM mastodon_instances WHERE id = ?;",
-                   (row[1], ))
+        return row[0]
+
+    def save_telegram_credentials(self, api_token):
+        db.execute("""INSERT INTO telegram_accounts (
+                          user_id, api_token, active) VALUES(?, ?, 1);""",
+                   (self.uid, api_token))
+        db.commit()
+
+
+    def get_telegram_subscribers(self):
+        db.execute("""SELECT subscriber_id 
+                          FROM telegram_subscribers 
+                          WHERE user_id = ? AND active = 1;""",
+                   (self.uid,))
+        rows = db.cur.fetchall()
+        return rows
+
+    def add_telegram_subscribers(self, subscriber_id):
+        db.execute("""INSERT INTO telegram_subscribers (
+                            user_id, subscriber_id) VALUES(?, ?);""",
+                   (self.uid, subscriber_id))
+        db.commit()
+
+    def remove_telegram_subscribers(self, subscriber_id):
+        db.execute("""DELETE 
+                          FROM telegram_subscribers 
+                          WHERE user_id = ?
+                          AND subscriber_id = ?;""",
+                   (self.uid, subscriber_id))
+        db.commit()
+
+    def get_masto_credentials(self):
+        db.execute("""SELECT access_token, instance_id 
+                          FROM mastodon_accounts 
+                          WHERE user_id = ? AND active = 1;""",
+                   (self.uid,))
+        row = db.cur.fetchone()
+        db.execute("""SELECT instance, client_id, client_secret 
+                          FROM mastodon_instances 
+                          WHERE id = ?;""",
+                   (row[1],))
         instance = db.cur.fetchone()
         return instance[1], instance[2], row[0], instance[0]
 
@@ -92,7 +134,7 @@ class User(object):
 
     def get_seen_toot(self):
         db.execute("SELECT toot_id FROM seen_toots WHERE user_id = ?;",
-                   (self.uid, ))
+                   (self.uid,))
         return db.cur.fetchone()[0]
 
     def save_seen_toot(self, toot_id):
@@ -101,7 +143,7 @@ class User(object):
 
     def get_seen_tweet(self):
         db.execute("SELECT tweet_id FROM seen_tweets WHERE user_id = ?;",
-                   (self.uid, ))
+                   (self.uid,))
         return db.cur.fetchone()[0]
 
     def save_seen_tweet(self, tweet_id):
@@ -110,7 +152,7 @@ class User(object):
 
     def get_seen_dm(self):
         db.execute("SELECT message_id FROM seen_dms WHERE user_id = ?;",
-                   (self.uid, ))
+                   (self.uid,))
         return db.cur.fetchone()
 
     def save_seen_dm(self, tweet_id):
@@ -118,11 +160,14 @@ class User(object):
                    (tweet_id, self.uid))
 
     def get_mailinglist(self):
-        db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
+        db.execute("""SELECT email 
+                          FROM mailinglist 
+                          WHERE user_id = ? AND active = 1;""", (self.uid,))
         return db.cur.fetchone()[0]
 
     def get_seen_mail(self):
-        db.execute("SELECT mail_date FROM seen_mails WHERE user_id = ?;", (self.uid, ))
+        db.execute("""SELECT mail_date 
+                          FROM seen_mails WHERE user_id = ?;""", (self.uid,))
         return db.cur.fetchone()[0]
 
     def save_seen_mail(self, mail_date):
@@ -130,38 +175,50 @@ class User(object):
                    (mail_date, self.uid))
 
     def get_trigger_words(self, table):
-        db.execute("SELECT words FROM ? WHERE user_id = ?;", (table, self.uid,))
+        db.execute("""SELECT words 
+                          FROM ? WHERE user_id = ?;""", (table, self.uid,))
         return db.cur.fetchone()[0]
 
     def state(self):
         return dict(foo='bar')
 
     def save_request_token(self, token):
-        db.execute("INSERT INTO twitter_request_tokens(user_id, request_token, request_token_secret) VALUES(?, ?, ?);",
-                   (self.uid, token["oauth_token"], token["oauth_token_secret"]))
+        db.execute("""INSERT INTO
+                          twitter_request_tokens(
+                              user_id, request_token, request_token_secret
+                          ) VALUES(?, ?, ?);""",
+                   (self.uid, token["oauth_token"],
+                    token["oauth_token_secret"]))
         db.commit()
 
     def get_request_token(self):
-        db.execute("SELECT request_token, request_token_secret FROM twitter_request_tokens WHERE user_id = ?;", (self.uid,))
+        db.execute("""SELECT request_token, request_token_secret 
+                          FROM twitter_request_tokens 
+                          WHERE user_id = ?;""", (self.uid,))
         request_token = db.cur.fetchone()
-        db.execute("DELETE FROM twitter_request_tokens WHERE user_id = ?;", (self.uid,))
+        db.execute("""DELETE FROM twitter_request_tokens 
+                          WHERE user_id = ?;""", (self.uid,))
         db.commit()
-        return {"oauth_token" : request_token[0],
-                "oauth_token_secret" : request_token[1]}
+        return {"oauth_token": request_token[0],
+                "oauth_token_secret": request_token[1]}
 
     def save_twitter_token(self, access_token, access_token_secret):
-        db.execute(
-            "INSERT INTO twitter_accounts(user_id, client_id, client_secret) VALUES(?, ?, ?);",
-            (self.uid, access_token, access_token_secret))
+        db.execute(""""INSERT INTO twitter_accounts(
+                           user_id, client_id, client_secret
+                           ) VALUES(?, ?, ?);""",
+                   (self.uid, access_token, access_token_secret))
         db.commit()
 
     def get_twitter_token(self):
-        db.execute("SELECT access_token, access_token_secret FROM twitter_accouts WHERE user_id = ?;",
-                   (self.uid, ))
+        db.execute("""SELECT access_token, access_token_secret 
+                          FROM twitter_accouts WHERE user_id = ?;""",
+                   (self.uid,))
         return db.cur.fetchall()
 
     def get_mastodon_app_keys(self, instance):
-        db.execute("SELECT client_id, client_secret FROM mastodon_instances WHERE instance = ?;", (instance, ))
+        db.execute("""SELECT client_id, client_secret 
+                          FROM mastodon_instances 
+                          WHERE instance = ?;""", (instance,))
         try:
             row = db.cur.fetchone()
             client_id = row[0]
@@ -169,19 +226,24 @@ class User(object):
             return client_id, client_secret
         except TypeError:
             app_name = "ticketfrei" + str(db.secret)[0:4]
-            client_id, client_secret = Mastodon.create_app(app_name, api_base_url=instance)
-            db.execute("INSERT INTO mastodon_instances(instance, client_id, client_secret) VALUES(?, ?, ?);",
+            client_id, client_secret \
+                = Mastodon.create_app(app_name, api_base_url=instance)
+            db.execute("""INSERT INTO mastodon_instances(
+                              instance, client_id, client_secret
+                              ) VALUES(?, ?, ?);""",
                        (instance, client_id, client_secret))
             db.commit()
             return client_id, client_secret
 
     def save_masto_token(self, access_token, instance):
-        db.execute("SELECT id FROM mastodon_instances WHERE instance = ?;", (instance, ))
+        db.execute("""SELECT id 
+                          FROM mastodon_instances 
+                          WHERE instance = ?;""", (instance,))
         instance_id = db.cur.fetchone()[0]
         db.execute("INSERT INTO mastodon_accounts(user_id, access_token, instance_id, active) "
                    "VALUES(?, ?, ?, ?);", (self.uid, access_token, instance_id, 1))
         db.commit()
 
     def get_city(self):
-        db.execute("SELECT city FROM user WHERE id == ?;", (self.uid, ))
+        db.execute("SELECT city FROM user WHERE id == ?;", (self.uid,))
         return db.cur.fetchone()[0]
