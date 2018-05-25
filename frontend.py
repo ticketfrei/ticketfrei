@@ -29,6 +29,7 @@ def register_post():
         email = request.forms['email']
         password = request.forms['pass']
         password_repeat = request.forms['pass-repeat']
+        city = request.forms['city']
     except KeyError:
         return dict(error='Please, fill the form.')
     if password != password_repeat:
@@ -37,11 +38,12 @@ def register_post():
         return dict(error='Email address already in use.')
     # send confirmation mail
     try:
+        # print(url('confirm/' + city + '/%s' % db.user_token(email, password)))  # only for local testing
         sendmail(
                 email,
                 "Confirm your account",
                 "Complete your registration here: %s" % (
-                        url('confirm/%s' % db.user_token(email, password))
+                        url('confirm/' + city + '/%s' % db.user_token(email, password))
                     )
             )
         return dict(info='Confirmation mail sent.')
@@ -50,11 +52,11 @@ def register_post():
         return dict(error='Could not send confirmation mail.')
 
 
-@get('/confirm/<token>')
+@get('/confirm/<city>/<token>')
 @view('template/propaganda.tpl')
-def confirm(token):
+def confirm(city, token):
     # create db-entry
-    if db.confirm(token):
+    if db.confirm(token, city):
         # :todo show info "Account creation successful."
         redirect('/settings')
     return dict(error='Email confirmation failed.')
@@ -76,9 +78,13 @@ def login_post():
 
 
 @get('/city/<city>')
-@view('template/user-facing.tpl')
+@view('template/city.tpl')
 def city_page(city):
-    return db.user_facing_properties(city)
+    citydict = db.user_facing_properties(city)
+    if citydict is not None:
+        return citydict
+    redirect('/')
+    return dict(info='There is no Ticketfrei bot in your city yet. Create one yourself!')
 
 
 @get('/settings')

@@ -122,7 +122,8 @@ class DB(object):
                 markdown    TEXT,
                 masto_link  TEXT,
                 twit_link   TEXT,
-                FOREIGN KEY(user_id) REFERENCES user(id)
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                UNIQUE(user_id, city) ON CONFLICT IGNORE 
             );
         ''')
 
@@ -134,7 +135,7 @@ class DB(object):
                     ).decode('ascii')
             }, self.secret).decode('ascii')
 
-    def confirm(self, token):
+    def confirm(self, token, city):
         from user import User
         try:
             json = jwt.decode(token, self.secret)
@@ -154,7 +155,9 @@ class DB(object):
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",
                      (uid, json['email']))
         self.commit()
-        return User(uid)
+        user = User(uid)
+        user.set_city(city)
+        return user
 
     def by_email(self, email):
         from user import User
@@ -174,7 +177,8 @@ class DB(object):
             return dict(city=city,
                         markdown=markdown,
                         masto_link=masto_link,
-                        twit_link=twit_link)
+                        twit_link=twit_link,
+                        mailinglist=city + "@" + config["web"]["host"])
         except TypeError:
             return None
 
