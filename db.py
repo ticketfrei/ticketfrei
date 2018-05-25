@@ -168,7 +168,7 @@ u\d\d?
             self.execute("""INSERT INTO triggerpatterns (user_id, patterns)
                                 VALUES(?, ?); """, (uid, default_triggerpatterns))
             self.execute("INSERT INTO badwords (user_id, words) VALUES(?, ?);",
-                         (uid, ""))
+                         (uid, "bastard"))
         else:
             uid = json['uid']
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",

@@ -67,7 +67,6 @@ class User(object):
             # no pattern matched
             return False
         default_badwords = """
-bastard
 bitch
 whore
 hitler

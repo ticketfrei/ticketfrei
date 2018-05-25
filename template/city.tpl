@@ -1,7 +1,7 @@
 % rebase('template/wrapper.tpl')
 
 <%
-import markdown as md
+import markdown2 as md
 
 html = md.markdown(markdown)
 %>

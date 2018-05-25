@@ -70,8 +70,8 @@
 <div style="float: left; padding: 1.5em;">
     <h2>Edit your city page</h2>
     <p>
-        With your bot, we generated you a page, which you can use for promotion: <a href="city/$city"
-        target="_blank">Ticketfrei $city</a> You can change what your users will read there, and adjust it to your
+        With your bot, we generated you a page, which you can use for promotion: <a href="/city/{{city}}"
+        target="_blank">Ticketfrei {{city}}</a> You can change what your users will read there, and adjust it to your
         needs. <b>You should definitely adjust the Social Media profile links.</b> This is just the default text we
         suggest:
     </p>
