@@ -227,6 +227,10 @@ schlitz
                    "VALUES(?, ?, ?, ?);", (self.uid, access_token, instance_id, 1))
         db.commit()
 
+    def set_markdown(self, markdown):
+        db.execute("UPDATE cities SET markdown = ? WHERE user_id = ?;",
+                   (markdown, self.uid))
+
     def get_city(self):
         db.execute("SELECT city FROM cities WHERE user_id == ?;", (self.uid, ))
         return db.cur.fetchone()[0]

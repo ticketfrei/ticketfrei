@@ -75,8 +75,8 @@
         needs. <b>You should definitely adjust the Social Media profile links.</b> This is just the default text we
         suggest:
     </p>
-    <form action="/settings/goodlist" method="post">
-        <textarea id="markdown" rows="20" cols="70" name="goodlist" wrap="physical">{{markdown}}</textarea>
+    <form action="/settings/markdown" method="post">
+        <textarea id="markdown" rows="20" cols="70" name="markdown" wrap="physical">{{markdown}}</textarea>
         <input name='confirm' value='Save' type='submit'/>
     </form>
 </div>

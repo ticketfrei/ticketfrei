@@ -93,6 +93,13 @@ def settings(user):
     return user.state()
 
 
+@post('/settings/markdown')
+@view('template/settings.tpl')
+def update_markdown(user):
+    user.set_markdown(request.forms['markdown'])
+    return user.state()
+
+
 @post('/settings/goodlist')
 @view('template/settings.tpl')
 def update_trigger_patterns(user):
