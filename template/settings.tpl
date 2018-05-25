@@ -1,7 +1,11 @@
 % rebase('template/wrapper.tpl')
 <a href="/logout/"><button>Logout</button></a>
 
-<div id="enablebutton" style="float: right; padding: 2em;">asdf</div>
+% if enabled:
+    <div id="enablebutton" style="float: right; padding: 2em;">Disable</div>
+% else:
+    <div id="enablebutton" style="float: right; padding: 2em;" color="red">Enable</div>
+% end
 
 <a class='button' style="padding: 1.5em;" href="/login/twitter">
     <picture>
@@ -72,7 +76,7 @@
         suggest:
     </p>
     <form action="/settings/goodlist" method="post">
-        <textarea id="markdown" rows="20" cols="70" name="goodlist" wrap="physical">$markdown</textarea>
+        <textarea id="markdown" rows="20" cols="70" name="goodlist" wrap="physical">{{markdown}}</textarea>
         <input name='confirm' value='Save' type='submit'/>
     </form>
 </div>
@@ -86,7 +90,7 @@
     </p>
     <form action="/settings/goodlist" method="post">
         <!-- find a way to display current good list. js which reads from a cookie? template? -->
-        <textarea id="goodlist" rows="8" cols="70" name="goodlist" wrap="physical">$triggerwords</textarea>
+        <textarea id="goodlist" rows="8" cols="70" name="goodlist" wrap="physical">{{triggerwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>
@@ -100,7 +104,7 @@
     </p>
     <form action="/settings/blacklist" method="post">
         <!-- find a way to display current blacklist. js which reads from a cookie? template? -->
-        <textarea id="blacklist" rows="8" cols="70" name="blacklist" wrap="physical">$badwords</textarea>
+        <textarea id="blacklist" rows="8" cols="70" name="blacklist" wrap="physical">{{badwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>

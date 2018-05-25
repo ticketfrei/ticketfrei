@@ -42,13 +42,13 @@ class DB(object):
             CREATE TABLE IF NOT EXISTS triggerpatterns (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
-                pattern     TEXT,
+                patterns    TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS badwords (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
-                word        TEXT,
+                words       TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS mastodon_instances (
@@ -146,10 +146,29 @@ class DB(object):
             self.execute("INSERT INTO user (passhash) VALUES(?);",
                          (json['passhash'], ))
             uid = self.cur.lastrowid
-            self.execute("""
-                    INSERT INTO triggerpatterns (user_id, pattern)
-                        VALUES(?, ?);
-                    """, (uid, '.*'))
+            default_triggerpatterns = """
+kontroll?e
+konti
+db
+vgn
+vag
+zivil
+sicherheit
+uniform
+station
+bus
+bahn
+tram
+linie
+nuernberg
+nürnberg
+s\d
+u\d\d?            
+            """
+            self.execute("""INSERT INTO triggerpatterns (user_id, patterns)
+                                VALUES(?, ?); """, (uid, default_triggerpatterns))
+            self.execute("INSERT INTO badwords (user_id, words) VALUES(?, ?);",
+                         (uid, ""))
         else:
             uid = json['uid']
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",

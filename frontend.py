@@ -38,7 +38,7 @@ def register_post():
         return dict(error='Email address already in use.')
     # send confirmation mail
     try:
-        # print(url('confirm/' + city + '/%s' % db.user_token(email, password)))  # only for local testing
+        print(url('confirm/' + city + '/%s' % db.user_token(email, password)))  # only for local testing
         sendmail(
                 email,
                 "Confirm your account",
@@ -90,6 +90,20 @@ def city_page(city):
 @get('/settings')
 @view('template/settings.tpl')
 def settings(user):
+    return user.state()
+
+
+@post('/settings/goodlist')
+@view('template/settings.tpl')
+def update_trigger_patterns(user):
+    user.set_trigger_words(request.forms['goodlist'])
+    return user.state()
+
+
+@post('/settings/blacklist')
+@view('template/settings.tpl')
+def update_badwords(user):
+    user.set_badwords(request.forms['blacklist'])
     return user.state()
 
 

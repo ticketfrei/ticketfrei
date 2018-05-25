@@ -1,4 +1,9 @@
 % rebase('template/wrapper.tpl')
 
-$markdown.render()
+<%
+import markdown as md
 
+html = md.markdown(markdown)
+%>
+
+{{html}}
