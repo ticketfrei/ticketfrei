@@ -1,13 +1,17 @@
 % rebase('template/wrapper.tpl')
 <a href="/logout/"><button>Logout</button></a>
 
-<div id="enablebutton" style="float: right; padding: 2em;">asdf</div>
+% if enabled:
+    <div id="enablebutton" style="float: right; padding: 2em;">Disable</div>
+% else:
+    <div id="enablebutton" style="float: right; padding: 2em;" color="red">Enable</div>
+% end
 
 <a class='button' style="padding: 1.5em;" href="/login/twitter">
     <picture>
         <source type='image/webp' sizes='20px' srcset="/static-cb/1517673283/twitter-20.webp 20w,/static-cb/1517673283/twitter-40.webp 40w,/static-cb/1517673283/twitter-80.webp 80w,"/>
         <source type='image/png' sizes='20px' srcset="/static-cb/1517673283/twitter-20.png 20w,/static-cb/1517673283/twitter-40.png 40w,/static-cb/1517673283/twitter-80.png 80w,"/>
-        <img src="https://codl.forget.fr/static-cb/1517673283/twitter-20.png" alt="" />
+        <img src="https://patriciaannbridewell.files.wordpress.com/2014/04/official-twitter-logo-tile.png" alt="" />
     </picture>
     Log in with Twitter
 </a>
@@ -63,10 +67,22 @@
     </p>
 </section>
 
-<!-- offer mailing list creation button -->
+<div style="float: left; padding: 1.5em;">
+    <h2>Edit your city page</h2>
+    <p>
+        With your bot, we generated you a page, which you can use for promotion: <a href="/city/{{city}}"
+        target="_blank">Ticketfrei {{city}}</a> You can change what your users will read there, and adjust it to your
+        needs. <b>You should definitely adjust the Social Media profile links.</b> This is just the default text we
+        suggest:
+    </p>
+    <form action="/settings/markdown" method="post">
+        <textarea id="markdown" rows="20" cols="70" name="markdown" wrap="physical">{{markdown}}</textarea>
+        <input name='confirm' value='Save' type='submit'/>
+    </form>
+</div>
 
 <div style="float: left; padding: 1.5em;">
-    <!-- good list entry field -->
+    <h2>Edit your trigger patterns</h2>
     <p>
         These words have to be contained in a report.
         If none of these expressions is in the report, it will be ignored by the bot.
@@ -74,13 +90,13 @@
     </p>
     <form action="/settings/goodlist" method="post">
         <!-- find a way to display current good list. js which reads from a cookie? template? -->
-        <textarea id="goodlist" rows="8" cols="70" name="goodlist" wrap="physical"></textarea>
+        <textarea id="goodlist" rows="8" cols="70" name="goodlist" wrap="physical">{{triggerwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>
 
-<!-- blacklist entry field -->
 <div style="float:right; padding: 1.5em;">
+    <h2>Edit the blacklist</h2>
     <p>
         These words are not allowed in reports.
         If you encounter spam, you can add more here - the bot will ignore reports which use such words.
@@ -88,7 +104,7 @@
     </p>
     <form action="/settings/blacklist" method="post">
         <!-- find a way to display current blacklist. js which reads from a cookie? template? -->
-        <textarea id="blacklist" rows="8" cols="70" name="blacklist" wrap="physical"></textarea>
+        <textarea id="blacklist" rows="8" cols="70" name="blacklist" wrap="physical">{{badwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>

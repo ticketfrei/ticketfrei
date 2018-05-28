@@ -2,6 +2,9 @@
     <label for="email">Email</label>
     <input type="text" placeholder="Enter Email" name="email" id="email" required>
 
+    <label for="city">City</label>
+    <input type='text' name='city' placeholder='Barcelona'/>
+
     <label for="pass">Password</label>
     <input type="password" placeholder="Enter Password" name="pass" id="pass" required>
 
