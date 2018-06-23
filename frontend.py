@@ -114,6 +114,14 @@ def update_badwords(user):
     return user.state()
 
 
+@post('/settings/telegram')
+@view('template/settings.tpl')
+def register_telegram(user):
+    apikey = request.forms['apikey']
+    user.set_telegram_key(apikey)
+    return user.state()
+
+
 @get('/api/state')
 def api_enable(user):
     return user.state()

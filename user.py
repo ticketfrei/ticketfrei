@@ -205,6 +205,10 @@ schlitz
                    (self.uid, ))
         return db.cur.fetchall()
 
+    def set_telegram_key(self, apikey):
+        db.execute("UPDATE telegram_accounts SET apikey = ? WHERE user_id = ?;", (apikey, self.uid))
+        db.commit()
+
     def get_mastodon_app_keys(self, instance):
         db.execute("SELECT client_id, client_secret FROM mastodon_instances WHERE instance = ?;", (instance, ))
         try:

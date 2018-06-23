@@ -90,6 +90,13 @@ class DB(object):
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
+            CREATE TABLE IF NOT EXISTS telegram_accounts (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                apikey      TEXT,
+                active      INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
             CREATE TABLE IF NOT EXISTS seen_tweets (
                 id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id            INTEGER,
@@ -173,6 +180,8 @@ u\d\d?
             uid = json['uid']
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",
                      (uid, json['email']))
+        self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
+                        active) VALUES(?, ?, ?);""", (uid, "", 1))
         self.commit()
         user = User(uid)
         user.set_city(city)
