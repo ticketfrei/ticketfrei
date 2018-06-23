@@ -161,6 +161,7 @@ If you want to install it locally to develop on it:
 sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx git
 sudo git clone https://github.com/b3yond/ticketfrei
 cd ticketfrei
+git checkout multi-deployment
 ```
 
 Install the necessary packages, create and activate virtualenv:
