@@ -41,3 +41,7 @@ input[type=text], input[type=password] {
     display: inline-block;
     border: 1px solid #ccc;
 }
+
+h2 {
+    padding-top: 1em;
+}
