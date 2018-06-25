@@ -11,6 +11,7 @@ seen_toots.pickle
 seen_toots.pickle.part
 pip-selfcheck.json
 config.toml
+venv/
 bin/
 include/
 lib/

@@ -249,6 +249,7 @@ Willst du einen Fahrscheinfreien ÖPNV erkämpfen?
 Schau einfach auf das Profil unseres Bots: """ + twit_link + """
 
 Hat jemand vor kurzem etwas über Kontrolleur\*innen gepostet?
+
 * Wenn ja, dann kauf dir vllt lieber ein Ticket. In Nürnberg 
   haben wir die Erfahrung gemacht, dass Kontis normalerweile
   ungefähr ne Woche aktiv sind, ein paar Stunden am Tag. Wenn es 
