@@ -118,9 +118,12 @@ echo "Enter your domain name into the following prompt:" && read DOMAIN
 # configure nginx
 sudo sed -r "s/example.org/$DOMAIN/g" deployment/example.org.conf > /etc/nginx/sites-enabled/$DOMAIN.conf
 
-# create folder for socket
+# create folder for socket & database
 sudo mkdir /var/ticketfrei
 sudo chown www-data:www-data -R /var/ticketfrei
+
+# create folder for logs
+sudo mkdir /var/log/ticketfrei
 sudo chown www-data:www-data -R /var/log/ticketfrei
 
 # start up nginx
@@ -149,3 +152,51 @@ less /var/log/syslog
 # for the nginx web server:
 less /var/log/nginx/example.org_error.log
 ```
+
+### Development Install
+
+If you want to install it locally to develop on it:
+
+```shell
+sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx git
+sudo git clone https://github.com/b3yond/ticketfrei
+cd ticketfrei
+git checkout multi-deployment
+```
+
+Install the necessary packages, create and activate virtualenv:
+
+```shell
+virtualenv -p python3 .
+. bin/activate
+```
+
+Install the dependencies:
+
+```shell
+pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown
+```
+
+Configure the bot:
+
+```shell
+cp config.toml.example config.toml
+vim config.toml
+```
+
+This configuration is only for the admin. Users can log into
+twitter/mastodon/mail and configure their personal bot on the settings page.
+
+```shell
+# create folder for socket & database
+sudo mkdir /var/ticketfrei
+sudo chown $USER:$USER -R /var/ticketfrei
+
+# create folder for logs
+sudo mkdir /var/log/ticketfrei
+sudo chown $USER:$USER -R /var/log/ticketfrei
+
+# start Ticketfrei
+./frontend.py & ./backend.py &
+```
+

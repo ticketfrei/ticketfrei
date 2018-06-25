@@ -16,7 +16,7 @@
     Log in with Twitter
 </a>
 
-<section style="padding: 1.5em;">
+<section>
     <h2>Log in with Mastodon</h2>
     <p>
         <form action="/login/mastodon" method='post'>
@@ -67,7 +67,22 @@
     </p>
 </section>
 
-<div style="float: left; padding: 1.5em;">
+<div>
+    <h2>Connect with Telegram</h2>
+    <p>
+        If you have a Telegram account, you can register a bot there. Just write to @botfather. You can find detailed
+        instructions <a href="https://botsfortelegram.com/project/the-bot-father/" target="_blank">on Bots for
+        Telegram</a>.
+    </p>
+    <p>
+        The botfather will give you an API key - with the API key, Ticketfrei can use the Telegram bot. Enter it here:
+    </p>
+    <form action="/settings/telegram" method="post">
+        <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey" required>
+        <input name='confirm' value='Login with Telegram' type='submit'/>
+</div>
+
+<div>
     <h2>Edit your city page</h2>
     <p>
         With your bot, we generated you a page, which you can use for promotion: <a href="/city/{{city}}"
@@ -81,7 +96,7 @@
     </form>
 </div>
 
-<div style="float: left; padding: 1.5em;">
+<div>
     <h2>Edit your trigger patterns</h2>
     <p>
         These words have to be contained in a report.
@@ -95,7 +110,7 @@
     </form>
 </div>
 
-<div style="float:right; padding: 1.5em;">
+<div>
     <h2>Edit the blacklist</h2>
     <p>
         These words are not allowed in reports.
