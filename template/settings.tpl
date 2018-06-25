@@ -78,7 +78,7 @@
         The botfather will give you an API key - with the API key, Ticketfrei can use the Telegram bot. Enter it here:
     </p>
     <form action="/settings/telegram" method="post">
-        <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey" required>
+        <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey">
         <input name='confirm' value='Login with Telegram' type='submit'/>
 </div>
 
