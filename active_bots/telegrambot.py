@@ -13,8 +13,12 @@ class TelegramBot(Bot):
         updates = tb.get_updates().wait()
         reports = []
         for update in updates:
-            reports.append(Report(update.message.from.username,self,
-                                  update.message.text,None,update.message.date))
+            if update.message.text =="/stop":
+                remove_telegram_subscribers(self, update.message.from.id)  
+            else:
+                add_telegram_subscribers(self, update.message.from.id)
+                reports.append(Report(update.message.from.username,self,
+                               update.message.text,None,update.message.date))
         return reports
 
     def post(self, user, report):
