@@ -18,7 +18,6 @@
 
 <section>
     <h2>Log in with Mastodon</h2>
-    <p>
         <form action="/login/mastodon" method='post'>
             <label for="email">E-Mail of your Mastodon-Account</label>
             <input type="text" placeholder="Enter Email" name="email" id="email" required>
@@ -64,7 +63,6 @@
             </datalist>
             <input name='confirm' value='Log in' type='submit'/>
         </form>
-    </p>
 </section>
 
 <div>
