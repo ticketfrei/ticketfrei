@@ -80,6 +80,7 @@
     <form action="/settings/telegram" method="post">
         <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey">
         <input name='confirm' value='Login with Telegram' type='submit'/>
+    </form>
 </div>
 
 <div>
