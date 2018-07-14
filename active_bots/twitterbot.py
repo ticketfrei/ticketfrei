@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 class TwitterBot(Bot):
     def get_api(self, user):
-        keys = user.get_api_keys()
+        keys = user.get_twitter_credentials()
         auth = tweepy.OAuthHandler(consumer_key=keys[0],
                                    consumer_secret=keys[1])
         auth.set_access_token(keys[2],  # access_token_key
@@ -27,7 +27,11 @@ class TwitterBot(Bot):
         :return: reports: (list of report.Report objects)
         """
         reports = []
-        api = self.get_api(user)
+        try:
+            api = self.get_api(user)
+        except Exception:
+            logger.error("Error Authenticating Twitter", exc_info=True)
+            return reports
         last_mention = user.get_seen_tweet()
         try:
             if last_mention == 0:

@@ -201,7 +201,7 @@ schlitz
         db.commit()
 
     def get_twitter_token(self):
-        db.execute("SELECT access_token, access_token_secret FROM twitter_accouts WHERE user_id = ?;",
+        db.execute("SELECT client_id, client_secret FROM twitter_accounts WHERE user_id = ?;",
                    (self.uid, ))
         return db.cur.fetchall()
 
