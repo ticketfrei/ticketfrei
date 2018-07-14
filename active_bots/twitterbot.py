@@ -30,7 +30,7 @@ class TwitterBot(Bot):
         try:
             api = self.get_api(user)
         except Exception:
-            logger.error("Error Authenticating Twitter", exc_info=True)
+            #logger.error("Error Authenticating Twitter", exc_info=True)
             return reports
         last_mention = user.get_seen_tweet()
         try:

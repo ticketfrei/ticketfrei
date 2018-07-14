@@ -21,7 +21,7 @@ class MastodonBot(Bot):
         try:
             m = Mastodon(*user.get_masto_credentials())
         except TypeError:
-            logger.error("No Mastodon Credentials in database.", exc_info=True)
+            #logger.error("No Mastodon Credentials in database.", exc_info=True)
             return mentions
         try:
             notifications = m.notifications()
