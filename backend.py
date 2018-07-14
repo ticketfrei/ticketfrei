@@ -27,8 +27,6 @@ if __name__ == '__main__':
         if isinstance(ActiveBot, type) and issubclass(ActiveBot, Bot):
             bots.append(ActiveBot())
 
-    # Mailinglists not fully implemented yet. debug
-    bots.pop(1)
     try:
         while True:
             for user in db.active_users:
