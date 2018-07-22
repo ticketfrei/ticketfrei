@@ -87,6 +87,18 @@ def city_page(city):
     return dict(info='There is no Ticketfrei bot in your city yet. Create one yourself!')
 
 
+@get('/city/mail/<city>')
+@view('template/mail.tpl')
+def display_mail_page(city, user):
+    return user.state()
+
+
+@post('/city/mail/submit/<city>')
+def subscribe_mail(user, city):
+    email = request.forms['mailaddress']
+    redirect('/city/' + city)
+
+
 @get('/settings')
 @view('template/settings.tpl')
 def settings(user):
