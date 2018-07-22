@@ -96,6 +96,8 @@ def display_mail_page(city, user):
 @post('/city/mail/submit/<city>')
 def subscribe_mail(user, city):
     email = request.forms['mailaddress']
+    # add confirmation mail workflow
+    user.add_subscriber(email)
     redirect('/city/' + city)
 
 
