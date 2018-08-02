@@ -156,6 +156,9 @@ schlitz
                    (self.uid,))
         return db.cur.fetchone()[0]
 
+    def add_subscriber(self, email):
+        db.execute("INSERT INTO mailinglist(user_id, email, active VALUES(?, ?, ?);", (self.uid, email, 1))
+
     def set_badwords(self, words):
         db.execute("UPDATE badwords SET words = ? WHERE user_id = ?;",
                    (words, self.uid))
@@ -201,7 +204,7 @@ schlitz
         db.commit()
 
     def get_twitter_token(self):
-        db.execute("SELECT access_token, access_token_secret FROM twitter_accouts WHERE user_id = ?;",
+        db.execute("SELECT client_id, client_secret FROM twitter_accounts WHERE user_id = ?;",
                    (self.uid, ))
         return db.cur.fetchall()
 

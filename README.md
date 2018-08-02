@@ -133,6 +133,11 @@ sudo service nginx restart
 sudo cp deployment/ticketfrei-web.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl start ticketfrei-web.service
+
+# create and start the backend systemd service
+sudo cp deployment/ticketfrei-backend.service /etc/systemd/system
+sudo systemctl daemon-reload
+sudo systemctl start ticketfrei-backend.service
 ```
 
 ### Logs
