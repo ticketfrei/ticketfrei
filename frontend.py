@@ -89,14 +89,23 @@ def city_page(city):
 
 @get('/city/mail/<city>')
 @view('template/mail.tpl')
-def display_mail_page(city, user):
+def display_mail_page(city):
+    user = db.by_city(city)
     return user.state()
 
 
 @post('/city/mail/submit/<city>')
-def subscribe_mail(user, city):
+def subscribe_mail(city):
     email = request.forms['mailaddress']
-    # add confirmation mail workflow
+    code = generate_code(email, city)
+    # send mail with code to email
+
+
+@get('/city/mail/confirm/<code>')
+@view('template/city.tpl')
+def confirm_subscribe(code):
+    email, city = parse_code(code)
+    user = db.by_city(city)
     user.add_subscriber(email)
     redirect('/city/' + city)
 

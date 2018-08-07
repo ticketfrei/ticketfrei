@@ -196,6 +196,15 @@ u\d\d?
             return None
         return User(uid)
 
+    def by_city(self, city):
+        from user import User
+        self.execute("SELECT user_id FROM cities WHERE city=?", (city, ))
+        try:
+            uid, = self.cur.fetchone()
+        except TypeError:
+            return None
+        return User(uid)
+
     def user_facing_properties(self, city):
         self.execute("""SELECT city, markdown, masto_link, twit_link 
                             FROM cities
