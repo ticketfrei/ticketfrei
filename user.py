@@ -141,7 +141,7 @@ schlitz
 
     def get_mailinglist(self):
         db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
-        return db.cur.fetchone()[0]
+        return db.cur.fetchall()
 
     def get_seen_mail(self):
         db.execute("SELECT mail_date FROM seen_mails WHERE user_id = ?;", (self.uid, ))
