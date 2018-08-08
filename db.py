@@ -135,12 +135,39 @@ class DB(object):
         ''')
 
     def user_token(self, email, password):
+        """
+        This function is called by the register confirmation process. It wants
+        to write an email to the email table and a passhash to the user table.
+
+        :param email: a string with an E-Mail address.
+        :param password: a string with a passhash.
+        :return:
+        """
         return jwt.encode({
                 'email': email,
                 'passhash': scrypt_mcf(
                         password.encode('utf-8')
                     ).decode('ascii')
             }, self.secret).decode('ascii')
+
+    def mail_subscription_token(self, email, city):
+        """
+        This function is called by the mail subscription process. It wants
+        to write an email to the mailinglist table.
+
+        :param email: string
+        :param city: string
+        :return: a token with an encoded json dict { email: x, city: y }
+        """
+        return jwt.encode({
+            'email': email,
+            'city': city
+        }, self.secret).decode('ascii')
+
+    def confirm_subscription(self, token):
+        json = jwt.decode(token, self.secret)
+        return json['email'], json['city']
+
 
     def confirm(self, token, city):
         from user import User

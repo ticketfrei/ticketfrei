@@ -97,14 +97,20 @@ def display_mail_page(city):
 @post('/city/mail/submit/<city>')
 def subscribe_mail(city):
     email = request.forms['mailaddress']
-    code = generate_code(email, city)
+    token = db.mail_subscription_token(email, city)
+    confirm_link = url('city/mail/confirm/' + token)
+    print(confirm_link)  # only for local testing
     # send mail with code to email
+    sendmail(email, "Subscribe to Ticketfrei " + city + " Mail Notifications",
+             body="To subscribe to the mail notifications for Ticketfrei " + city + ", click on this link: " + token)
 
 
-@get('/city/mail/confirm/<code>')
+@get('/city/mail/confirm/<token>')
 @view('template/city.tpl')
-def confirm_subscribe(code):
-    email, city = parse_code(code)
+def confirm_subscribe(token):
+    email, city = db.confirm_subscription(token)
+    print(email)  # debug
+    print(city)  # debug
     user = db.by_city(city)
     user.add_subscriber(email)
     redirect('/city/' + city)

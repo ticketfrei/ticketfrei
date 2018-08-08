@@ -65,6 +65,9 @@
         </form>
 </section>
 
+<%
+# todo: hide this part, if there is already a telegram bot connected.
+%>
 <div>
     <h2>Connect with Telegram</h2>
     <p>
