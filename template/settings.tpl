@@ -89,8 +89,15 @@
     <p>
         With your bot, we generated you a page, which you can use for promotion: <a href="/city/{{city}}"
         target="_blank">Ticketfrei {{city}}</a> You can change what your users will read there, and adjust it to your
-        needs. <b>You should definitely adjust the Social Media profile links.</b> This is just the default text we
-        suggest:
+        needs.
+    </p>
+    <p>
+        <b>You should definitely adjust the Social Media profile links.</b>
+        Also consider adding this link to the text: <a href="/city/mail/{{city}}" target="_blank">Link to the mail subscription page</a>.
+        Your readers can use this to subscribe to mail notifications.
+    </p>
+    <p>
+        So this is the default text we suggest:
     </p>
     <form action="/settings/markdown" method="post">
         <textarea id="markdown" rows="20" cols="70" name="markdown" wrap="physical">{{markdown}}</textarea>

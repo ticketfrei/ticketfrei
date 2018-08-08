@@ -278,6 +278,11 @@ also pass trotzdem auf, wer auf dem Bahnsteig steht.
 Aber je mehr Leute mitmachen, desto eher kannst du dir sicher 
 sein, dass wir sie finden, bevor sie uns finden.
 
+Wenn du immer direkt gewarnt werden willst, kannst du auch die
+E-Mail-Benachrichtigungen aktivieren. Gib einfach 
+<a href="/city/mail/""" + city + """"/">hier</a> deine 
+E-Mail-Adresse an.
+
 Also, wenn du weniger Glück hast, und der erste bist, der einen 
 Kontrolleur sieht:
 
