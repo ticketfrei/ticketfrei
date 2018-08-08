@@ -3,6 +3,7 @@
 import logging
 import sendmail
 import datetime
+import mailbox
 import email
 import report
 from bot import Bot
@@ -16,9 +17,9 @@ class Mailbot(Bot):
     # returns a list of Report objects
     def crawl(self, user):
         reports = []
-        mails = []  # todo: look if new reports are in mailbox
+        mails = mailbox.mbox('/var/mail/test')  # todo: adjust to actual mailbox file
         for msg in mails:
-            if msg.date > user.get_seen_mail():
+            if get_date_from_header(msg['Date']) > user.get_seen_mail():
                 reports.append(make_report(msg, user))
         return reports
 
@@ -29,10 +30,11 @@ class Mailbot(Bot):
             rec = rec[0]
             unsubscribe_link = ""  # todo: generate unsubscribe link
             body = report.text + unsubscribe_link
+            print(body)
             if report.author != rec:
                 try:
                     sendmail.sendmail(rec, "Ticketfrei " + user.get_city() +
-                                  " Report", body=body)
+                                      " Report", body=body)
                 except Exception:
                     logger.error("Sending Mail failed.", exc_info=True)
 
@@ -45,16 +47,24 @@ def make_report(msg, user):
     :return: post: report.Report object
     """
     # get a comparable date out of the email
-    date_tuple = email.utils.parsedate_tz(msg['Date'])
-    date_tuple = datetime.datetime.fromtimestamp(
-            email.utils.mktime_tz(date_tuple)
-        )
-    date = (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()
+    date = get_date_from_header(msg['Date'])
 
-    author = msg.get("From")  # get mail author from email header
-    # :todo take only the part before the @
+    author = msg['From']  # get mail author from email header
+    # :todo take only the part in between the < >
 
     text = msg.get_payload()
     post = report.Report(author, "mail", text, None, date)
     user.save_seen_mail(date)
     return post
+
+
+def get_date_from_header(header):
+    """
+    :param header: msg['Date']
+    :return: float: total seconds
+    """
+    date_tuple = email.utils.parsedate_tz(header)
+    date_tuple = datetime.datetime.fromtimestamp(
+        email.utils.mktime_tz(date_tuple)
+    )
+    return (date_tuple - datetime.datetime(1970, 1, 1)).total_seconds()

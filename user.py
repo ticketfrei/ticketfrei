@@ -57,11 +57,11 @@ class User(object):
             }, db.secret).decode('ascii')
 
     def is_appropriate(self, report):
-        db.execute("SELECT pattern FROM triggerpatterns WHERE user_id=?;",
+        db.execute("SELECT patterns FROM triggerpatterns WHERE user_id=?;",
                    (self.uid, ))
-        patterns = db.cur.fetchone()
+        patterns = db.cur.fetchone()[0]
         for pattern in patterns.splitlines():
-            if pattern.search(report.text) is not None:
+            if pattern in report.text:
                 break
         else:
             # no pattern matched
@@ -81,7 +81,7 @@ nigger
 neger
 schlitz           
         """
-        db.execute("SELECT word FROM badwords WHERE user_id=?;",
+        db.execute("SELECT words FROM badwords WHERE user_id=?;",
                    (self.uid, ))
         badwords = db.cur.fetchone()
         for word in report.text.lower().splitlines():
@@ -144,7 +144,7 @@ schlitz
         return db.cur.fetchall()
 
     def get_seen_mail(self):
-        db.execute("SELECT mail_date FROM seen_mails WHERE user_id = ?;", (self.uid, ))
+        db.execute("SELECT mail_date FROM seen_mail WHERE user_id = ?;", (self.uid, ))
         return db.cur.fetchone()[0]
 
     def save_seen_mail(self, mail_date):

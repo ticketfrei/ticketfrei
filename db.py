@@ -122,6 +122,12 @@ class DB(object):
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
+            CREATE TABLE IF NOT EXISTS seen_mail (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                mail_date   REAL,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
             CREATE TABLE IF NOT EXISTS cities (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
@@ -211,6 +217,8 @@ u\d\d?
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
         self.commit()
         user = User(uid)
+        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?)",
+                     (uid, 0))
         user.set_city(city)
         return user
 
