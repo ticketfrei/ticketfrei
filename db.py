@@ -165,12 +165,19 @@ class DB(object):
         :param city: string
         :return: a token with an encoded json dict { email: x, city: y }
         """
-        return jwt.encode({
+        token = jwt.encode({
             'email': email,
             'city': city
         }, self.secret).decode('ascii')
+        print("mail_subscription_token")
+        print(token)
+        print(self.secret)
+        return token
 
     def confirm_subscription(self, token):
+        print("confirm_subscription")
+        print(token)
+        print(self.secret)
         json = jwt.decode(token, self.secret)
         return json['email'], json['city']
 

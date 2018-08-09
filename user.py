@@ -166,6 +166,10 @@ schlitz
         db.execute("INSERT INTO mailinglist(user_id, email, active) VALUES(?, ?, ?);", (self.uid, email, 1))
         db.commit()
 
+    def remove_subscriber(self, email):
+        db.execute("UPDATE mailinglist SET active = 0 WHERE email = ? AND user_id = ?;", (email, self.uid))
+        db.commit()
+
     def set_badwords(self, words):
         db.execute("UPDATE badwords SET words = ? WHERE user_id = ?;",
                    (words, self.uid))

@@ -109,10 +109,17 @@ def subscribe_mail(city):
 @view('template/city.tpl')
 def confirm_subscribe(token):
     email, city = db.confirm_subscription(token)
-    print(email)  # debug
-    print(city)  # debug
     user = db.by_city(city)
     user.add_subscriber(email)
+    redirect('/city/' + city)
+
+
+@get('/city/mail/unsubscribe/<token>')
+@view('template/mail.tpl')
+def unsubscribe(token):
+    email, city = db.confirm_subscription(token)
+    user = db.by_city(city)
+    user.remove_subscriber(email)
     redirect('/city/' + city)
 
 

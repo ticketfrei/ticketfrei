@@ -7,7 +7,8 @@ import mailbox
 import email
 import report
 from bot import Bot
-
+from config import config
+from db import db
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +29,9 @@ class Mailbot(Bot):
         recipients = user.get_mailinglist()
         for rec in recipients:
             rec = rec[0]
-            unsubscribe_link = ""  # todo: generate unsubscribe link
-            body = report.text + unsubscribe_link
+            unsubscribe_text = "\n_______\nYou don't want to receive those messages? Unsubscribe with this link: "
+            body = report.text + unsubscribe_text + config['web']['host'] + "/city/mail/unsubscribe/" \
+                   + db.mail_subscription_token(rec, user.get_city())
             print(body)
             if report.author != rec:
                 try:
