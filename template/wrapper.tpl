@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <title>Ticketfrei - {{get('title', 'A bot against control society!')}}</title>
     <meta name='og:title' content='Ticketfrei'/>
@@ -25,3 +27,4 @@
         <p>Contribute on <a href="https://github.com/b3yond/ticketfrei">GitHub!</a></p>
     </div>
 </body>
+</html>
