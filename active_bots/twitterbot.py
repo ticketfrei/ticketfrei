@@ -18,7 +18,7 @@ class TwitterBot(Bot):
                                    consumer_secret=keys[1])
         auth.set_access_token(keys[2],  # access_token_key
                               keys[3])  # access_token_secret
-        return tweepy.API(auth)
+        return tweepy.API(auth, wait_on_rate_limit=True)
 
     def crawl(self, user):
         """
