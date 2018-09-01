@@ -74,6 +74,7 @@ slut
 hure
 jude
 schwuchtel
+schlampe
 fag
 faggot
 nigger
@@ -116,6 +117,7 @@ schlitz
     def save_seen_toot(self, toot_id):
         db.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ?;",
                    (toot_id, self.uid))
+        db.commit()
 
     def get_seen_tweet(self):
         db.execute("SELECT tweet_id FROM seen_tweets WHERE user_id = ?;",
@@ -125,6 +127,7 @@ schlitz
     def save_seen_tweet(self, tweet_id):
         db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
+        db.commit()
 
     def get_seen_dm(self):
         db.execute("SELECT message_id FROM seen_dms WHERE user_id = ?;",
@@ -134,6 +137,7 @@ schlitz
     def save_seen_dm(self, tweet_id):
         db.execute("UPDATE seen_dms SET message_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
+        db.commit()
 
     def get_mailinglist(self):
         db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
@@ -146,10 +150,12 @@ schlitz
     def save_seen_mail(self, mail_date):
         db.execute("UPDATE seen_mail SET mail_date = ? WHERE user_id = ?;",
                    (mail_date, self.uid))
+        db.commit()
 
     def set_trigger_words(self, patterns):
         db.execute("UPDATE triggerpatterns SET patterns = ? WHERE user_id = ?;",
                    (patterns, self.uid))
+        db.commit()
 
     def get_trigger_words(self):
         db.execute("SELECT patterns FROM triggerpatterns WHERE user_id = ?;",
@@ -157,11 +163,13 @@ schlitz
         return db.cur.fetchone()[0]
 
     def add_subscriber(self, email):
-        db.execute("INSERT INTO mailinglist(user_id, email, active VALUES(?, ?, ?);", (self.uid, email, 1))
+        db.execute("INSERT INTO mailinglist(user_id, email, active) VALUES(?, ?, ?);", (self.uid, email, 1))
+        db.commit()
 
     def set_badwords(self, words):
         db.execute("UPDATE badwords SET words = ? WHERE user_id = ?;",
                    (words, self.uid))
+        db.commit()
 
     def get_badwords(self):
         db.execute("SELECT words FROM badwords WHERE user_id = ?;",
@@ -237,6 +245,7 @@ schlitz
     def set_markdown(self, markdown):
         db.execute("UPDATE cities SET markdown = ? WHERE user_id = ?;",
                    (markdown, self.uid))
+        db.commit()
 
     def get_city(self):
         db.execute("SELECT city FROM cities WHERE user_id == ?;", (self.uid, ))
