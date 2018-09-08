@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class TwitterBot(Bot):
+
     def get_api(self, user):
         keys = user.get_twitter_credentials()
         auth = tweepy.OAuthHandler(consumer_key=keys[0],
@@ -60,7 +61,10 @@ class TwitterBot(Bot):
         return []
 
     def post(self, user, report):
-        api = self.get_api(user)
+        try:
+            api = self.get_api(user)
+        except IndexError:
+            return  # no twitter account for this user.
         try:
             if report.source == self:
                 api.retweet(report.id)

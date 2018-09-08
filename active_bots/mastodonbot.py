@@ -53,7 +53,10 @@ class MastodonBot(Bot):
         return mentions
 
     def post(self, user, report):
-        m = Mastodon(*user.get_masto_credentials())
+        try:
+            m = Mastodon(*user.get_masto_credentials())
+        except TypeError:
+            return  # no mastodon account for this user.
         if report.source == self:
             try:
                 m.status_reblog(report.id)

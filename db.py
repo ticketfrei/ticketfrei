@@ -14,7 +14,7 @@ class DB(object):
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
-        self.secret = urandom(32)
+        self.secret = self.get_secret()
 
     def execute(self, *args, **kwargs):
         return self.cur.execute(*args, **kwargs)
@@ -119,7 +119,12 @@ class DB(object):
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
                 email       TEXT,
-                active      INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
+            CREATE TABLE IF NOT EXISTS seen_mail (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                mail_date   REAL,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS cities (
@@ -127,12 +132,35 @@ class DB(object):
                 user_id     INTEGER,
                 city        TEXT,
                 markdown    TEXT,
+                mail_md     TEXT,
                 masto_link  TEXT,
                 twit_link   TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id),
                 UNIQUE(user_id, city) ON CONFLICT IGNORE 
             );
+            CREATE TABLE IF NOT EXISTS secret (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                secret      BLOB
+            );
         ''')
+
+    def get_secret(self):
+        """
+        At __init__(), the db needs a secret. It tries to fetch it from the db,
+        and if it fails, it generates a new one.
+
+        :return:
+        """
+        # select only the newest secret. should be only one row anyway.
+        self.execute("SELECT secret FROM secret ORDER BY id DESC LIMIT 1")
+        try:
+            return self.cur.fetchone()[0]
+        except TypeError:
+            new_secret = urandom(32)
+            self.execute("INSERT INTO secret (secret) VALUES (?);",
+                         (new_secret, ))
+            self.commit()
+            return new_secret
 
     def user_token(self, email, password):
         """
@@ -159,10 +187,11 @@ class DB(object):
         :param city: string
         :return: a token with an encoded json dict { email: x, city: y }
         """
-        return jwt.encode({
+        token = jwt.encode({
             'email': email,
             'city': city
         }, self.secret).decode('ascii')
+        return token
 
     def confirm_subscription(self, token):
         json = jwt.decode(token, self.secret)
@@ -211,6 +240,8 @@ u\d\d?
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
         self.commit()
         user = User(uid)
+        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?)",
+                     (uid, 0))
         user.set_city(city)
         return user
 
@@ -233,13 +264,14 @@ u\d\d?
         return User(uid)
 
     def user_facing_properties(self, city):
-        self.execute("""SELECT city, markdown, masto_link, twit_link 
+        self.execute("""SELECT city, markdown, mail_md, masto_link, twit_link 
                             FROM cities
                             WHERE city=?;""", (city, ))
         try:
-            city, markdown, masto_link, twit_link = self.cur.fetchone()
+            city, markdown, mail_md, masto_link, twit_link = self.cur.fetchone()
             return dict(city=city,
                         markdown=markdown,
+                        mail_md=mail_md,
                         masto_link=masto_link,
                         twit_link=twit_link,
                         mailinglist=city + "@" + config["web"]["host"])
