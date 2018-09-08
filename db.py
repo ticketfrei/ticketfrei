@@ -14,7 +14,7 @@ class DB(object):
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
-        self.secret = urandom(32)
+        self.secret = self.get_secret()
 
     def execute(self, *args, **kwargs):
         return self.cur.execute(*args, **kwargs)
@@ -138,7 +138,29 @@ class DB(object):
                 FOREIGN KEY(user_id) REFERENCES user(id),
                 UNIQUE(user_id, city) ON CONFLICT IGNORE 
             );
+            CREATE TABLE IF NOT EXISTS secret (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                secret      BLOB
+            );
         ''')
+
+    def get_secret(self):
+        """
+        At __init__(), the db needs a secret. It tries to fetch it from the db,
+        and if it fails, it generates a new one.
+
+        :return:
+        """
+        # select only the newest secret. should be only one row anyway.
+        self.execute("SELECT secret FROM secret ORDER BY id DESC LIMIT 1")
+        try:
+            return self.cur.fetchone()[0]
+        except TypeError:
+            new_secret = urandom(32)
+            self.execute("INSERT INTO secret (secret) VALUES (?);",
+                         (new_secret, ))
+            self.commit()
+            return new_secret
 
     def user_token(self, email, password):
         """
@@ -169,15 +191,9 @@ class DB(object):
             'email': email,
             'city': city
         }, self.secret).decode('ascii')
-        print("mail_subscription_token")
-        print(token)
-        print(self.secret)
         return token
 
     def confirm_subscription(self, token):
-        print("confirm_subscription")
-        print(token)
-        print(self.secret)
         json = jwt.decode(token, self.secret)
         return json['email'], json['city']
 
