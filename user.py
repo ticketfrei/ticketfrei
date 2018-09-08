@@ -140,7 +140,7 @@ schlitz
         db.commit()
 
     def get_mailinglist(self):
-        db.execute("SELECT email FROM mailinglist WHERE user_id = ? AND active = 1;", (self.uid, ))
+        db.execute("SELECT email FROM mailinglist WHERE user_id = ?;", (self.uid, ))
         return db.cur.fetchall()
 
     def get_seen_mail(self):
@@ -163,11 +163,11 @@ schlitz
         return db.cur.fetchone()[0]
 
     def add_subscriber(self, email):
-        db.execute("INSERT INTO mailinglist(user_id, email, active) VALUES(?, ?, ?);", (self.uid, email, 1))
+        db.execute("INSERT INTO mailinglist(user_id, email) VALUES(?, ?);", (self.uid, email))
         db.commit()
 
     def remove_subscriber(self, email):
-        db.execute("UPDATE mailinglist SET active = 0 WHERE email = ? AND user_id = ?;", (email, self.uid))
+        db.execute("DELETE FROM mailinglist WHERE email = ? AND user_id = ?;", (email, self.uid))
         db.commit()
 
     def set_badwords(self, words):
@@ -184,6 +184,7 @@ schlitz
         # necessary:
         # - city
         # - markdown
+        # - mail_md
         # - goodlist
         # - blacklist
         # - logged in with twitter?
@@ -192,6 +193,7 @@ schlitz
         citydict = db.user_facing_properties(self.get_city())
         return dict(city=citydict['city'],
                     markdown=citydict['markdown'],
+                    mail_md=citydict['mail_md'],
                     triggerwords=self.get_trigger_words(),
                     badwords=self.get_badwords(),
                     enabled=self.enabled)
@@ -249,6 +251,11 @@ schlitz
     def set_markdown(self, markdown):
         db.execute("UPDATE cities SET markdown = ? WHERE user_id = ?;",
                    (markdown, self.uid))
+        db.commit()
+
+    def set_mail_md(self, mail_md):
+        db.execute("UPDATE cities SET mail_md = ? WHERE user_id = ?;",
+                   (mail_md, self.uid))
         db.commit()
 
     def get_city(self):
@@ -351,7 +358,25 @@ sicher vor Zensur.
 Um Mastodon zu benutzen, besucht diese Seite: 
 [https://joinmastodon.org/](https://joinmastodon.org/)
         """
-        db.execute("""INSERT INTO cities(user_id, city, markdown, masto_link, 
-                        twit_link) VALUES(?,?,?,?,?)""",
-                   (self.uid, city, markdown, masto_link, twit_link))
+        mail_md = """# Immer up-to-date
+
+Du bist viel unterwegs und hast keine Lust, jedes Mal auf das Profil des Bots
+zu schauen? Kein Problem. Unsere Mail Notifications benachrichtigen dich, wenn
+irgendwo Kontis gesehen werden.
+
+Wenn du uns deine E-Mail-Adresse gibst, kriegst du bei jedem Konti-Report eine
+Mail. Wenn du eine Mail-App auf dem Handy hast, so wie 
+[K9Mail](https://k9mail.github.io/), kriegst du sogar eine Push Notification. So
+bist du immer Up-to-date über alles, was im Verkehrsnetz passiert.
+
+## Keine Sorge
+
+Wir benutzen deine E-Mail-Adresse selbstverständlich für nichts anderes. Du 
+kannst die Benachrichtigungen jederzeit deaktivieren, mit jeder Mail wird ein
+unsubscribe-link mitgeschickt. 
+        """
+        db.execute("""INSERT INTO cities(user_id, city, markdown, mail_md,
+                        masto_link, twit_link) VALUES(?,?,?,?,?,?)""",
+                   (self.uid, city, markdown, mail_md, masto_link, twit_link))
         db.commit()
+

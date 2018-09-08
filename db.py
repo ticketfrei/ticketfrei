@@ -119,7 +119,6 @@ class DB(object):
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
                 email       TEXT,
-                active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS seen_mail (
@@ -133,6 +132,7 @@ class DB(object):
                 user_id     INTEGER,
                 city        TEXT,
                 markdown    TEXT,
+                mail_md     TEXT,
                 masto_link  TEXT,
                 twit_link   TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id),
@@ -264,13 +264,14 @@ u\d\d?
         return User(uid)
 
     def user_facing_properties(self, city):
-        self.execute("""SELECT city, markdown, masto_link, twit_link 
+        self.execute("""SELECT city, markdown, mail_md, masto_link, twit_link 
                             FROM cities
                             WHERE city=?;""", (city, ))
         try:
-            city, markdown, masto_link, twit_link = self.cur.fetchone()
+            city, markdown, mail_md, masto_link, twit_link = self.cur.fetchone()
             return dict(city=city,
                         markdown=markdown,
+                        mail_md=mail_md,
                         masto_link=masto_link,
                         twit_link=twit_link,
                         mailinglist=city + "@" + config["web"]["host"])
