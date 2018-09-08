@@ -74,7 +74,7 @@ feel free to use them as an orientation.
 
 Just add the words to the goodlist, which you want to require. A
 report is only spread, if it contains at least one of them. If you
-want to RT everything, just add a ```\*```.
+want to RT everything, just add a ```*```.
 
 There is also a blacklist, which you can use to automatically sort
 out malicious tweets. Be careful though, our filter can't read the
