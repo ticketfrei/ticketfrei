@@ -41,7 +41,7 @@ def register_post():
     try:
         link = url('confirm/' + city + '/%s' % db.user_token(email, password))
         print(link)  # only for local testing
-        logger.info('confirmation link to ' + email + ": " + link)
+        logger.error('confirmation link to ' + email + ": " + link)
         sendmail(
                 email,
                 "Confirm your account",
