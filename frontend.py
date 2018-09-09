@@ -39,13 +39,13 @@ def register_post():
         return dict(error='Email address already in use.')
     # send confirmation mail
     try:
-        print(url('confirm/' + city + '/%s' % db.user_token(email, password)))  # only for local testing
+        link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+        print(link)  # only for local testing
+        logger.info('confirmation link to ' + email + ": " + link)
         sendmail(
                 email,
                 "Confirm your account",
-                "Complete your registration here: %s" % (
-                        url('confirm/' + city + '/%s' % db.user_token(email, password))
-                    )
+                "Complete your registration here: %s" % (link)
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
