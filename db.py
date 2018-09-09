@@ -75,6 +75,12 @@ class DB(object):
                 FOREIGN KEY(mastodon_accounts_id)
                     REFERENCES mastodon_accounts(id)
             );
+            CREATE TABLE IF NOT EXISTS seen_telegrams (
+                id                 INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id            INTEGER,
+                tg_id              INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id),
+            );
             CREATE TABLE IF NOT EXISTS twitter_request_tokens (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
