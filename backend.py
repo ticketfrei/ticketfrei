@@ -37,7 +37,6 @@ if __name__ == '__main__':
                             continue
                         for bot2 in bots:
                             bot2.post(user, status)
-            time.sleep(60)  # twitter rate limit >.<
     except Exception:
         logger.error("Shutdown.", exc_info=True)
         shutdown()

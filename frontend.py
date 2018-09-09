@@ -39,13 +39,13 @@ def register_post():
         return dict(error='Email address already in use.')
     # send confirmation mail
     try:
-        print(url('confirm/' + city + '/%s' % db.user_token(email, password)))  # only for local testing
+        link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+        print(link)  # only for local testing
+        logger.error('confirmation link to ' + email + ": " + link)
         sendmail(
                 email,
                 "Confirm your account",
-                "Complete your registration here: %s" % (
-                        url('confirm/' + city + '/%s' % db.user_token(email, password))
-                    )
+                "Complete your registration here: %s" % (link)
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
@@ -160,11 +160,10 @@ def update_badwords(user):
 
 
 @post('/settings/telegram')
-@view('template/settings.tpl')
 def register_telegram(user):
     apikey = request.forms['apikey']
-    user.set_telegram_key(apikey)
-    return user.state()
+    user.update_telegram_key(apikey)
+    return city_page(user.get_city(), info="Thanks for registering Telegram!")
 
 
 @get('/api/state')
@@ -237,18 +236,19 @@ def login_mastodon(user):
     # get app tokens
     instance_url = request.forms.get('instance_url')
     masto_email = request.forms.get('email')
-    print(masto_email)
     masto_pass = request.forms.get('pass')
-    print(masto_pass)
     client_id, client_secret = user.get_mastodon_app_keys(instance_url)
     m = Mastodon(client_id=client_id, client_secret=client_secret,
                  api_base_url=instance_url)
     try:
         access_token = m.log_in(masto_email, masto_pass)
         user.save_masto_token(access_token, instance_url)
-        return dict(
-                info='Thanks for supporting decentralized social networks!'
-            )
+
+        # Trying to set the seen_toot to 0, thereby initializing it.
+        # It should work now, but has default values. Not sure if I need them.
+        user.init_seen_toot(instance_url)
+
+        return city_page(user.get_city(), info='Thanks for supporting decentralized social networks!')
     except Exception:
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')

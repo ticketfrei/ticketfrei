@@ -70,10 +70,16 @@ class DB(object):
                 id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id            INTEGER,
                 mastodon_accounts_id    INTEGER,
-                toot_id            TEXT,
+                toot_id            INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id),
                 FOREIGN KEY(mastodon_accounts_id)
                     REFERENCES mastodon_accounts(id)
+            );
+            CREATE TABLE IF NOT EXISTS seen_telegrams (
+                id                 INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id            INTEGER,
+                tg_id              INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS twitter_request_tokens (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -88,6 +94,12 @@ class DB(object):
                 client_id   TEXT,
                 client_secret   TEXT,
                 active      INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
+            CREATE TABLE IF NOT EXISTS twitter_last_request (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                date        INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS telegram_accounts (
@@ -114,6 +126,20 @@ class DB(object):
                 FOREIGN KEY(user_id) REFERENCES user(id)
                 FOREIGN KEY(twitter_accounts_id)
                     REFERENCES twitter_accounts(id)
+            );
+            CREATE TABLE IF NOT EXISTS telegram_accounts (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                api_token   TEXT,
+                active      INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
+            CREATE TABLE IF NOT EXISTS telegram_subscribers (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                subscriber_id   INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id),
+                UNIQUE(user_id, subscriber_id) ON CONFLICT IGNORE
             );
             CREATE TABLE IF NOT EXISTS mailinglist (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -209,8 +235,7 @@ class DB(object):
             self.execute("INSERT INTO user (passhash) VALUES(?);",
                          (json['passhash'], ))
             uid = self.cur.lastrowid
-            default_triggerpatterns = """
-kontroll?e
+            default_triggerpatterns = """kontroll?e
 konti
 db
 vgn
@@ -226,8 +251,7 @@ linie
 nuernberg
 nürnberg
 s\d
-u\d\d?            
-            """
+u\d\d?"""
             self.execute("""INSERT INTO triggerpatterns (user_id, patterns)
                                 VALUES(?, ?); """, (uid, default_triggerpatterns))
             self.execute("INSERT INTO badwords (user_id, words) VALUES(?, ?);",
@@ -238,10 +262,12 @@ u\d\d?
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
+        self.execute("INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?,?);",
+                     (uid, 0))
+        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?);",
+                     (uid, 0))
         self.commit()
         user = User(uid)
-        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?)",
-                     (uid, 0))
         user.set_city(city)
         return user
 
