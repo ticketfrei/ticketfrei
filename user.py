@@ -144,6 +144,16 @@ schlitz
         keys.append(row[1])
         return keys
 
+    def get_last_twitter_request(self):
+        db.execute("SELECT date FROM twitter_last_request WHERE user_id = ?;",
+                   (self.uid,))
+        return db.cur.fetchone()[0]
+
+    def set_last_twitter_request(self, date):
+        db.execute("UPDATE twitter_last_request SET date = ? WHERE user_id = ?;",
+                   (date, self.uid))
+        db.commit()
+
     def get_seen_toot(self):
         db.execute("SELECT toot_id FROM seen_toots WHERE user_id = ?;",
                    (self.uid,))

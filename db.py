@@ -90,6 +90,12 @@ class DB(object):
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
+            CREATE TABLE IF NOT EXISTS twitter_last_request (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                date        INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
             CREATE TABLE IF NOT EXISTS telegram_accounts (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,

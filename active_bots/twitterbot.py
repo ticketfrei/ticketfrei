@@ -4,6 +4,7 @@ import logging
 import tweepy
 import re
 import requests
+from time import time
 import report
 from bot import Bot
 
@@ -29,6 +30,11 @@ class TwitterBot(Bot):
         """
         reports = []
         try:
+            if user.get_last_twitter_request() + 60 > time():
+                return reports
+        except TypeError:
+            user.set_last_twitter_request(time())
+        try:
             api = self.get_api(user)
         except Exception:
             #logger.error("Error Authenticating Twitter", exc_info=True)
@@ -39,6 +45,8 @@ class TwitterBot(Bot):
                 mentions = api.mentions_timeline()
             else:
                 mentions = api.mentions_timeline(since_id=last_mention)
+            user.set_last_twitter_request(time())
+            print(time())
             for status in mentions:
                 text = re.sub(
                         "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
