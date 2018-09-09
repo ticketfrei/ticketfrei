@@ -91,7 +91,7 @@ virtualenv -p python3 .
 Install the dependencies:
 
 ```shell
-pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown
+pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown twx
 ```
 
 Configure the bot:
@@ -179,7 +179,7 @@ virtualenv -p python3 .
 Install the dependencies:
 
 ```shell
-pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown
+pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown twx
 ```
 
 Configure the bot:
