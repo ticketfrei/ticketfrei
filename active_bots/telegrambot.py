@@ -11,7 +11,7 @@ class TelegramBot(Bot):
     def crawl(self, user):
         tb = Telegram(user.get_telegram_credentials())
         seen_tg = user.get_seen_tg()
-        updates = tb.get_updates(offset=seen_tg+1).wait()
+        updates = tb.get_updates(offset=seen_tg+1, allowed_updates="message").wait()
         reports = []
         for update in updates:
             try:
