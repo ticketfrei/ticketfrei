@@ -12,7 +12,8 @@ class TelegramBot(Bot):
         tb = Telegram(user.get_telegram_credentials())
         seen_tg = user.get_seen_tg()
         try:
-            updates = tb.get_updates(offset=seen_tg+1).wait()
+            updates = tb.get_updates(offset=seen_tg + 1,
+                                     allowed_updates="message").wait()
         except TypeError:
             updates = tb.get_updates().wait()
         reports = []
