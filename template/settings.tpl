@@ -93,7 +93,8 @@
         needs.
     </p>
     <p>
-        <b>You should definitely adjust the Social Media profile links.</b>
+        <b>You should definitely adjust the Social Media, E-Mail, and Telegram 
+        profile links.</b>
         Also consider adding this link to the text: <a href="/city/mail/{{city}}"
         target="_blank">Link to the mail subscription page</a>. Your readers
         can use this to subscribe to mail notifications.

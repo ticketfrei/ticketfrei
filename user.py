@@ -62,7 +62,7 @@ class User(object):
                    (self.uid, ))
         patterns = db.cur.fetchone()[0]
         for pattern in patterns.splitlines():
-            if pattern in report.text:
+            if pattern in report.text.lower():
                 break
         else:
             # no pattern matched
@@ -372,9 +372,10 @@ Aber je mehr Leute mitmachen, desto eher kannst du dir sicher
 sein, dass wir sie finden, bevor sie uns finden.
 
 Wenn du immer direkt gewarnt werden willst, kannst du auch die
-E-Mail-Benachrichtigungen aktivieren. Gib einfach 
-<a href="/city/mail/""" + city + """"/">hier</a> deine 
-E-Mail-Adresse an.
+Benachrichtigungen über E-Mail oder Telegram aktivieren. Gib 
+einfach <a href="/city/mail/""" + city + """"/">hier</a> deine 
+E-Mail-Adresse an oder subscribe dem Telegram-Bot [@ticketfrei_""" + city + \
+                   "_bot](https://t.me/ticketfrei_" + city + """_bot) 
 
 Also, wenn du weniger Glück hast, und der erste bist, der einen 
 Kontrolleur sieht:
@@ -385,6 +386,8 @@ Ganz einfach, du schreibst es den anderen. Das geht entweder
 
 * mit Mastodon [Link zu unserem Profil](""" + masto_link + """)
 * über Twitter: [Link zu unserem Profil](""" + twit_link + """)
+* über Telegram an [@ticketfrei_""" + city + "_bot](https://t.me/ticketfrei_" \
+                   + city + """_bot)
 * Oder per Mail an [""" + mailinglist + "](mailto:" + mailinglist + """), wenn 
   ihr kein Social Media benutzen wollt.
 
