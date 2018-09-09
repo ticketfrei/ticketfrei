@@ -184,6 +184,16 @@ schlitz
                    (tweet_id, self.uid))
         db.commit()
 
+    def get_seen_tg(self):
+        db.execute("SELECT tg_id FROM seen_telegrams WHERE user_id = ?;",
+                   (self.uid,))
+        return db.cur.fetchone()
+
+    def save_seen_tg(self, tg_id):
+        db.execute("UPDATE seen_telegrams SET tg_id = ? WHERE user_id = ?;",
+                   (tg_id, self.uid))
+        db.commit()
+
     def get_mailinglist(self):
         db.execute("SELECT email FROM mailinglist WHERE user_id = ?;", (self.uid, ))
         return db.cur.fetchall()

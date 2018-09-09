@@ -10,7 +10,8 @@ logger = logging.getLogger(__name__)
 class TelegramBot(Bot):
     def crawl(self, user):
         tb = Telegram(user.get_telegram_credentials())
-        updates = tb.get_updates().wait()
+        seen_tg = user.get_seen_tg()
+        updates = tb.get_updates(offset=seen_tg+1).wait()
         reports = []
         for update in updates:
             try:
@@ -28,6 +29,7 @@ class TelegramBot(Bot):
                 else:
                     reports.append(Report(update.message.sender.username, self,
                                    update.message.text, None, update.message.date))
+                user.save_seen_tg(update.message.id)
             except AttributeError:
                 print(updates[0], updates[1])  # Telegram API returns an Error
                 return reports
