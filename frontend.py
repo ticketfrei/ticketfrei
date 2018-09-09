@@ -246,9 +246,7 @@ def login_mastodon(user):
     try:
         access_token = m.log_in(masto_email, masto_pass)
         user.save_masto_token(access_token, instance_url)
-        return dict(
-                info='Thanks for supporting decentralized social networks!'
-            )
+        city_page(user.get_city(), info='Thanks for supporting decentralized social networks!')
     except Exception:
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
