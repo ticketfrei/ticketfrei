@@ -29,6 +29,8 @@ class MastodonBot(Bot):
             logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
         for status in notifications:
+            if user.get_seen_toot() == None:
+                user.init_seen_toot(m.instance()['uri'])
             if (status['type'] == 'mention' and
                     status['status']['id'] > user.get_seen_toot()):
                 # save state

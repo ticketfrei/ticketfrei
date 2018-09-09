@@ -19,6 +19,7 @@ class TelegramBot(Bot):
         reports = []
         for update in updates:
             try:
+                user.save_seen_tg(update.update_id)
                 if update.message.text.lower() == "/start":
                     user.add_telegram_subscribers(update.message.sender.id)
                     tb.send_message(update.message.sender.id, "You are now subscribed to report notifications.")
@@ -32,10 +33,9 @@ class TelegramBot(Bot):
                     # TODO: /help message should be set in frontend
                 else:
                     reports.append(Report(update.message.sender.username, self,
-                                   update.message.text, None, update.message.date))
-                user.save_seen_tg(update.update_id)
+                                          update.message.text, None, update.message.date))
             except AttributeError:
-                print(updates[0], updates[1])  # Telegram API returns an Error
+                logger.error('Some Attribute Error. ', exc_info=True)
                 return reports
         return reports
 

@@ -67,10 +67,10 @@ class DB(object):
                 FOREIGN KEY(instance_id) REFERENCES mastodon_instances(id)
             );
             CREATE TABLE IF NOT EXISTS seen_toots (
-                id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id            INTEGER,
-                mastodon_accounts_id    INTEGER,
-                toot_id            TEXT,
+                id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE DEFAULT 1,
+                user_id            INTEGER DEFAULT 1,
+                mastodon_accounts_id    INTEGER DEFAULT 1,
+                toot_id            INTEGER DEFAULT 0,
                 FOREIGN KEY(user_id) REFERENCES user(id),
                 FOREIGN KEY(mastodon_accounts_id)
                     REFERENCES mastodon_accounts(id)
@@ -235,8 +235,7 @@ class DB(object):
             self.execute("INSERT INTO user (passhash) VALUES(?);",
                          (json['passhash'], ))
             uid = self.cur.lastrowid
-            default_triggerpatterns = """
-kontroll?e
+            default_triggerpatterns = """kontroll?e
 konti
 db
 vgn
@@ -252,8 +251,7 @@ linie
 nuernberg
 nürnberg
 s\d
-u\d\d?            
-            """
+u\d\d?"""
             self.execute("""INSERT INTO triggerpatterns (user_id, patterns)
                                 VALUES(?, ?); """, (uid, default_triggerpatterns))
             self.execute("INSERT INTO badwords (user_id, words) VALUES(?, ?);",
@@ -266,10 +264,10 @@ u\d\d?
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
         self.execute("INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?,?);",
                      (uid, 0))
+        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?);",
+                     (uid, 0))
         self.commit()
         user = User(uid)
-        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?)",
-                     (uid, 0))
         user.set_city(city)
         return user
 

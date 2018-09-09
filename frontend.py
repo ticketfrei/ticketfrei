@@ -236,16 +236,19 @@ def login_mastodon(user):
     # get app tokens
     instance_url = request.forms.get('instance_url')
     masto_email = request.forms.get('email')
-    print(masto_email)
     masto_pass = request.forms.get('pass')
-    print(masto_pass)
     client_id, client_secret = user.get_mastodon_app_keys(instance_url)
     m = Mastodon(client_id=client_id, client_secret=client_secret,
                  api_base_url=instance_url)
     try:
         access_token = m.log_in(masto_email, masto_pass)
         user.save_masto_token(access_token, instance_url)
-        city_page(user.get_city(), info='Thanks for supporting decentralized social networks!')
+
+        # Trying to set the seen_toot to 0, thereby initializing it.
+        # It should work now, but has default values. Not sure if I need them.
+        user.init_seen_toot(instance_url)
+
+        return city_page(user.get_city(), info='Thanks for supporting decentralized social networks!')
     except Exception:
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')

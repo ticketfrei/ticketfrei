@@ -154,10 +154,22 @@ schlitz
                    (date, self.uid))
         db.commit()
 
+    def init_seen_toot(self, instance_url):
+        db.execute("SELECT id FROM mastodon_instances WHERE instance = ?;",
+                   (instance_url,))
+        masto_instance = db.cur.fetchone()[0]
+        db.execute("INSERT INTO seen_toots (user_id, mastodon_accounts_id) VALUES (?,?);",
+            (self.uid, masto_instance))
+        db.conn.commit()
+        return
+
     def get_seen_toot(self):
         db.execute("SELECT toot_id FROM seen_toots WHERE user_id = ?;",
                    (self.uid,))
-        return db.cur.fetchone()[0]
+        try:
+            return db.cur.fetchone()[0]
+        except TypeError:
+            return None
 
     def save_seen_toot(self, toot_id):
         db.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ?;",

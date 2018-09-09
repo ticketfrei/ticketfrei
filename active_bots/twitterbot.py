@@ -46,7 +46,6 @@ class TwitterBot(Bot):
             else:
                 mentions = api.mentions_timeline(since_id=last_mention)
             user.set_last_twitter_request(time())
-            print(time())
             for status in mentions:
                 text = re.sub(
                         "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
