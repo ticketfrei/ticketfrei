@@ -11,7 +11,10 @@ class TelegramBot(Bot):
     def crawl(self, user):
         tb = Telegram(user.get_telegram_credentials())
         seen_tg = user.get_seen_tg()
-        updates = tb.get_updates(offset=seen_tg+1).wait()
+        try:
+            updates = tb.get_updates(offset=seen_tg+1).wait()
+        except TypeError:
+            updates = tb.get_updates().wait()
         reports = []
         for update in updates:
             try:
@@ -45,4 +48,4 @@ class TelegramBot(Bot):
                 tb.send_message(subscriber_id, text).wait()
         except Exception:
             logger.error('Error telegramming: ' + user.get_city() + ': '
-                         + report.id, exc_info=True)
+                         + str(report.id), exc_info=True)

@@ -104,7 +104,7 @@ schlitz
     def get_telegram_subscribers(self):
         db.execute("""SELECT subscriber_id 
                           FROM telegram_subscribers 
-                          WHERE user_id = ? AND active = 1;""",
+                          WHERE user_id = ?;""",
                    (self.uid,))
         rows = db.cur.fetchall()
         return rows

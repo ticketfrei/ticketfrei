@@ -79,7 +79,7 @@ class DB(object):
                 id                 INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id            INTEGER,
                 tg_id              INTEGER,
-                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS twitter_request_tokens (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -264,6 +264,8 @@ u\d\d?
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
+        self.execute("INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?,?);",
+                     (uid, 0))
         self.commit()
         user = User(uid)
         self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?)",
