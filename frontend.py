@@ -160,11 +160,10 @@ def update_badwords(user):
 
 
 @post('/settings/telegram')
-@view('template/settings.tpl')
 def register_telegram(user):
     apikey = request.forms['apikey']
-    user.set_telegram_key(apikey)
-    return user.state()
+    user.update_telegram_key(apikey)
+    return city_page(user.get_city(), info="Thanks for registering Telegram!")
 
 
 @get('/api/state')

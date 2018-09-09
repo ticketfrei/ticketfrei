@@ -126,7 +126,6 @@ class DB(object):
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
                 subscriber_id   INTEGER,
-                active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id),
                 UNIQUE(user_id, subscriber_id) ON CONFLICT IGNORE
             );

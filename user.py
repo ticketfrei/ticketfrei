@@ -94,19 +94,12 @@ schlitz
         return True
 
     def get_telegram_credentials(self):
-        db.execute("""SELECT api_token 
+        db.execute("""SELECT apikey 
                           FROM telegram_accounts 
                           WHERE user_id = ? AND active = 1;""",
                    (self.uid,))
         row = db.cur.fetchone()
         return row[0]
-
-    def save_telegram_credentials(self, api_token):
-        db.execute("""INSERT INTO telegram_accounts (
-                          user_id, api_token, active) VALUES(?, ?, 1);""",
-                   (self.uid, api_token))
-        db.commit()
-
 
     def get_telegram_subscribers(self):
         db.execute("""SELECT subscriber_id 
@@ -272,7 +265,7 @@ schlitz
                    (self.uid, ))
         return db.cur.fetchall()
 
-    def set_telegram_key(self, apikey):
+    def update_telegram_key(self, apikey):
         db.execute("UPDATE telegram_accounts SET apikey = ? WHERE user_id = ?;", (apikey, self.uid))
         db.commit()
 
