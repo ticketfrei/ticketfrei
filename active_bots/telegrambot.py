@@ -28,12 +28,12 @@ class TelegramBot(Bot):
                     tb.send_message(update.message.sender.id, "You are now unsubscribed from report notifications.")
                     # TODO: /stop message should be set in frontend
                 elif update.message.text.lower() == "/help":
-                    tb.send_message(update.message.sender.id, "Send reports here to share them with other users. Use /start and /stop to be included/excluded.")
+                    tb.send_message(update.message.sender.id, "Send reports here to share them with other users. Use /start and /stop to get reports or not.")
                     # TODO: /help message should be set in frontend
                 else:
                     reports.append(Report(update.message.sender.username, self,
                                    update.message.text, None, update.message.date))
-                user.save_seen_tg(update.message.id)
+                user.save_seen_tg(update.update_id)
             except AttributeError:
                 print(updates[0], updates[1])  # Telegram API returns an Error
                 return reports
