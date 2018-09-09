@@ -9,6 +9,7 @@ from sendmail import sendmail
 from session import SessionPlugin
 from mastodon import Mastodon
 
+
 def url(route):
     return '%s://%s/%s' % (
             request.urlparts.scheme,
@@ -78,13 +79,51 @@ def login_post():
 
 
 @get('/city/<city>')
-@view('template/city.tpl')
-def city_page(city):
+def city_page(city, info=None):
     citydict = db.user_facing_properties(city)
     if citydict is not None:
-        return citydict
-    redirect('/')
-    return dict(info='There is no Ticketfrei bot in your city yet. Create one yourself!')
+        citydict['info'] = info
+        return bottle.template('template/city.tpl', **citydict)
+    return bottle.template('template/propaganda.tpl',
+                           **dict(info='There is no Ticketfrei bot in your city'
+                                       ' yet. Create one yourself!'))
+
+
+@get('/city/mail/<city>')
+@view('template/mail.tpl')
+def display_mail_page(city):
+    user = db.by_city(city)
+    return user.state()
+
+
+@post('/city/mail/submit/<city>')
+def subscribe_mail(city):
+    email = request.forms['mailaddress']
+    token = db.mail_subscription_token(email, city)
+    confirm_link = url('city/mail/confirm/' + token)
+    print(confirm_link)  # only for local testing
+    # send mail with code to email
+    sendmail(email, "Subscribe to Ticketfrei " + city + " Mail Notifications",
+             body="To subscribe to the mail notifications for Ticketfrei " +
+                  city + ", click on this link: " + token)
+    return city_page(city, info="Thanks! You will receive a confirmation mail.")
+
+
+@get('/city/mail/confirm/<token>')
+def confirm_subscribe(token):
+    email, city = db.confirm_subscription(token)
+    user = db.by_city(city)
+    user.add_subscriber(email)
+    return city_page(city, info="Thanks for subscribing to mail notifications!")
+
+
+@get('/city/mail/unsubscribe/<token>')
+def unsubscribe(token):
+    email, city = db.confirm_subscription(token)
+    user = db.by_city(city)
+    user.remove_subscriber(email)
+    return city_page(city, info="You successfully unsubscribed " + email +
+                         " from the mail notifications.")
 
 
 @get('/settings')
@@ -100,6 +139,12 @@ def update_markdown(user):
     return user.state()
 
 
+@post('/settings/mail_md')
+@view('template/settings.tpl')
+def update_mail_md(user):
+    user.set_mail_md(request.forms['mail_md'])
+    return user.state()
+
 @post('/settings/goodlist')
 @view('template/settings.tpl')
 def update_trigger_patterns(user):
@@ -111,6 +156,14 @@ def update_trigger_patterns(user):
 @view('template/settings.tpl')
 def update_badwords(user):
     user.set_badwords(request.forms['blacklist'])
+    return user.state()
+
+
+@post('/settings/telegram')
+@view('template/settings.tpl')
+def register_telegram(user):
+    apikey = request.forms['apikey']
+    user.set_telegram_key(apikey)
     return user.state()
 
 
@@ -211,6 +264,6 @@ bottle.install(SessionPlugin('/'))
 
 if __name__ == '__main__':
     # testing only
-    bottle.run(host='localhost', port=8080)
+    bottle.run(host=config["web"]["host"], port=config["web"]["port"])
 else:
     application.catchall = False

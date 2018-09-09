@@ -9,7 +9,7 @@ ExecStart=/srv/ticketfrei/bin/python3 backend.py
 #RuntimeDirectory=uwsgi
 Restart=always
 KillSignal=SIGQUIT
-Type=notify
+Type=simple
 StandardError=syslog
 NotifyAccess=all
 

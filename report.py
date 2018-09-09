@@ -19,7 +19,7 @@ class Report(object):
         :param timestamp: time of the report
         """
         self.author = author
-        self.type = source
+        self.source = source
         self.text = text
         self.timestamp = timestamp
         self.id = id

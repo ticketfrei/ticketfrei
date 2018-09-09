@@ -6,6 +6,7 @@ consumer_secret = "your_consumer_secret"
 
 [web]
 host = "0.0.0.0"  # will be used by bottle as a host.
+port = 80
 contact = "b3yond@riseup.net"
 
 [mail]

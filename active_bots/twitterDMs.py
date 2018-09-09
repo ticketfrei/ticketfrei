@@ -18,7 +18,7 @@ class TwitterBot(Bot):
                                    consumer_secret=keys[1])
         auth.set_access_token(keys[2],  # access_token_key
                               keys[3])  # access_token_secret
-        return tweepy.API(auth)
+        return tweepy.API(auth, wait_on_rate_limit=True)
 
     def crawl(self, user):
         """
@@ -27,7 +27,10 @@ class TwitterBot(Bot):
         :return: reports: (list of report.Report objects)
         """
         reports = []
-        api = self.get_api(user)
+        try:
+            api = self.get_api(user)
+        except IndexError:
+            return reports  # no twitter account for this user.
         last_dm = user.get_seen_dm()
         try:
             if last_dm == None:

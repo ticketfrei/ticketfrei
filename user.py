@@ -58,11 +58,11 @@ class User(object):
         }, db.secret).decode('ascii')
 
     def is_appropriate(self, report):
-        db.execute("SELECT pattern FROM triggerpatterns WHERE user_id=?;",
+        db.execute("SELECT patterns FROM triggerpatterns WHERE user_id=?;",
                    (self.uid, ))
-        patterns = db.cur.fetchone()
+        patterns = db.cur.fetchone()[0]
         for pattern in patterns.splitlines():
-            if pattern.search(report.text) is not None:
+            if pattern in report.text:
                 break
         else:
             # no pattern matched
@@ -75,13 +75,14 @@ slut
 hure
 jude
 schwuchtel
+schlampe
 fag
 faggot
 nigger
 neger
 schlitz           
         """
-        db.execute("SELECT word FROM badwords WHERE user_id=?;",
+        db.execute("SELECT words FROM badwords WHERE user_id=?;",
                    (self.uid, ))
         badwords = db.cur.fetchone()
         for word in report.text.lower().splitlines():
@@ -158,6 +159,7 @@ schlitz
     def save_seen_toot(self, toot_id):
         db.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ?;",
                    (toot_id, self.uid))
+        db.commit()
 
     def get_seen_tweet(self):
         db.execute("SELECT tweet_id FROM seen_tweets WHERE user_id = ?;",
@@ -167,6 +169,7 @@ schlitz
     def save_seen_tweet(self, tweet_id):
         db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
+        db.commit()
 
     def get_seen_dm(self):
         db.execute("SELECT message_id FROM seen_dms WHERE user_id = ?;",
@@ -176,34 +179,43 @@ schlitz
     def save_seen_dm(self, tweet_id):
         db.execute("UPDATE seen_dms SET message_id = ? WHERE user_id = ?;",
                    (tweet_id, self.uid))
+        db.commit()
 
     def get_mailinglist(self):
-        db.execute("""SELECT email 
-                          FROM mailinglist 
-                          WHERE user_id = ? AND active = 1;""", (self.uid,))
-        return db.cur.fetchone()[0]
+        db.execute("SELECT email FROM mailinglist WHERE user_id = ?;", (self.uid, ))
+        return db.cur.fetchall()
 
     def get_seen_mail(self):
-        db.execute("""SELECT mail_date 
-                          FROM seen_mails WHERE user_id = ?;""", (self.uid,))
+        db.execute("SELECT mail_date FROM seen_mail WHERE user_id = ?;", (self.uid, ))
         return db.cur.fetchone()[0]
 
     def save_seen_mail(self, mail_date):
         db.execute("UPDATE seen_mail SET mail_date = ? WHERE user_id = ?;",
                    (mail_date, self.uid))
+        db.commit()
 
     def set_trigger_words(self, patterns):
         db.execute("UPDATE triggerpatterns SET patterns = ? WHERE user_id = ?;",
                    (patterns, self.uid))
+        db.commit()
 
     def get_trigger_words(self):
         db.execute("SELECT patterns FROM triggerpatterns WHERE user_id = ?;",
                    (self.uid,))
         return db.cur.fetchone()[0]
 
+    def add_subscriber(self, email):
+        db.execute("INSERT INTO mailinglist(user_id, email) VALUES(?, ?);", (self.uid, email))
+        db.commit()
+
+    def remove_subscriber(self, email):
+        db.execute("DELETE FROM mailinglist WHERE email = ? AND user_id = ?;", (email, self.uid))
+        db.commit()
+
     def set_badwords(self, words):
         db.execute("UPDATE badwords SET words = ? WHERE user_id = ?;",
                    (words, self.uid))
+        db.commit()
 
     def get_badwords(self):
         db.execute("SELECT words FROM badwords WHERE user_id = ?;",
@@ -214,6 +226,7 @@ schlitz
         # necessary:
         # - city
         # - markdown
+        # - mail_md
         # - goodlist
         # - blacklist
         # - logged in with twitter?
@@ -222,6 +235,7 @@ schlitz
         citydict = db.user_facing_properties(self.get_city())
         return dict(city=citydict['city'],
                     markdown=citydict['markdown'],
+                    mail_md=citydict['mail_md'],
                     triggerwords=self.get_trigger_words(),
                     badwords=self.get_badwords(),
                     enabled=self.enabled)
@@ -254,10 +268,13 @@ schlitz
         db.commit()
 
     def get_twitter_token(self):
-        db.execute("""SELECT access_token, access_token_secret 
-                          FROM twitter_accouts WHERE user_id = ?;""",
-                   (self.uid,))
+        db.execute("SELECT client_id, client_secret FROM twitter_accounts WHERE user_id = ?;",
+                   (self.uid, ))
         return db.cur.fetchall()
+
+    def set_telegram_key(self, apikey):
+        db.execute("UPDATE telegram_accounts SET apikey = ? WHERE user_id = ?;", (apikey, self.uid))
+        db.commit()
 
     def get_mastodon_app_keys(self, instance):
         db.execute("""SELECT client_id, client_secret 
@@ -291,6 +308,12 @@ schlitz
     def set_markdown(self, markdown):
         db.execute("UPDATE cities SET markdown = ? WHERE user_id = ?;",
                    (markdown, self.uid))
+        db.commit()
+
+    def set_mail_md(self, mail_md):
+        db.execute("UPDATE cities SET mail_md = ? WHERE user_id = ?;",
+                   (mail_md, self.uid))
+        db.commit()
 
     def get_city(self):
         db.execute("SELECT city FROM cities WHERE user_id == ?;", (self.uid, ))
@@ -310,6 +333,7 @@ Willst du einen Fahrscheinfreien ÖPNV erkämpfen?
 Schau einfach auf das Profil unseres Bots: """ + twit_link + """
 
 Hat jemand vor kurzem etwas über Kontrolleur\*innen gepostet?
+
 * Wenn ja, dann kauf dir vllt lieber ein Ticket. In Nürnberg 
   haben wir die Erfahrung gemacht, dass Kontis normalerweile
   ungefähr ne Woche aktiv sind, ein paar Stunden am Tag. Wenn es 
@@ -321,6 +345,11 @@ Wir können natürlich nicht garantieren, dass es sicher ist,
 also pass trotzdem auf, wer auf dem Bahnsteig steht.
 Aber je mehr Leute mitmachen, desto eher kannst du dir sicher 
 sein, dass wir sie finden, bevor sie uns finden.
+
+Wenn du immer direkt gewarnt werden willst, kannst du auch die
+E-Mail-Benachrichtigungen aktivieren. Gib einfach 
+<a href="/city/mail/""" + city + """"/">hier</a> deine 
+E-Mail-Adresse an.
 
 Also, wenn du weniger Glück hast, und der erste bist, der einen 
 Kontrolleur sieht:
@@ -386,7 +415,25 @@ sicher vor Zensur.
 Um Mastodon zu benutzen, besucht diese Seite: 
 [https://joinmastodon.org/](https://joinmastodon.org/)
         """
-        db.execute("""INSERT INTO cities(user_id, city, markdown, masto_link, 
-                        twit_link) VALUES(?,?,?,?,?)""",
-                   (self.uid, city, markdown, masto_link, twit_link))
+        mail_md = """# Immer up-to-date
+
+Du bist viel unterwegs und hast keine Lust, jedes Mal auf das Profil des Bots
+zu schauen? Kein Problem. Unsere Mail Notifications benachrichtigen dich, wenn
+irgendwo Kontis gesehen werden.
+
+Wenn du uns deine E-Mail-Adresse gibst, kriegst du bei jedem Konti-Report eine
+Mail. Wenn du eine Mail-App auf dem Handy hast, so wie 
+[K9Mail](https://k9mail.github.io/), kriegst du sogar eine Push Notification. So
+bist du immer Up-to-date über alles, was im Verkehrsnetz passiert.
+
+## Keine Sorge
+
+Wir benutzen deine E-Mail-Adresse selbstverständlich für nichts anderes. Du 
+kannst die Benachrichtigungen jederzeit deaktivieren, mit jeder Mail wird ein
+unsubscribe-link mitgeschickt. 
+        """
+        db.execute("""INSERT INTO cities(user_id, city, markdown, mail_md,
+                        masto_link, twit_link) VALUES(?,?,?,?,?,?)""",
+                   (self.uid, city, markdown, mail_md, masto_link, twit_link))
         db.commit()
+
