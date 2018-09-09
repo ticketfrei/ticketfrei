@@ -158,8 +158,8 @@ schlitz
         db.execute("SELECT id FROM mastodon_instances WHERE instance = ?;",
                    (instance_url,))
         masto_instance = db.cur.fetchone()[0]
-        db.execute("INSERT INTO seen_toots (user_id, mastodon_accounts_id) VALUES (?,?);",
-            (self.uid, masto_instance))
+        db.execute("INSERT INTO seen_toots (user_id, mastodon_accounts_id, toot_id) VALUES (?,?,?);",
+            (self.uid, masto_instance, 0))
         db.conn.commit()
         return
 
