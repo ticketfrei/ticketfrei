@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class Report(object):
     """
     A ticketfrei report object.

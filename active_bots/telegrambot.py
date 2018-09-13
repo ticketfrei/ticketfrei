@@ -34,7 +34,8 @@ class TelegramBot(Bot):
                 # TODO: /help message should be set in frontend
             else:
                 reports.append(Report(update.message.sender.username, self,
-                                      update.message.text, None, update.message.date))
+                                      update.message.text, None,
+                                      update.message.date))
         return reports
 
     def post(self, user, report):
