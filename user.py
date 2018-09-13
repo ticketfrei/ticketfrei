@@ -253,7 +253,7 @@ schlitz
         # - markdown
         # - mail_md
         # - goodlist
-        # - blacklist
+        # - blocklist
         # - logged in with twitter?
         # - logged in with mastodon?
         # - enabled?

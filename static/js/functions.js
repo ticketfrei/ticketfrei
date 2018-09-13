@@ -36,4 +36,4 @@ document.getElementById("enablebutton").innerHTML = enableButton();
 
 document.getElementById("goodlist").innerHTML = listformat(getCookie("goodlist"));
 
-document.getElementById("blacklist").innerHTML = listformat(getCookie("blacklist"));
+document.getElementById("blocklist").innerHTML = listformat(getCookie("blocklist"));
