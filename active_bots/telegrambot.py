@@ -17,6 +17,8 @@ class TelegramBot(Bot):
         except TypeError:
             updates = tb.get_updates().wait()
         reports = []
+        if updates == None:
+            return reports
         for update in updates:
             if update == 404:
                 return reports
