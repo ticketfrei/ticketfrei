@@ -34,7 +34,7 @@ class Mailer(object):
         try:
             context = ssl.create_default_context()
             self.s.starttls(context=context)
-        except:
+        except BaseException:  # TODO: Amend specific exception
             logger.error('StartTLS failed.', exc_info=True)
         self.s.login(config["mail"]["user"], config["mail"]["passphrase"])
 

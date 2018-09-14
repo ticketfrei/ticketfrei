@@ -48,8 +48,8 @@ class TwitterBot(Bot):
             user.set_last_twitter_request(time())
             for status in mentions:
                 text = re.sub(
-                        "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                        "", status.text)
+                    "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                    "", status.text)
                 reports.append(report.Report(status.author.screen_name,
                                              self,
                                              text,

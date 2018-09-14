@@ -38,8 +38,8 @@ class MastodonBot(Bot):
                 # add mention to mentions
                 text = re.sub(r'<[^>]*>', '', status['status']['content'])
                 text = re.sub(
-                        "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                        "", text)
+                    "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                    "", text)
                 if status['status']['visibility'] == 'public':
                     mentions.append(Report(status['account']['acct'],
                                            self,

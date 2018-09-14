@@ -23,14 +23,20 @@ class TelegramBot(Bot):
             user.save_seen_tg(update.update_id)
             if update.message.text.lower() == "/start":
                 user.add_telegram_subscribers(update.message.sender.id)
-                tb.send_message(update.message.sender.id, "You are now subscribed to report notifications.")
+                tb.send_message(
+                    update.message.sender.id,
+                    "You are now subscribed to report notifications.")
                 # TODO: /start message should be set in frontend
             elif update.message.text.lower() == "/stop":
                 user.remove_telegram_subscribers(update.message.sender.id)
-                tb.send_message(update.message.sender.id, "You are now unsubscribed from report notifications.")
+                tb.send_message(
+                    update.message.sender.id,
+                    "You are now unsubscribed from report notifications.")
                 # TODO: /stop message should be set in frontend
             elif update.message.text.lower() == "/help":
-                tb.send_message(update.message.sender.id, "Send reports here to share them with other users. Use /start and /stop to get reports or not.")
+                tb.send_message(
+                    update.message.sender.id,
+                    "Send reports here to share them with other users. Use /start and /stop to get reports or not.")
                 # TODO: /help message should be set in frontend
             else:
                 reports.append(Report(update.message.sender.username, self,
