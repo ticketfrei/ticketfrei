@@ -50,16 +50,16 @@ to check if something was retweeted in the last hour or something.
 
 To this date, we have never heard of this happening though.
 
-### blacklisting
+### blockisting
 
-You also need to edit the goodlist and the blacklist. You can do this on the
+You also need to edit the goodlist and the blocklist. You can do this on the
 website, in the settings of your bot.
 
 Just add the words to the goodlist, which you want to require. A report is only
 spread if it contains at least one of them. If you want to RT everything, just
 add a ```*```.
 
-There is also a blacklist, which you can use to automatically sort out
+There is also a blocklist, which you can use to automatically sort out
 malicious messages. Be careful though, our filter can't read the intention with
 which a word was used. Maybe you wanted it there.
 
@@ -91,7 +91,7 @@ virtualenv -p python3 .
 Install the dependencies:
 
 ```shell
-pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown
+pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown twx
 ```
 
 Configure the bot:
@@ -179,7 +179,7 @@ virtualenv -p python3 .
 Install the dependencies:
 
 ```shell
-pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown
+pip install tweepy pytoml Mastodon.py bottle pyjwt pylibscrypt Markdown twx
 ```
 
 Configure the bot:

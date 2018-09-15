@@ -9,6 +9,7 @@ from sendmail import sendmail
 from session import SessionPlugin
 from mastodon import Mastodon
 
+
 def url(route):
     return '%s://%s/%s' % (
             request.urlparts.scheme,
@@ -38,13 +39,13 @@ def register_post():
         return dict(error='Email address already in use.')
     # send confirmation mail
     try:
-        print(url('confirm/' + city + '/%s' % db.user_token(email, password)))  # only for local testing
+        link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+        print(link)  # only for local testing
+        logger.error('confirmation link to ' + email + ": " + link)
         sendmail(
                 email,
                 "Confirm your account",
-                "Complete your registration here: %s" % (
-                        url('confirm/' + city + '/%s' % db.user_token(email, password))
-                    )
+                "Complete your registration here: %s" % (link)
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
@@ -78,13 +79,14 @@ def login_post():
 
 
 @get('/city/<city>')
-@view('template/city.tpl')
-def city_page(city):
+def city_page(city, info=None):
     citydict = db.user_facing_properties(city)
     if citydict is not None:
-        return citydict
-    redirect('/')
-    return dict(info='There is no Ticketfrei bot in your city yet. Create one yourself!')
+        citydict['info'] = info
+        return bottle.template('template/city.tpl', **citydict)
+    return bottle.template('template/propaganda.tpl',
+                           **dict(info='There is no Ticketfrei bot in your city'
+                                       ' yet. Create one yourself!'))
 
 
 @get('/city/mail/<city>')
@@ -102,18 +104,26 @@ def subscribe_mail(city):
     print(confirm_link)  # only for local testing
     # send mail with code to email
     sendmail(email, "Subscribe to Ticketfrei " + city + " Mail Notifications",
-             body="To subscribe to the mail notifications for Ticketfrei " + city + ", click on this link: " + token)
+             body="To subscribe to the mail notifications for Ticketfrei " +
+                  city + ", click on this link: " + token)
+    return city_page(city, info="Thanks! You will receive a confirmation mail.")
 
 
 @get('/city/mail/confirm/<token>')
-@view('template/city.tpl')
 def confirm_subscribe(token):
     email, city = db.confirm_subscription(token)
-    print(email)  # debug
-    print(city)  # debug
     user = db.by_city(city)
     user.add_subscriber(email)
-    redirect('/city/' + city)
+    return city_page(city, info="Thanks for subscribing to mail notifications!")
+
+
+@get('/city/mail/unsubscribe/<token>')
+def unsubscribe(token):
+    email, city = db.confirm_subscription(token)
+    user = db.by_city(city)
+    user.remove_subscriber(email)
+    return city_page(city, info="You successfully unsubscribed " + email +
+                     " from the mail notifications.")
 
 
 @get('/settings')
@@ -126,6 +136,13 @@ def settings(user):
 @view('template/settings.tpl')
 def update_markdown(user):
     user.set_markdown(request.forms['markdown'])
+    return user.state()
+
+
+@post('/settings/mail_md')
+@view('template/settings.tpl')
+def update_mail_md(user):
+    user.set_mail_md(request.forms['mail_md'])
     return user.state()
 
 
@@ -144,11 +161,10 @@ def update_badwords(user):
 
 
 @post('/settings/telegram')
-@view('template/settings.tpl')
 def register_telegram(user):
     apikey = request.forms['apikey']
-    user.set_telegram_key(apikey)
-    return user.state()
+    user.update_telegram_key(apikey)
+    return city_page(user.get_city(), info="Thanks for registering Telegram!")
 
 
 @get('/api/state')
@@ -221,18 +237,19 @@ def login_mastodon(user):
     # get app tokens
     instance_url = request.forms.get('instance_url')
     masto_email = request.forms.get('email')
-    print(masto_email)
     masto_pass = request.forms.get('pass')
-    print(masto_pass)
     client_id, client_secret = user.get_mastodon_app_keys(instance_url)
     m = Mastodon(client_id=client_id, client_secret=client_secret,
                  api_base_url=instance_url)
     try:
         access_token = m.log_in(masto_email, masto_pass)
         user.save_masto_token(access_token, instance_url)
-        return dict(
-                info='Thanks for supporting decentralized social networks!'
-            )
+
+        # Trying to set the seen_toot to 0, thereby initializing it.
+        # It should work now, but has default values. Not sure if I need them.
+        user.init_seen_toot(instance_url)
+
+        return city_page(user.get_city(), info='Thanks for supporting decentralized social networks!')
     except Exception:
         logger.error('Login to Mastodon failed.', exc_info=True)
         return dict(error='Login to Mastodon failed.')
@@ -248,6 +265,6 @@ bottle.install(SessionPlugin('/'))
 
 if __name__ == '__main__':
     # testing only
-    bottle.run(host='localhost', port=8080)
+    bottle.run(host=config["web"]["host"], port=config["web"]["port"])
 else:
     application.catchall = False

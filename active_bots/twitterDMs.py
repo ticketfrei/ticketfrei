@@ -27,17 +27,20 @@ class TwitterBot(Bot):
         :return: reports: (list of report.Report objects)
         """
         reports = []
-        api = self.get_api(user)
+        try:
+            api = self.get_api(user)
+        except IndexError:
+            return reports  # no twitter account for this user.
         last_dm = user.get_seen_dm()
         try:
-            if last_dm == None:
+            if last_dm is None:
                 mentions = api.direct_messages()
             else:
                 mentions = api.mentions_timeline(since_id=last_dm[0])
             for status in mentions:
                 text = re.sub(
-                        "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                        "", status.text)
+                       "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                       "", status.text)
                 reports.append(report.Report(status.author.screen_name,
                                              "twitterDM",
                                              text,

@@ -1,4 +1,12 @@
 % rebase('template/wrapper.tpl')
+% if defined('info'):
+<div class="ui-widget">
+    <div class="ui-state-highlight ui-corner-all" style="padding: 0.7em;">
+        <p><span class="ui-icon ui-icon-info" style="float: left; margin-right: .3em;"></span>{{!info}}</p>
+    </div>
+</div>
+<br>
+% end
 % include('template/login-plain.tpl')
 <h1>Features</h1>
 <p>
@@ -42,17 +50,17 @@
     reclaim public transportation.
 </p>
 <p>
-    On short term we want to do this by helping users to avoid 
-    controllers and fines - on long term by pressuring public 
-    transportation companies to offer their services free of 
-    charge, financed by the public. 
+    On short term we want to do this by helping users to avoid
+    controllers and fines - on long term by pressuring public
+    transportation companies to offer their services free of
+    charge, financed by the public.
 </p>
 <p>
-    Because with Ticketfrei you're able to use trains and 
-    subways for free anyway. Take part and create a new 
+    Because with Ticketfrei you're able to use trains and
+    subways for free anyway. Take part and create a new
     understanding of what public transportation should look
     like!
 </p>
-    
-    
-    
+
+
+

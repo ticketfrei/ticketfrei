@@ -87,10 +87,20 @@
 <div>
     <h2>Edit your city page</h2>
     <p>
-        With your bot, we generated you a page, which you can use for promotion: <a href="/city/{{city}}"
-        target="_blank">Ticketfrei {{city}}</a> You can change what your users will read there, and adjust it to your
-        needs. <b>You should definitely adjust the Social Media profile links.</b> This is just the default text we
-        suggest:
+        With your bot, we generated you a page, which you can use for promotion:
+        <a href="/city/{{city}}" target="_blank">Ticketfrei {{city}}</a> You
+        can change what your users will read there, and adjust it to your
+        needs.
+    </p>
+    <p>
+        <b>You should definitely adjust the Social Media, E-Mail, and Telegram
+        profile links.</b>
+        Also consider adding this link to the text: <a href="/city/mail/{{city}}"
+        target="_blank">Link to the mail subscription page</a>. Your readers
+        can use this to subscribe to mail notifications.
+    </p>
+    <p>
+        So this is the default text we suggest:
     </p>
     <form action="/settings/markdown" method="post">
         <textarea id="markdown" rows="20" cols="70" name="markdown" wrap="physical">{{markdown}}</textarea>
@@ -99,11 +109,29 @@
 </div>
 
 <div>
+    <h2>Edit your mail subscription page</h2>
+    <p>
+        There is also a page where users can subscribe to mail notifications:
+        <a href="/city/mail/{{city}}" target="_blank">Ticketfrei {{city}}</a>.
+        You can change what your users will read there, and adjust it to your
+        needs.
+    </p>
+    <p>
+        So this is the default text we suggest:
+    </p>
+    <form action="/settings/mail_md" method="post">
+        <textarea id="mail_md" rows="20" cols="70" name="mail_md" wrap="physical">{{mail_md}}</textarea>
+        <input name='confirm' value='Save' type='submit'/>
+    </form>
+</div>
+
+<div>
     <h2>Edit your trigger patterns</h2>
     <p>
-        These words have to be contained in a report.
-        If none of these expressions is in the report, it will be ignored by the bot.
-        You can use the defaults, or enter some expressions specific to your city and language.
+        These words have to be contained in a report. If none of these
+        expressions is in the report, it will be ignored by the bot. You can
+        use the defaults, or enter some expressions specific to your city and
+        language.
     </p>
     <form action="/settings/goodlist" method="post">
         <!-- find a way to display current good list. js which reads from a cookie? template? -->
@@ -115,11 +143,12 @@
 <div>
     <h2>Edit the blocklist</h2>
     <p>
-        These words are not allowed in reports.
-        If you encounter spam, you can add more here - the bot will ignore reports which use such words.
-        There are words which you can't exclude from the blocklist, e.g. certain racist, sexist, or antisemitic slurs.
+        These words are not allowed in reports. If you encounter spam, you can
+        add more here - the bot will ignore reports which use such words.
+        <!-- There are words which you can't exclude from the blocklist, e.g. certain racist, sexist, or antisemitic slurs.
     </p>
     <form action="/settings/blocklist" method="post">
+        <!-- find a way to display current blocklist. js which reads from a cookie? template? -->
         <textarea id="blocklist" rows="8" cols="70" name="blocklist" wrap="physical">{{badwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>

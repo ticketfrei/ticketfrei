@@ -4,6 +4,7 @@ import logging
 import tweepy
 import re
 import requests
+from time import time
 import report
 from bot import Bot
 
@@ -12,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 
 class TwitterBot(Bot):
+
     def get_api(self, user):
         keys = user.get_twitter_credentials()
         auth = tweepy.OAuthHandler(consumer_key=keys[0],
@@ -28,6 +30,11 @@ class TwitterBot(Bot):
         """
         reports = []
         try:
+            if user.get_last_twitter_request() + 60 > time():
+                return reports
+        except TypeError:
+            user.set_last_twitter_request(time())
+        try:
             api = self.get_api(user)
         except Exception:
             #logger.error("Error Authenticating Twitter", exc_info=True)
@@ -38,10 +45,11 @@ class TwitterBot(Bot):
                 mentions = api.mentions_timeline()
             else:
                 mentions = api.mentions_timeline(since_id=last_mention)
+            user.set_last_twitter_request(time())
             for status in mentions:
                 text = re.sub(
-                        "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                        "", status.text)
+                    "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                    "", status.text)
                 reports.append(report.Report(status.author.screen_name,
                                              self,
                                              text,
@@ -60,7 +68,10 @@ class TwitterBot(Bot):
         return []
 
     def post(self, user, report):
-        api = self.get_api(user)
+        try:
+            api = self.get_api(user)
+        except IndexError:
+            return  # no twitter account for this user.
         try:
             if report.source == self:
                 api.retweet(report.id)
