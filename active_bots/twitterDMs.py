@@ -39,8 +39,8 @@ class TwitterBot(Bot):
                 mentions = api.mentions_timeline(since_id=last_dm[0])
             for status in mentions:
                 text = re.sub(
-                    "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                    "", status.text)
+                       "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                       "", status.text)
                 reports.append(report.Report(status.author.screen_name,
                                              "twitterDM",
                                              text,
