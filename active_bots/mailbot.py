@@ -32,7 +32,7 @@ class Mailbot(Bot):
             rec = rec[0]
             unsubscribe_text = "\n_______\nYou don't want to receive those messages? Unsubscribe with this link: "
             body = report.text + unsubscribe_text + config['web']['host'] + "/city/mail/unsubscribe/" \
-                + db.mail_subscription_token(rec, user.get_city())
+                   + db.mail_subscription_token(rec, user.get_city())
             if report.author != rec:
                 try:
                     sendmail.sendmail(rec, "Ticketfrei " + user.get_city() +
