@@ -136,10 +136,10 @@ def update_trigger_patterns(user):
     return user.state()
 
 
-@post('/settings/blacklist')
+@post('/settings/blocklist')
 @view('template/settings.tpl')
 def update_badwords(user):
-    user.set_badwords(request.forms['blacklist'])
+    user.set_badwords(request.forms['blocklist'])
     return user.state()
 
 

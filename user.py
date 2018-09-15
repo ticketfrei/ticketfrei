@@ -181,7 +181,7 @@ schlitz
         # - city
         # - markdown
         # - goodlist
-        # - blacklist
+        # - blocklist
         # - logged in with twitter?
         # - logged in with mastodon?
         # - enabled?
