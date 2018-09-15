@@ -18,7 +18,8 @@ class Mailbot(Bot):
     # returns a list of Report objects
     def crawl(self, user):
         reports = []
-        mails = mailbox.mbox('/var/mail/test')  # todo: adjust to actual mailbox
+        # todo: adjust to actual mailbox
+        mails = mailbox.mbox('/var/mail/test')
         for msg in mails:
             if get_date_from_header(msg['Date']) > user.get_seen_mail():
                 reports.append(make_report(msg, user))

@@ -162,7 +162,7 @@ class DB(object):
                 masto_link  TEXT,
                 twit_link   TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id),
-                UNIQUE(user_id, city) ON CONFLICT IGNORE 
+                UNIQUE(user_id, city) ON CONFLICT IGNORE
             );
             CREATE TABLE IF NOT EXISTS secret (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -198,11 +198,11 @@ class DB(object):
         :return:
         """
         return jwt.encode({
-                'email': email,
-                'passhash': scrypt_mcf(
-                        password.encode('utf-8')
-                    ).decode('ascii')
-            }, self.secret).decode('ascii')
+            'email': email,
+            'passhash': scrypt_mcf(
+                password.encode('utf-8')
+            ).decode('ascii')
+        }, self.secret).decode('ascii')
 
     def mail_subscription_token(self, email, city):
         """
@@ -222,7 +222,6 @@ class DB(object):
     def confirm_subscription(self, token):
         json = jwt.decode(token, self.secret)
         return json['email'], json['city']
-
 
     def confirm(self, token, city):
         from user import User
@@ -262,10 +261,10 @@ u\d\d?"""
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
-        self.execute("INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?,?);",
-                     (uid, 0))
-        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?);",
-                     (uid, 0))
+        self.execute(
+            "INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?,?);", (uid, 0))
+        self.execute(
+            "INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?);", (uid, 0))
         self.commit()
         user = User(uid)
         user.set_city(city)
@@ -290,7 +289,7 @@ u\d\d?"""
         return User(uid)
 
     def user_facing_properties(self, city):
-        self.execute("""SELECT city, markdown, mail_md, masto_link, twit_link 
+        self.execute("""SELECT city, markdown, mail_md, masto_link, twit_link
                             FROM cities
                             WHERE city=?;""", (city, ))
         try:

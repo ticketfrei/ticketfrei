@@ -80,7 +80,7 @@ fag
 faggot
 nigger
 neger
-schlitz           
+schlitz
         """
         db.execute("SELECT words FROM badwords WHERE user_id=?;",
                    (self.uid, ))
@@ -253,7 +253,7 @@ schlitz
         # - markdown
         # - mail_md
         # - goodlist
-        # - blacklist
+        # - blocklist
         # - logged in with twitter?
         # - logged in with mastodon?
         # - enabled?
@@ -345,8 +345,8 @@ schlitz
         return db.cur.fetchone()[0]
 
     def set_city(self, city):
-        masto_link = "https://example.mastodon.social/@" + city # get masto_link
-        twit_link = "https://example.twitter.com/" + city # get twit_link
+        masto_link = "https://example.mastodon.social/@" + city  # get masto_link
+        twit_link = "https://example.twitter.com/" + city  # get twit_link
         mailinglist = city + "@" + config['web']['host']
         markdown = """# Wie funktioniert Ticketfrei?
 
@@ -464,4 +464,3 @@ unsubscribe-link mitgeschickt.
                         masto_link, twit_link) VALUES(?,?,?,?,?,?)""",
                    (self.uid, city, markdown, mail_md, masto_link, twit_link))
         db.commit()
-

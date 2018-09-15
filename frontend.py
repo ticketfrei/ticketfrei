@@ -123,7 +123,7 @@ def unsubscribe(token):
     user = db.by_city(city)
     user.remove_subscriber(email)
     return city_page(city, info="You successfully unsubscribed " + email +
-                         " from the mail notifications.")
+                     " from the mail notifications.")
 
 
 @get('/settings')
@@ -145,6 +145,7 @@ def update_mail_md(user):
     user.set_mail_md(request.forms['mail_md'])
     return user.state()
 
+
 @post('/settings/goodlist')
 @view('template/settings.tpl')
 def update_trigger_patterns(user):
@@ -152,10 +153,10 @@ def update_trigger_patterns(user):
     return user.state()
 
 
-@post('/settings/blacklist')
+@post('/settings/blocklist')
 @view('template/settings.tpl')
 def update_badwords(user):
-    user.set_badwords(request.forms['blacklist'])
+    user.set_badwords(request.forms['blocklist'])
     return user.state()
 
 

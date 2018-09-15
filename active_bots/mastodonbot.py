@@ -21,7 +21,7 @@ class MastodonBot(Bot):
         try:
             m = Mastodon(*user.get_masto_credentials())
         except TypeError:
-            #logger.error("No Mastodon Credentials in database.", exc_info=True)
+            # logger.error("No Mastodon Credentials in database.", exc_info=True)
             return mentions
         try:
             notifications = m.notifications()
@@ -29,7 +29,7 @@ class MastodonBot(Bot):
             logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
         for status in notifications:
-            if user.get_seen_toot() == None:
+            if user.get_seen_toot() is None:
                 user.init_seen_toot(m.instance()['uri'])
             if (status['type'] == 'mention' and
                     status['status']['id'] > user.get_seen_toot()):
@@ -38,8 +38,8 @@ class MastodonBot(Bot):
                 # add mention to mentions
                 text = re.sub(r'<[^>]*>', '', status['status']['content'])
                 text = re.sub(
-                        "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                        "", text)
+                    "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                    "", text)
                 if status['status']['visibility'] == 'public':
                     mentions.append(Report(status['account']['acct'],
                                            self,
@@ -71,4 +71,5 @@ class MastodonBot(Bot):
             try:
                 m.toot(text)
             except Exception:
-                logger.error('Error tooting: ' + user.get_city() + ': ' + report.id, exc_info=True)
+                logger.error('Error tooting: ' + user.get_city() + ': ' +
+                             report.id, exc_info=True)

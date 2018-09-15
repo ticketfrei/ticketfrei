@@ -141,15 +141,15 @@
 </div>
 
 <div>
-    <h2>Edit the blacklist</h2>
+    <h2>Edit the blocklist</h2>
     <p>
         These words are not allowed in reports. If you encounter spam, you can
         add more here - the bot will ignore reports which use such words.
-        <!-- There are words which you can't exclude from the blacklist, e.g. certain racist, sexist, or antisemitic slurs.
+        <!-- There are words which you can't exclude from the blocklist, e.g. certain racist, sexist, or antisemitic slurs.
     </p>
-    <form action="/settings/blacklist" method="post">
-        <!-- find a way to display current blacklist. js which reads from a cookie? template? -->
-        <textarea id="blacklist" rows="8" cols="70" name="blacklist" wrap="physical">{{badwords}}</textarea>
+    <form action="/settings/blocklist" method="post">
+        <!-- find a way to display current blocklist. js which reads from a cookie? template? -->
+        <textarea id="blocklist" rows="8" cols="70" name="blocklist" wrap="physical">{{badwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>
