@@ -71,12 +71,14 @@
 <div>
     <h2>Connect with Telegram</h2>
     <p>
-        If you have a Telegram account, you can register a bot there. Just write to @botfather. You can find detailed
-        instructions <a href="https://botsfortelegram.com/project/the-bot-father/" target="_blank">on Bots for
-        Telegram</a>.
+        If you have a Telegram account, you can register a bot there. Just
+        write to @botfather. There are detailed instructions on
+        <a href="https://botsfortelegram.com/project/the-bot-father/" target="_blank">
+        Bots for Telegram</a>.
     </p>
     <p>
-        The botfather will give you an API key - with the API key, Ticketfrei can use the Telegram bot. Enter it here:
+        The botfather will give you an API key - with the API key, Ticketfrei
+        can use the Telegram bot. Enter it here:
     </p>
     <form action="/settings/telegram" method="post">
         <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey">
@@ -134,7 +136,6 @@
         language.
     </p>
     <form action="/settings/goodlist" method="post">
-        <!-- find a way to display current good list. js which reads from a cookie? template? -->
         <textarea id="goodlist" rows="8" cols="70" name="goodlist" wrap="physical">{{triggerwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
@@ -145,10 +146,10 @@
     <p>
         These words are not allowed in reports. If you encounter spam, you can
         add more here - the bot will ignore reports which use such words.
-        <!-- There are words which you can't exclude from the blocklist, e.g. certain racist, sexist, or antisemitic slurs.
+        There are words which you can't exclude from the blocklist, e.g.
+        certain racist, sexist, or antisemitic slurs.
     </p>
     <form action="/settings/blocklist" method="post">
-        <!-- find a way to display current blocklist. js which reads from a cookie? template? -->
         <textarea id="blocklist" rows="8" cols="70" name="blocklist" wrap="physical">{{badwords}}</textarea>
         <input name='confirm' value='Submit' type='submit'/>
     </form>
