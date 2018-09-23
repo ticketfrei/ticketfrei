@@ -19,10 +19,11 @@ class Mailbot(Bot):
     def crawl(self, user):
         reports = []
         # todo: adjust to actual mailbox
-        mails = mailbox.mbox('/var/mail/test')
+        mails = mailbox.mbox("/var/mail/" + config['mail']['mbox_user'])
         for msg in mails:
             if get_date_from_header(msg['Date']) > user.get_seen_mail():
-                reports.append(make_report(msg, user))
+                if user.get_city() in msg['To']:
+                    reports.append(make_report(msg, user))
         return reports
 
     # post/boost Report object

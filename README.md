@@ -75,7 +75,7 @@ We wrote these installation notes, so you can set up the website easily:
 To Do:
 
 ```shell
-sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx git
+sudo apt install python3 virtualenv uwsgi uwsgi-plugin-python3 nginx git exim4
 cd /srv
 sudo git clone https://github.com/b3yond/ticketfrei
 cd ticketfrei
@@ -108,6 +108,22 @@ Set up LetsEncrypt:
 ```shell
 sudo apt-get install python-certbot-nginx -t stretch-backports
 sudo certbot --authenticator webroot --installer nginx --agree-tos --redirect --hsts 
+```
+
+Configure exim4 for using mbox files.
+
+```
+sudo dpkg-reconfigure exim4-config
+# Choose the following values:
+# internet site; mail is sent and received directly using SMTP
+# your domain name
+# 
+# your domain name
+# 
+# 
+# No
+# mbox format in /var/mail/
+# No
 ```
 
 Deploy ticketfrei with uwsgi:

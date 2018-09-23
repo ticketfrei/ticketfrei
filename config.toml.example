@@ -13,6 +13,7 @@ contact = "b3yond@riseup.net"
 mailserver = "smtp.riseup.net"
 user = "user"
 passphrase = "sup3rs3cur3"
+mbox = "root"
 
 [database]
 db_path = "/var/ticketfrei/db.sqlite"

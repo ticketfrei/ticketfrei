@@ -1,7 +1,7 @@
 from config import config
 import jwt
 import logging
-from os import urandom
+from os import urandom, system
 from pylibscrypt import scrypt_mcf
 import sqlite3
 
@@ -257,6 +257,8 @@ u\d\d?"""
                          (uid, "bastard"))
         else:
             uid = json['uid']
+        with open("/etc/aliases", "a+") as f:
+            f.write(city + ": " + config["mail"]["mbox_user"])
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
