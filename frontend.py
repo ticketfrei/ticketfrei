@@ -105,7 +105,7 @@ def subscribe_mail(city):
     # send mail with code to email
     sendmail(email, "Subscribe to Ticketfrei " + city + " Mail Notifications",
              body="To subscribe to the mail notifications for Ticketfrei " +
-                  city + ", click on this link: " + token)
+                  city + ", click on this link: " + confirm_link)
     return city_page(city, info="Thanks! You will receive a confirmation mail.")
 
 
