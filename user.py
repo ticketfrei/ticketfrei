@@ -170,9 +170,10 @@ schlitz
         return db.cur.fetchone()[0]
 
     def save_seen_tweet(self, tweet_id):
-        db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
-                   (tweet_id, self.uid))
-        db.commit()
+        if tweet_id > self.get_seen_tweet():
+            db.execute("UPDATE seen_tweets SET tweet_id = ? WHERE user_id = ?;",
+                       (tweet_id, self.uid))
+            db.commit()
 
     def get_seen_dm(self):
         db.execute("SELECT message_id FROM seen_dms WHERE user_id = ?;",
