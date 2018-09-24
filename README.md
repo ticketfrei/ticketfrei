@@ -138,6 +138,10 @@ sudo sed -r "s/example.org/$DOMAIN/g" deployment/example.org.conf > /etc/nginx/s
 sudo mkdir /var/ticketfrei
 sudo chown www-data:www-data -R /var/ticketfrei
 
+# change /etc/aliases permissions to be able to receive reports per mail
+sudo chown root:www-data /etc/aliases
+sudo chmod 664 /etc/aliases
+
 # create folder for logs
 sudo mkdir /var/log/ticketfrei
 sudo chown www-data:www-data -R /var/log/ticketfrei

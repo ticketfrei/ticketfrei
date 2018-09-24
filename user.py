@@ -286,7 +286,7 @@ schlitz
                 "oauth_token_secret": request_token[1]}
 
     def save_twitter_token(self, access_token, access_token_secret):
-        db.execute(""""INSERT INTO twitter_accounts(
+        db.execute("""INSERT INTO twitter_accounts(
                            user_id, client_id, client_secret
                            ) VALUES(?, ?, ?);""",
                    (self.uid, access_token, access_token_secret))
