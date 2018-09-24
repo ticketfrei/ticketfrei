@@ -35,6 +35,7 @@ if __name__ == '__main__':
                     for status in reports:
                         if not user.is_appropriate(status):
                             logger.info("Inaproppriate message: %d %s %s" % (user.uid, status.author, status.text))
+                            continue
                         for bot2 in bots:
                             bot2.post(user, status)
                             logger.info("Resent: %d %s %s" % (user.uid, status.author, status.text))
