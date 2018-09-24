@@ -283,7 +283,7 @@ schlitz
     def get_twitter_token(self):
         db.execute("SELECT client_id, client_secret FROM twitter_accounts WHERE user_id = ?;",
                    (self.uid, ))
-        return db.cur.fetchall()
+        return db.cur.fetchone()
 
     def update_telegram_key(self, apikey):
         db.execute("UPDATE telegram_accounts SET apikey = ? WHERE user_id = ?;", (apikey, self.uid))
