@@ -55,7 +55,7 @@ class TwitterBot(Bot):
                                              text,
                                              status.id,
                                              status.created_at))
-            user.save_seen_tweet(last_mention)
+                user.save_seen_tweet(status.id)
             return reports
         except tweepy.RateLimitError:
             logger.error("Twitter API Error: Rate Limit Exceeded",
