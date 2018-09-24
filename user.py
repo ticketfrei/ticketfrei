@@ -62,7 +62,7 @@ class User(object):
                    (self.uid, ))
         patterns = db.cur.fetchone()[0]
         for pattern in patterns.splitlines():
-            if pattern in report.text.lower():
+            if pattern.lower() in report.text.lower():
                 break
         else:
             # no pattern matched
