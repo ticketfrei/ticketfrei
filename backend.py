@@ -34,9 +34,10 @@ if __name__ == '__main__':
                     reports = bot.crawl(user)
                     for status in reports:
                         if not user.is_appropriate(status):
-                            continue
+                            logger.info("Inaproppriate message: %d %s %s" % (user.id, status.author, status.text))
                         for bot2 in bots:
                             bot2.post(user, status)
+                            logger.info("Resent: %d %s %s" % (user.id, status.author, status.text))
     except Exception:
         logger.error("Shutdown.", exc_info=True)
         shutdown()
