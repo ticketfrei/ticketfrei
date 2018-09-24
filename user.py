@@ -154,26 +154,14 @@ schlitz
                    (date, self.uid))
         db.commit()
 
-    def init_seen_toot(self, instance_url):
-        db.execute("SELECT id FROM mastodon_instances WHERE instance = ?;",
-                   (instance_url,))
-        masto_instance = db.cur.fetchone()[0]
-        db.execute("INSERT INTO seen_toots (user_id, mastodon_accounts_id, toot_id) VALUES (?,?,?);",
-            (self.uid, masto_instance, 0))
-        db.conn.commit()
-        return
+    def toot_is_seen(self, toot_uri):
+        db.execute("SELECT COUNT(*) FROM seen_toots WHERE user_id = ? AND toot_uri = ?;",
+                   (self.uid, toot_uri))
+        return db.cur.fetchone()[0] > 0
 
-    def get_seen_toot(self):
-        db.execute("SELECT toot_id FROM seen_toots WHERE user_id = ?;",
-                   (self.uid,))
-        try:
-            return db.cur.fetchone()[0]
-        except TypeError:
-            return None
-
-    def save_seen_toot(self, toot_id):
-        db.execute("UPDATE seen_toots SET toot_id = ? WHERE user_id = ?;",
-                   (toot_id, self.uid))
+    def toot_witness(self, toot_uri):
+        db.execute("INSERT INTO seen_toots SET (toot_uri, user_id) VALUES (?,?);",
+                   (toot_uri, self.uid))
         db.commit()
 
     def get_seen_tweet(self):

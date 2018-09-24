@@ -29,12 +29,10 @@ class MastodonBot(Bot):
             logger.error("Unknown Mastodon API Error.", exc_info=True)
             return mentions
         for status in notifications:
-            if user.get_seen_toot() is None:
-                user.init_seen_toot(m.instance()['uri'])
             if (status['type'] == 'mention' and
-                    status['status']['id'] > user.get_seen_toot()):
+                    not user.toot_is_seen(status['status']['uri'])):
                 # save state
-                user.save_seen_toot(status['status']['id'])
+                user.toot_witness(status['status']['uri'])
                 # add mention to mentions
                 text = re.sub(r'<[^>]*>', '', status['status']['content'])
                 text = re.sub(

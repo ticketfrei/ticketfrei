@@ -69,11 +69,8 @@ class DB(object):
             CREATE TABLE IF NOT EXISTS seen_toots (
                 id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id            INTEGER,
-                mastodon_accounts_id    INTEGER,
-                toot_id            INTEGER,
+                toot_uri           TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id),
-                FOREIGN KEY(mastodon_accounts_id)
-                    REFERENCES mastodon_accounts(id)
             );
             CREATE TABLE IF NOT EXISTS seen_telegrams (
                 id                 INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
