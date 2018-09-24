@@ -83,4 +83,5 @@ class TwitterBot(Bot):
         except requests.exceptions.ConnectionError:
             logger.error("Twitter API Error: Bad Connection",
                          exc_info=True)
-            # :todo implement rate limiting
+        except tweepy.error.TweepError:
+            logger.error("Twitter API Error", exc_info=True)
