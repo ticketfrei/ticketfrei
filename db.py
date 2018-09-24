@@ -107,13 +107,10 @@ class DB(object):
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS seen_tweets (
-                id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id            INTEGER,
-                twitter_accounts_id INTEGER,
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
                 tweet_id    TEXT,
                 FOREIGN KEY(user_id) REFERENCES user(id)
-                FOREIGN KEY(twitter_accounts_id)
-                    REFERENCES twitter_accounts(id)
             );
             CREATE TABLE IF NOT EXISTS seen_dms (
                 id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
@@ -261,9 +258,11 @@ u\d\d?"""
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
         self.execute(
-            "INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?,?);", (uid, 0))
+            "INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?, ?);", (uid, 0))
         self.execute(
-            "INSERT INTO seen_mail (user_id, mail_date) VALUES (?,?);", (uid, 0))
+            "INSERT INTO seen_mail (user_id, mail_date) VALUES (?, ?);", (uid, 0))
+        self.execute("INSERT INTO seen_tweets (user_id, tweet_id) VALUES (?, ?)",
+                     (uid, 0))
         self.commit()
         user = User(uid)
         user.set_city(city)
