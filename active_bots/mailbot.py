@@ -22,7 +22,7 @@ class Mailbot(Bot):
         mails = mailbox.mbox("/var/mail/" + config['mail']['mbox_user'])
         for msg in mails:
             if get_date_from_header(msg['Date']) > user.get_seen_mail():
-                if user.get_city() in msg['To']:
+                if user.get_city().lower() in msg['To'].lower():
                     reports.append(make_report(msg, user))
         return reports
 
