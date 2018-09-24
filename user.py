@@ -160,7 +160,7 @@ schlitz
         return db.cur.fetchone()[0] > 0
 
     def toot_witness(self, toot_uri):
-        db.execute("INSERT INTO seen_toots SET (toot_uri, user_id) VALUES (?,?);",
+        db.execute("INSERT INTO seen_toots (toot_uri, user_id) VALUES (?,?);",
                    (toot_uri, self.uid))
         db.commit()
 
