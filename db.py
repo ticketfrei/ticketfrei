@@ -70,7 +70,7 @@ class DB(object):
                 id         INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id            INTEGER,
                 toot_uri           TEXT,
-                FOREIGN KEY(user_id) REFERENCES user(id),
+                FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS seen_telegrams (
                 id                 INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
