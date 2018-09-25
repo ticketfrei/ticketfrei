@@ -23,7 +23,7 @@ class Mailbot(Bot):
         for msg in mails:
             if get_date_from_header(msg['Date']) > user.get_seen_mail():
                 if user.get_city().lower() in msg['To'].lower():
-                    reports.append(make_report(msg, user))
+                    reports.append(make_report(msg.get_payload(), user))
         return reports
 
     # post/boost Report object
