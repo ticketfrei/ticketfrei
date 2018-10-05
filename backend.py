@@ -5,7 +5,7 @@ from config import config
 from db import db
 import logging
 from sendmail import sendmail
-import time
+from time import time
 
 
 def shutdown():
@@ -16,11 +16,14 @@ def shutdown():
     exit(1)
 
 
+last_twitter_request = time()
+
 if __name__ == '__main__':
     logger = logging.getLogger()
     fh = logging.FileHandler('/var/log/ticketfrei/backend.log')
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
+
 
     bots = []
     for ActiveBot in active_bots.__dict__.values():
