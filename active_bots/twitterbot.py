@@ -50,7 +50,7 @@ class TwitterBot(Bot):
                 text = re.sub(
                     "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
                     "", status.text)
-                username = api.me()
+                username = "@" + api.me().screen_name
                 if username in status.text:
                     reports.append(report.Report(status.author.screen_name,
                                                  self,
