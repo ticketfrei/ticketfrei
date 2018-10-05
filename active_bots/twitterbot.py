@@ -50,11 +50,13 @@ class TwitterBot(Bot):
                 text = re.sub(
                     "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
                     "", status.text)
-                reports.append(report.Report(status.author.screen_name,
-                                             self,
-                                             text,
-                                             status.id,
-                                             status.created_at))
+                username = api.me()
+                if username in status.text:
+                    reports.append(report.Report(status.author.screen_name,
+                                                 self,
+                                                 text,
+                                                 status.id,
+                                                 status.created_at))
                 user.save_seen_tweet(status.id)
             return reports
         except tweepy.RateLimitError:
