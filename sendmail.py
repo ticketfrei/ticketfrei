@@ -71,9 +71,12 @@ class Mailer(object):
         return "Sent mail to " + recipient + ": " + subject
 
 
-def sendmail(to, subject, body=''):
+def sendmail(to, subject, city=None, body=''):
     msg = MIMEMultipart()
-    msg['From'] = 'Ticketfrei <%s@%s>' % (getuser(), getfqdn())
+    if city:
+        msg['From'] = 'Ticketfrei <%s@%s>' % (city, getfqdn())
+    else:
+        msg['From'] = 'Ticketfrei <%s@%s>' % (getuser(), getfqdn())
     msg['To'] = to
     msg['Subject'] = '[Ticketfrei] %s' % (subject, )
     msg.attach(MIMEText(body))
