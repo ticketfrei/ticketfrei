@@ -1,7 +1,7 @@
 from config import config
 import jwt
 import logging
-from os import urandom, system
+from os import urandom
 from pylibscrypt import scrypt_mcf
 import sqlite3
 

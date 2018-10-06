@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
-import sendmail
+from sendmail import sendmail
 import datetime
 import mailbox
 import email
@@ -37,7 +37,7 @@ class Mailbot(Bot):
             if report.author != rec:
                 try:
                     city = user.get_city()
-                    sendmail.sendmail(rec, "Ticketfrei " + city + " Report",
+                    sendmail(rec, "Ticketfrei " + city + " Report",
                                       city=city, body=body)
                 except Exception:
                     logger.error("Sending Mail failed.", exc_info=True)
