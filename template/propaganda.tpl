@@ -38,7 +38,7 @@
     <li>Promote the service! Ticketfrei only works if there is
     a community for it. Fortunately, we prepared some material
     you can use:
-    <a href="https://github.com/b3yond/ticketfrei/tree/master/promotion" target="_blank">https://github.com/b3yond/ticketfrei/tree/master/promotion</a></li>
+    <a href="https://github.com/ticketfrei/promotion" target="_blank">https://github.com/ticketfrei/promotion</a></li>
 </ul>
 % include('template/register-plain.tpl')
 <h2>Our Mission</h2>
