@@ -141,6 +141,12 @@ class DB(object):
                 mail_date   REAL,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
+            CREATE TABLE IF NOT EXISTS twitter_last_request (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                date        INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
             CREATE TABLE IF NOT EXISTS cities (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
