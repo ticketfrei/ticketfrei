@@ -1,7 +1,7 @@
 from config import config
 import jwt
 import logging
-from os import urandom, system
+from os import urandom
 from pylibscrypt import scrypt_mcf
 import sqlite3
 
@@ -91,12 +91,6 @@ class DB(object):
                 client_id   TEXT,
                 client_secret   TEXT,
                 active      INTEGER,
-                FOREIGN KEY(user_id) REFERENCES user(id)
-            );
-            CREATE TABLE IF NOT EXISTS twitter_last_request (
-                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id     INTEGER,
-                date        INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
             CREATE TABLE IF NOT EXISTS telegram_accounts (

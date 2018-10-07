@@ -231,8 +231,8 @@ def twitter_callback(user):
 @post('/login/mastodon')
 def login_mastodon(user):
     """
-    Starts the mastodon OAuth authentication process.
-    :return: redirect to twitter.
+    Mastodon OAuth authentication process.
+    :return: redirect to city page.
     """
     # get app tokens
     instance_url = request.forms.get('instance_url')

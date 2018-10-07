@@ -136,24 +136,6 @@ schlitz
         instance = db.cur.fetchone()
         return instance[1], instance[2], row[0], instance[0]
 
-    def get_twitter_credentials(self):
-        keys = [config['twitter']['consumer_key'],
-                config['twitter']['consumer_secret']]
-        row = self.get_twitter_token()
-        keys.append(row[0])
-        keys.append(row[1])
-        return keys
-
-    def get_last_twitter_request(self):
-        db.execute("SELECT date FROM twitter_last_request WHERE user_id = ?;",
-                   (self.uid,))
-        return db.cur.fetchone()[0]
-
-    def set_last_twitter_request(self, date):
-        db.execute("UPDATE twitter_last_request SET date = ? WHERE user_id = ?;",
-                   (date, self.uid))
-        db.commit()
-
     def toot_is_seen(self, toot_uri):
         db.execute("SELECT COUNT(*) FROM seen_toots WHERE user_id = ? AND toot_uri = ?;",
                    (self.uid, toot_uri))
@@ -285,6 +267,14 @@ schlitz
         db.execute("SELECT client_id, client_secret FROM twitter_accounts WHERE user_id = ?;",
                    (self.uid, ))
         return db.cur.fetchone()
+
+    def get_twitter_credentials(self):
+        keys = [config['twitter']['consumer_key'],
+                config['twitter']['consumer_secret']]
+        row = self.get_twitter_token()
+        keys.append(row[0])
+        keys.append(row[1])
+        return keys
 
     def update_telegram_key(self, apikey):
         db.execute("UPDATE telegram_accounts SET apikey = ? WHERE user_id = ?;", (apikey, self.uid))
