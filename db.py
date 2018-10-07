@@ -257,12 +257,10 @@ u\d\d?"""
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
-        self.execute(
-            "INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?, ?);", (uid, 0))
-        self.execute(
-            "INSERT INTO seen_mail (user_id, mail_date) VALUES (?, ?);", (uid, 0))
-        self.execute("INSERT INTO seen_tweets (user_id, tweet_id) VALUES (?, ?)",
-                     (uid, 0))
+        self.execute("INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?, ?);", (uid, 0))
+        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?, ?);", (uid, 0))
+        self.execute("INSERT INTO seen_tweets (user_id, tweet_id) VALUES (?, ?)", (uid, 0))
+        self.execute("INSERT INTO twitter_last_request (user_id, date) VALUES (?, ?)", (uid, 0))
         self.commit()
         user = User(uid)
         user.set_city(city)
