@@ -63,6 +63,8 @@ def make_report(msg, user):
                 text.append(part.get_payload())
             elif part.get_content_type() == "multipart/mixed":
                 for p in part:
+                    if isinstance(p, str):
+                        text.append(p)
                     if p.get_content_type() == "text":
                         text.append(part.get_payload())
                     else:
