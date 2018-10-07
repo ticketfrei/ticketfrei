@@ -93,6 +93,16 @@ schlitz
                 return False
         return True
 
+    def get_last_twitter_request(self):
+        db.execute("SELECT date FROM twitter_last_request WHERE user_id = ?;",
+                   (self.uid,))
+        return db.cur.fetchone()[0]
+
+    def set_last_twitter_request(self, date):
+        db.execute("UPDATE twitter_last_request SET date = ? WHERE user_id = ?;",
+                   (date, self.uid))
+        db.commit()
+
     def get_telegram_credentials(self):
         db.execute("""SELECT apikey 
                           FROM telegram_accounts 

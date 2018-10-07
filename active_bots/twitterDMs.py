@@ -5,7 +5,6 @@ import tweepy
 import re
 import requests
 import report
-import tfglobals
 from time import time
 from bot import Bot
 
@@ -29,8 +28,11 @@ class TwitterBot(Bot):
         :return: reports: (list of report.Report objects)
         """
         reports = []
-        if tfglobals.last_twitter_request + 60 > time():
-            return reports
+        try:
+            if user.get_last_twitter_request() + 60 > time():
+                return reports
+        except TypeError:
+            user.set_last_twitter_request(time())
         try:
             api = self.get_api(user)
         except IndexError:
@@ -41,7 +43,7 @@ class TwitterBot(Bot):
                 mentions = api.direct_messages()
             else:
                 mentions = api.mentions_timeline(since_id=last_dm[0])
-            tfglobals.last_twitter_request = time()
+            user.set_last_twitter_request(time())
             for status in mentions:
                 text = re.sub(
                        "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
