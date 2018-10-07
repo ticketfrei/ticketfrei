@@ -1,0 +1,47 @@
+body {
+  background-image: url(/static/img/ticketfrei-og-image.jpg);
+  background-size: 50%;
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12pt;
+  line-height: 1.5em;
+  background-position: center top;
+  margin: 0;
+}
+
+#logo {
+    height: 9em;
+}
+
+#content {
+    background-color: #FFF;
+    max-width: 37em;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 2em;
+}
+
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 0.7em 1em;
+    margin: 0.5em 0;
+    border: none;
+    cursor: pointer;
+    font-size: 120%;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 0.8em 1em;
+    margin: 0.5em 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+}
+
+h2 {
+    padding-top: 1em;
+}
