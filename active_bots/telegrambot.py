@@ -20,7 +20,11 @@ class TelegramBot(Bot):
         if updates == None:
             return reports
         for update in updates:
-            if update == 404:
+            # return when telegram returns an error code
+            if update in [303, 404, 420, 500]:
+                return reports
+            elif isinstance(update, int):
+                logger.error("Unknown Telegram error code: " + str(update))
                 return reports
             user.save_seen_tg(update.update_id)
             if update.message.text.lower() == "/start":
