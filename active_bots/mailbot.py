@@ -55,7 +55,24 @@ def make_report(msg, user):
     author = msg['From']  # get mail author from email header
     # :todo take only the part in between the < >
 
-    text = msg.get_payload()
+    if msg.is_multipart():
+        text = []
+        for part in msg.get_payload():
+            if part.get_content_type() == "text":
+                text.append(part.get_payload())
+            elif part.get_content_type() == "multipart/mixed":
+                for p in part:
+                    if p.get_content_type() == "text":
+                        text.append(part.get_payload())
+                    else:
+                        logger.error("unknown MIMEtype: " +
+                                     p.get_content_type())
+            else:
+                logger.error("unknown MIMEtype: " +
+                             part.get_content_type())
+        text = '\n'.join(text)
+    else:
+        text = msg.get_payload()
     post = report.Report(author, "mail", text, None, date)
     user.save_seen_mail(date)
     return post
