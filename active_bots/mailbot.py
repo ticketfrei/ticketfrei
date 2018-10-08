@@ -61,6 +61,8 @@ def make_report(msg, user):
         for part in msg.get_payload():
             if part.get_content_type() == "text":
                 text.append(part.get_payload())
+            elif part.get_content_type() == "application/pgp-signature":
+                pass  # ignore PGP signatures
             elif part.get_content_type() == "multipart/mixed":
                 for p in part:
                     if isinstance(p, str):
