@@ -34,7 +34,7 @@ class Mailbot(Bot):
             unsubscribe_text = "\n_______\nYou don't want to receive those messages? Unsubscribe with this link: "
             body = report.text + unsubscribe_text + config['web']['host'] + "/city/mail/unsubscribe/" \
                    + db.mail_subscription_token(rec, user.get_city())
-            if report.author != rec:
+            if rec not in report.author:
                 try:
                     city = user.get_city()
                     sendmail(rec, "Ticketfrei " + city + " Report",
@@ -54,7 +54,6 @@ def make_report(msg, user):
     date = get_date_from_header(msg['Date'])
 
     author = msg['From']  # get mail author from email header
-    # :todo take only the part in between the < >
 
     if msg.is_multipart():
         text = []
