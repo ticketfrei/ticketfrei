@@ -3,7 +3,6 @@ from bottle import response
 from db import db
 import jwt
 from mastodon import Mastodon
-import tweepy
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 
 
@@ -268,15 +267,10 @@ schlitz
                 "oauth_token_secret": request_token[1]}
 
     def save_twitter_token(self, access_token, access_token_secret):
-        auth = tweepy.OAuthHandler(consumer_key=config['twitter']['consumer_key'],
-                                   consumer_secret=config['twitter']['consumer_secret'])
-        auth.set_access_token(access_token, access_token_secret)
-        api = tweepy.API(auth, wait_on_rate_limit=True)
-        username = api.me().screen_name
-        db.execute("""INSERT INTO (
-                           user_id, client_id, client_secret, screen_name, active
-                           ) VALUES(?, ?, ?, ?, ?);""",
-                   (self.uid, access_token, access_token_secret, username, 1))
+        db.execute("""INSERT INTO twitter_accounts(
+                           user_id, client_id, client_secret
+                           ) VALUES(?, ?, ?);""",
+                   (self.uid, access_token, access_token_secret))
         db.commit()
 
     def get_twitter_token(self):
@@ -291,11 +285,6 @@ schlitz
         keys.append(row[0])
         keys.append(row[1])
         return keys
-
-    def get_twitter_username(self):
-        db.execute("SELECT screen_name FROM twitter_accounts WHERE user_id = ?",
-                   (self.uid, ))
-        return db.fetchone()[0]
 
     def update_telegram_key(self, apikey):
         db.execute("UPDATE telegram_accounts SET apikey = ? WHERE user_id = ?;", (apikey, self.uid))

@@ -90,7 +90,6 @@ class DB(object):
                 user_id     INTEGER,
                 client_id   TEXT,
                 client_secret   TEXT,
-                screen_name TEXT,
                 active      INTEGER,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );

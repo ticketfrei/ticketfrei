@@ -50,11 +50,11 @@ class TwitterBot(Bot):
                 mentions = api.mentions_timeline(since_id=last_mention)
             user.set_last_twitter_request(time())
             for status in mentions:
-                # don't retweet replies - only mentions.
-                if user.get_twitter_username() in status.extended_tweet.full_text:
-                    text = re.sub(
-                        "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                        "", status.extended_tweet.full_text)
+                text = re.sub(
+                    "(?<=^|(?<=[^a-zA-Z0-9-_\.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                    "", status.text)
+                username = "@" + api.me().screen_name
+                if username in status.text:
                     reports.append(report.Report(status.author.screen_name,
                                                  self,
                                                  text,
