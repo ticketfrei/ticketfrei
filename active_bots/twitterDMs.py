@@ -42,7 +42,7 @@ class TwitterBot(Bot):
             if last_dm is None:
                 mentions = api.direct_messages()
             else:
-                mentions = api.mentions_timeline(since_id=last_dm[0])
+                mentions = api.direct_messages(since_id=last_dm[0])
             user.set_last_twitter_request(time())
             for status in mentions:
                 text = re.sub(
