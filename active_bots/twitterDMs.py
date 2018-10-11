@@ -36,7 +36,7 @@ class TwitterDMListener(Bot):
             user.set_last_twitter_request(time())
         try:
             api = self.get_api(user)
-        except IndexError:
+        except TypeError:
             return reports  # no twitter account for this user.
         last_dm = user.get_seen_dm()
         try:
