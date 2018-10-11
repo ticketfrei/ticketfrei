@@ -12,7 +12,7 @@ from bot import Bot
 logger = logging.getLogger(__name__)
 
 
-class TwitterBot(Bot):
+class TwitterDMListener(Bot):
     def get_api(self, user):
         keys = user.get_api_keys()
         auth = tweepy.OAuthHandler(consumer_key=keys[0],
