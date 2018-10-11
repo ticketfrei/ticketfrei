@@ -62,9 +62,13 @@ class TwitterDMListener(Bot):
             # :todo implement rate limiting
         except requests.exceptions.ConnectionError:
             logger.error("Twitter API Error: Bad Connection", exc_info=True)
-        except tweepy.TweepError:
+        except tweepy.TweepError as terror:
+            # Waiting for https://github.com/tweepy/tweepy/pull/1109 to get
+            # merged, so direct messages work again
+            if terror.api_code == 34:
+                return reports
             logger.error("Twitter API Error: General Error", exc_info=True)
-        return []
+        return reports
 
     def post(self, user, report):
         pass
