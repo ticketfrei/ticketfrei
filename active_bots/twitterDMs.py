@@ -13,8 +13,9 @@ logger = logging.getLogger(__name__)
 
 
 class TwitterDMListener(Bot):
+
     def get_api(self, user):
-        keys = user.get_api_keys()
+        keys = user.get_twitter_credentials()
         auth = tweepy.OAuthHandler(consumer_key=keys[0],
                                    consumer_secret=keys[1])
         auth.set_access_token(keys[2],  # access_token_key
