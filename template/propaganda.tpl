@@ -15,13 +15,14 @@
     your city into a paradise for fare dodgers.
 </p>
 <p>
-    Ticketfrei is a Twitter, Mastodon, and E-Mail bot. Users
-    can help each other by tweeting, tooting, or mailing,
-    when and where they spot a ticket controller.
+    Ticketfrei is a Twitter, Mastodon, Telegram, and E-Mail 
+    bot. Users can help each other by tweeting, tooting, 
+    messaging, or mailing, when and where they spot a ticket 
+    controller.
 </p>
 <p>
-    Ticketfrei automatically retweets, boosts, and remails
-    those controller reports, so others can see them. If there
+    Ticketfrei automatically spreads those controller reports 
+    in the other networks, so others can see them. If there
     are ticket controllers around, they can still buy a ticket
     - but if the coast is clear, they can save the money.
 </p>
@@ -31,22 +32,26 @@
     to other citys. There are four basic steps:
 </p>
 <ul>
-    <li>Create a Twitter and/or a Mastodon account.</li>
     <li>Register on this website to create a bot for your city.</li>
+    <li>Create a Twitter, a Telegram, and/or a Mastodon account.</li>
     <li>Log in with the social media accounts you want to
     use for Ticketfrei.</li>
     <li>Promote the service! Ticketfrei only works if there is
     a community for it. Fortunately, we prepared some material
-    you can use:
-    <a href="https://github.com/ticketfrei/promotion" target="_blank">https://github.com/ticketfrei/promotion</a></li>
+    you can edit, remix, use, and republish:
+    <a href="https://github.com/ticketfrei/promotion" target="_blank">https://github.com/ticketfrei/promotion</a>
+    <ul>
+        <li>If you build cool promotion material yourself, please
+        share it with us, so others can use it, too!</li>
+    </ul></li>
 </ul>
 % include('template/register-plain.tpl')
 <h2>Our Mission</h2>
 <p>
     Public transportation is meant to provide an easy and
     time-saving way to move within a region while being
-    affordable for everybody. Unfortunately, this is not the
-    case. Ticketfrei's approach is to enable people to
+    affordable for everybody. Unfortunately, this is not yet
+    the case. Ticketfrei's approach is to enable people to
     reclaim public transportation.
 </p>
 <p>
@@ -58,7 +63,7 @@
 <p>
     Because with Ticketfrei you're able to use trains and
     subways for free anyway. Take part and create a new
-    understanding of what public transportation should look
+    understanding of what public transportation could look
     like!
 </p>
 
