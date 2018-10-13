@@ -45,7 +45,7 @@ def register_post():
         sendmail(
                 email,
                 "Confirm your account",
-                "Complete your registration here: %s" % (link)
+                body="Complete your registration here: %s" % (link)
             )
         return dict(info='Confirmation mail sent.')
     except Exception:
@@ -105,7 +105,7 @@ def subscribe_mail(city):
     # send mail with code to email
     sendmail(email, "Subscribe to Ticketfrei " + city + " Mail Notifications",
              body="To subscribe to the mail notifications for Ticketfrei " +
-                  city + ", click on this link: " + confirm_link)
+                  city + ", click on this link: " + confirm_link, city=city)
     return city_page(city, info="Thanks! You will receive a confirmation mail.")
 
 

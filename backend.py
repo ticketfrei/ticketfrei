@@ -5,7 +5,6 @@ from config import config
 from db import db
 import logging
 from sendmail import sendmail
-from time import time
 
 
 def shutdown():
@@ -15,8 +14,6 @@ def shutdown():
         logger.error('Could not inform admin.', exc_info=True)
     exit(1)
 
-
-last_twitter_request = time()
 
 if __name__ == '__main__':
     logger = logging.getLogger()

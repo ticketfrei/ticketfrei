@@ -141,6 +141,12 @@ class DB(object):
                 mail_date   REAL,
                 FOREIGN KEY(user_id) REFERENCES user(id)
             );
+            CREATE TABLE IF NOT EXISTS twitter_last_request (
+                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+                user_id     INTEGER,
+                date        INTEGER,
+                FOREIGN KEY(user_id) REFERENCES user(id)
+            );
             CREATE TABLE IF NOT EXISTS cities (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
@@ -246,17 +252,15 @@ u\d\d?"""
         else:
             uid = json['uid']
         with open("/etc/aliases", "a+") as f:
-            f.write(city + ": " + config["mail"]["mbox_user"])
+            f.write(city + ": " + config["mail"]["mbox_user"] + "\n")
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
                         active) VALUES(?, ?, ?);""", (uid, "", 1))
-        self.execute(
-            "INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?, ?);", (uid, 0))
-        self.execute(
-            "INSERT INTO seen_mail (user_id, mail_date) VALUES (?, ?);", (uid, 0))
-        self.execute("INSERT INTO seen_tweets (user_id, tweet_id) VALUES (?, ?)",
-                     (uid, 0))
+        self.execute("INSERT INTO seen_telegrams (user_id, tg_id) VALUES (?, ?);", (uid, 0))
+        self.execute("INSERT INTO seen_mail (user_id, mail_date) VALUES (?, ?);", (uid, 0))
+        self.execute("INSERT INTO seen_tweets (user_id, tweet_id) VALUES (?, ?)", (uid, 0))
+        self.execute("INSERT INTO twitter_last_request (user_id, date) VALUES (?, ?)", (uid, 0))
         self.commit()
         user = User(uid)
         user.set_city(city)
