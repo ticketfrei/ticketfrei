@@ -388,9 +388,9 @@ mentioned, und gib an
 
 Zum Beispiel so:
 
-![Screenshot of writing a Toot](https://github.com/b3yond/ticketfrei/raw/master/guides/tooting_screenshot.png)
+![Screenshot of writing a Toot](https://github.com/b3yond/ticketfrei/raw/stable1/guides/tooting_screenshot.png)
 
-![A toot ready to be shared](https://github.com/b3yond/ticketfrei/raw/master/guides/toot_screenshot.png)
+![A toot ready to be shared](https://github.com/b3yond/ticketfrei/raw/stable1/guides/toot_screenshot.png)
 
 Der Bot wird die Nachricht dann weiterverbreiten, auch zu den 
 anderen Netzwerken.
