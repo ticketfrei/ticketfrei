@@ -45,6 +45,10 @@ class TelegramBot(Bot):
                     "Send reports here to share them with other users. Use /start and /stop to get reports or not.")
                 # TODO: /help message should be set in frontend
             else:
+                # set report.author to "" to avoid mailbot crash
+                if update.message.sender.username is None:
+                    update.message.sender.username = ""
+
                 reports.append(Report(update.message.sender.username, self,
                                       update.message.text, None,
                                       update.message.date))
