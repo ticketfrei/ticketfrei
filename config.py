@@ -9,7 +9,7 @@ def load_env():
     :return: config dictionary of dictionaries.
     """
     with open('config.toml.example') as defaultconf:
-        config = toml.load(configfile)
+        config = toml.load(defaultconf)
 
     try:
         config['twitter']['consumer_key'] = os.environ['CONSUMER_KEY']
@@ -55,3 +55,8 @@ try:
         config = toml.load(configfile)
 except FileNotFoundError:
     config = load_env()
+
+if __name__ == "__main__":
+    for category in config:
+        for key in config[category]:
+            print(key + " = " + str(config[category][key]))
