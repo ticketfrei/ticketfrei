@@ -23,7 +23,7 @@ class TelegramBot(Bot):
             # return when telegram returns an error code
             if update in [303, 404, 420, 500, 502]:
                 return reports
-            elif isinstance(update, int):
+            if isinstance(update, int):
                 logger.error("Unknown Telegram error code: " + str(update))
                 return reports
             user.save_seen_tg(update.update_id)
