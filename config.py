@@ -60,4 +60,4 @@ except FileNotFoundError:
 if __name__ == "__main__":
     for category in config:
         for key in config[category]:
-            print(key + " = " + str(config[category][key]))
+            print(key + "=" + str(config[category][key]))
