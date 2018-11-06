@@ -13,37 +13,44 @@ def load_env():
         configdict = toml.load(defaultconf)
 
     try:
-        configdict['twitter']['consumer_key'] = os.environ['CONSUMER_KEY']
+        if os.environ['CONSUMER_KEY'] != "":
+            configdict['twitter']['consumer_key'] = os.environ['CONSUMER_KEY']
     except KeyError:
         pass
 
     try:
-        configdict['twitter']['consumer_secret'] = os.environ['CONSUMER_SECRET']
+        if os.environ['CONSUMER_SECRET'] != "":
+            configdict['twitter']['consumer_secret'] = os.environ['CONSUMER_SECRET']
     except KeyError:
         pass
 
     try:
-        configdict['web']['host'] = os.environ['HOST']
+        if os.environ['HOST'] != "":
+            configdict['web']['host'] = os.environ['HOST']
     except KeyError:
         pass
 
     try:
-        configdict['web']['port'] = os.environ['PORT']
+        if os.environ['PORT'] != "":
+            configdict['web']['port'] = os.environ['PORT']
     except KeyError:
         pass
 
     try:
-        configdict['web']['contact'] = os.environ['CONTACT']
+        if os.environ['CONTACT'] != "":
+            configdict['web']['contact'] = os.environ['CONTACT']
     except KeyError:
         pass
 
     try:
-        configdict['mail']['mbox_user'] = os.environ['MBOX_USER']
+        if os.environ['MBOX_USER'] != "":
+            configdict['mail']['mbox_user'] = os.environ['MBOX_USER']
     except KeyError:
         pass
 
     try:
-        configdict['database']['db_path'] = os.environ['DB_PATH']
+        if os.environ['DB_PATH'] != "":
+            configdict['database']['db_path'] = os.environ['DB_PATH']
     except KeyError:
         pass
 
