@@ -46,12 +46,12 @@ class TelegramBot(Bot):
                 # TODO: /help message should be set in frontend
             else:
                 # set report.author to "" to avoid mailbot crash
-                if update.message.sender.username is None:
-                    update.message.sender.username = ""
+                sender_name = update.message.sender.username
+                if sender_name is None:
+                    sender_name = ""
 
-                reports.append(Report(update.message.sender.username, self,
-                                      update.message.text, None,
-                                      update.message.date))
+                reports.append(Report(sender_name, self, update.message.text,
+                                      None, update.message.date))
         return reports
 
     def post(self, user, report):
