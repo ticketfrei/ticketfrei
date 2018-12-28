@@ -115,13 +115,6 @@ class DB(object):
                 FOREIGN KEY(twitter_accounts_id)
                     REFERENCES twitter_accounts(id)
             );
-            CREATE TABLE IF NOT EXISTS telegram_accounts (
-                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id     INTEGER,
-                api_token   TEXT,
-                active      INTEGER,
-                FOREIGN KEY(user_id) REFERENCES user(id)
-            );
             CREATE TABLE IF NOT EXISTS telegram_subscribers (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
