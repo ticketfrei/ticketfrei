@@ -24,9 +24,12 @@ class TelegramBot(Bot):
             if update in [303, 404, 420, 500, 502]:
                 return reports
             if isinstance(update, int):
-                logger.error("City " + user.uid +
-                             ": Unknown Telegram error code: " +
-                             str(update) + " - " + updates[1])
+                try:
+                    logger.error("City " + user.uid +
+                                 ": Unknown Telegram error code: " +
+                                 str(update) + " - " + updates[1])
+                except TypeError:
+                    logger.error("Unknown Telegram error code: " + str(update))
                 return reports
             user.save_seen_tg(update.update_id)
             if update.message.text.lower() == "/start":
