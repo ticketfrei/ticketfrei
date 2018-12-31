@@ -25,9 +25,9 @@ class TelegramBot(Bot):
                 return reports
             if isinstance(update, int):
                 try:
-                    logger.error("City " + user.uid +
+                    logger.error("City " + str(user.uid) +
                                  ": Unknown Telegram error code: " +
-                                 str(update) + " - " + updates[1])
+                                 str(update) + " - " + str(updates[1]))
                 except TypeError:
                     logger.error("Unknown Telegram error code: " + str(update))
                 return reports
