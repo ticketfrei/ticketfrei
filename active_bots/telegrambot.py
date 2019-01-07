@@ -47,7 +47,8 @@ class TelegramBot(Bot):
             elif update.message.text.lower() == "/help":
                 tb.send_message(
                     update.message.sender.id,
-                    "Send reports here to share them with other users. Use /start and /stop to get reports or not.")
+                    "Send reports here to share them with other users. "
+                    "Use /start and /stop to get reports or not.")
                 # TODO: /help message should be set in frontend
             else:
                 # set report.author to "" to avoid mailbot crash
