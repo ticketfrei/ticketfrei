@@ -63,7 +63,7 @@ class TelegramBot(Bot):
         tb = Telegram(user.get_telegram_credentials())
         text = report.text
         if len(text) > 4096:
-            text = text[:4096 - 4] + u' ...'
+            text = text[:4096 - 2] + " \N{Horizontal ellipsis}"
         try:
             for subscriber_id in user.get_telegram_subscribers():
                 tb.send_message(subscriber_id, text).wait()
