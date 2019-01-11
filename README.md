@@ -5,11 +5,18 @@ transport systems.
 
 ## Mission
 
-Public transportation is meant to provide an easy and time-saving way to move within a region while being affordable for everybody. Unfortunately, this is not yet the case. Ticketfrei's approach is to **enable people to reclaim public transportation.**
+Public transportation is meant to provide an easy and time-saving way to move
+within a region while being affordable for everybody. Unfortunately, this is
+not yet the case. Ticketfrei's approach is to **enable people to reclaim public
+transportation.**
 
-On short term we want to do this by helping users to avoid controllers and fines - on long term by **pressuring public transportation companies to offer their services free of charge**, financed by the public.
+On short term we want to do this by helping users to avoid controllers and
+fines - on long term by **pressuring public transportation companies to offer
+their services free of charge**, financed by the public.
 
-Because with Ticketfrei you're able to use trains and subways for free anyway. Take part and create a new understanding of what public transportation could look like!
+Because with Ticketfrei you're able to use trains and subways for free anyway.
+Take part and create a new understanding of what public transportation could
+look like!
 
 ## How It Works
 
