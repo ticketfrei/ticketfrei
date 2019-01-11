@@ -263,7 +263,6 @@ application = bottle.default_app()
 bottle.install(SessionPlugin('/'))
 
 if __name__ == '__main__':
-    # testing only
-    bottle.run(host=config["web"]["host"], port=config["web"]["port"])
+    bottle.run(host="0.0.0.0", port=config["web"]["port"])
 else:
     application.catchall = False
