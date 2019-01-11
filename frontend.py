@@ -56,6 +56,9 @@ def register_post():
 @get('/confirm/<city>/<token>')
 @view('template/propaganda.tpl')
 def confirm(city, token):
+    # check whether city already exists
+    if db.by_city(city):
+        return dict(error='Account already exists.')
     # create db-entry
     if db.confirm(token, city):
         # :todo show info "Account creation successful."
