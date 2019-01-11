@@ -22,7 +22,7 @@ class Mailbot(Bot):
         try:
             mails = mailbox.mbox("/var/mail/" + config['mail']['mbox_user'])
         except FileNotFoundError:
-            logger.error("No mbox file found.", exc_info=True)
+            logger.error("No mbox file found.")
             return reports
         for msg in mails:
             if get_date_from_header(msg['Date']) > user.get_seen_mail():
