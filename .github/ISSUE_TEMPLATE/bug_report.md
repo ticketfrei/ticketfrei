@@ -17,6 +17,9 @@ Steps to reproduce the behavior:
 3. Scroll down to '....'
 4. See error
 
+**Ticketfrei Version**
+See the commit on which Ticketfrei is running at example.org/version.
+
 **Screenshots**
 If applicable, add screenshots to help explain your problem.
 
