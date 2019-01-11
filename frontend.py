@@ -56,11 +56,22 @@ def register_post():
 @get('/confirm/<city>/<token>')
 @view('template/propaganda.tpl')
 def confirm(city, token):
+    # check whether city already exists
+    if db.by_city(city):
+        return dict(error='This Account was already confirmed, please try '
+                          'signing in.')
     # create db-entry
     if db.confirm(token, city):
         # :todo show info "Account creation successful."
         redirect('/settings')
-    return dict(error='Email confirmation failed.')
+    return dict(error='Account creation failed. Please try to register again.')
+
+
+@get('/version')
+def version():
+    import git
+    repo = git.Repo(search_parent_directories=True)
+    return repo.head.object.hexsha
 
 
 @post('/login')
@@ -259,7 +270,6 @@ application = bottle.default_app()
 bottle.install(SessionPlugin('/'))
 
 if __name__ == '__main__':
-    # testing only
-    bottle.run(host=config["web"]["host"], port=config["web"]["port"])
+    bottle.run(host="0.0.0.0", port=config["web"]["port"])
 else:
     application.catchall = False

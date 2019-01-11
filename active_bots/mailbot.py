@@ -19,7 +19,11 @@ class Mailbot(Bot):
     def crawl(self, user):
         reports = []
         # todo: adjust to actual mailbox
-        mails = mailbox.mbox("/var/mail/" + config['mail']['mbox_user'])
+        try:
+            mails = mailbox.mbox("/var/mail/" + config['mail']['mbox_user'])
+        except FileNotFoundError:
+            logger.error("No mbox file found.")
+            return reports
         for msg in mails:
             if get_date_from_header(msg['Date']) > user.get_seen_mail():
                 if user.get_city().lower() in msg['To'].lower():

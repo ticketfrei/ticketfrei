@@ -14,7 +14,6 @@ class DB(object):
         self.conn = sqlite3.connect(dbfile)
         self.cur = self.conn.cursor()
         self.create()
-        self.secret = self.get_secret()
 
     def execute(self, *args, **kwargs):
         return self.cur.execute(*args, **kwargs)
@@ -115,13 +114,6 @@ class DB(object):
                 FOREIGN KEY(twitter_accounts_id)
                     REFERENCES twitter_accounts(id)
             );
-            CREATE TABLE IF NOT EXISTS telegram_accounts (
-                id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-                user_id     INTEGER,
-                api_token   TEXT,
-                active      INTEGER,
-                FOREIGN KEY(user_id) REFERENCES user(id)
-            );
             CREATE TABLE IF NOT EXISTS telegram_subscribers (
                 id          INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
                 user_id     INTEGER,
@@ -196,7 +188,7 @@ class DB(object):
             'passhash': scrypt_mcf(
                 password.encode('utf-8')
             ).decode('ascii')
-        }, self.secret).decode('ascii')
+        }, self.get_secret()).decode('ascii')
 
     def mail_subscription_token(self, email, city):
         """
@@ -210,17 +202,17 @@ class DB(object):
         token = jwt.encode({
             'email': email,
             'city': city
-        }, self.secret).decode('ascii')
+        }, self.get_secret()).decode('ascii')
         return token
 
     def confirm_subscription(self, token):
-        json = jwt.decode(token, self.secret)
+        json = jwt.decode(token, self.get_secret())
         return json['email'], json['city']
 
     def confirm(self, token, city):
         from user import User
         try:
-            json = jwt.decode(token, self.secret)
+            json = jwt.decode(token, self.get_secret())
         except jwt.DecodeError:
             return None  # invalid token
         if 'passhash' in json.keys():

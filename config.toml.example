@@ -10,10 +10,7 @@ port = 80
 contact = "b3yond@riseup.net"
 
 [mail]
-mailserver = "smtp.riseup.net"
-user = "user"
-passphrase = "sup3rs3cur3"
-mbox = "root"
+mbox_user = "root"
 
 [database]
 db_path = "/var/ticketfrei/db.sqlite"

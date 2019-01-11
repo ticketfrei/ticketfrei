@@ -21,10 +21,15 @@ class TelegramBot(Bot):
             return reports
         for update in updates:
             # return when telegram returns an error code
-            if update in [303, 404, 420, 500]:
+            if update in [303, 404, 420, 500, 502]:
                 return reports
-            elif isinstance(update, int):
-                logger.error("Unknown Telegram error code: " + str(update))
+            if isinstance(update, int):
+                try:
+                    logger.error("City " + str(user.uid) +
+                                 ": Unknown Telegram error code: " +
+                                 str(update) + " - " + str(updates[1]))
+                except TypeError:
+                    logger.error("Unknown Telegram error code: " + str(update))
                 return reports
             user.save_seen_tg(update.update_id)
             if update.message.text.lower() == "/start":
@@ -42,19 +47,24 @@ class TelegramBot(Bot):
             elif update.message.text.lower() == "/help":
                 tb.send_message(
                     update.message.sender.id,
-                    "Send reports here to share them with other users. Use /start and /stop to get reports or not.")
+                    "Send reports here to share them with other users. "
+                    "Use /start and /stop to get reports or not.")
                 # TODO: /help message should be set in frontend
             else:
-                reports.append(Report(update.message.sender.username, self,
-                                      update.message.text, None,
-                                      update.message.date))
+                # set report.author to "" to avoid mailbot crash
+                sender_name = update.message.sender.username
+                if sender_name is None:
+                    sender_name = ""
+
+                reports.append(Report(sender_name, self, update.message.text,
+                                      None, update.message.date))
         return reports
 
     def post(self, user, report):
         tb = Telegram(user.get_telegram_credentials())
         text = report.text
         if len(text) > 4096:
-            text = text[:4096 - 4] + u' ...'
+            text = text[:4096 - 2] + " \N{Horizontal ellipsis}"
         try:
             for subscriber_id in user.get_telegram_subscribers():
                 tb.send_message(subscriber_id, text).wait()

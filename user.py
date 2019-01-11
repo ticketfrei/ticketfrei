@@ -361,10 +361,13 @@ Aber je mehr Leute mitmachen, desto eher kannst du dir sicher
 sein, dass wir sie finden, bevor sie uns finden.
 
 Wenn du immer direkt gewarnt werden willst, kannst du auch die
-Benachrichtigungen über E-Mail oder Telegram aktivieren. Gib 
-einfach <a href="/city/mail/""" + city + """"/">hier</a> deine 
-E-Mail-Adresse an oder subscribe dem Telegram-Bot [@ticketfrei_""" + city + \
-                   "_bot](https://t.me/ticketfrei_" + city + """_bot) 
+Benachrichtigungen über E-Mail, Telegram, oder den Mastodon RSS 
+feed aktivieren. Entweder:
+* Gibt hier [deine E-Mail-Adresse an](/city/mail/""" + city + """)
+* Subscribe dem Telegram-Bot [@ticketfrei_""" + city + \
+"_bot](https://t.me/ticketfrei_" + city + """_bot)
+* oder subscribe dem RSS feed von [""" + city + """](""" + masto_link + \
+""".atom?replies=false&boosts=true)
 
 Also, wenn du weniger Glück hast, und der erste bist, der einen 
 Kontrolleur sieht:
@@ -388,9 +391,9 @@ mentioned, und gib an
 
 Zum Beispiel so:
 
-![Screenshot of writing a Toot](https://github.com/b3yond/ticketfrei/raw/master/guides/tooting_screenshot.png)
+![Screenshot of writing a Toot](https://github.com/b3yond/ticketfrei/raw/stable1/guides/tooting_screenshot.png)
 
-![A toot ready to be shared](https://github.com/b3yond/ticketfrei/raw/master/guides/toot_screenshot.png)
+![A toot ready to be shared](https://github.com/b3yond/ticketfrei/raw/stable1/guides/toot_screenshot.png)
 
 Der Bot wird die Nachricht dann weiterverbreiten, auch zu den 
 anderen Netzwerken.

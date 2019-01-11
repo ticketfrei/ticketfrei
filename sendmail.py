@@ -27,5 +27,5 @@ def sendmail(to, subject, city=None, body=''):
 
 # For testing:
 if __name__ == '__main__':
-    sendmail(config['mail']['contact'], "Test Mail",
+    sendmail(config['web']['contact'], "Test Mail",
              body="This is a test mail.")
