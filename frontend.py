@@ -58,12 +58,13 @@ def register_post():
 def confirm(city, token):
     # check whether city already exists
     if db.by_city(city):
-        return dict(error='Account already exists.')
+        return dict(error='This Account was already confirmed, please try '
+                          'signing in.')
     # create db-entry
     if db.confirm(token, city):
         # :todo show info "Account creation successful."
         redirect('/settings')
-    return dict(error='Email confirmation failed.')
+    return dict(error='Account creation failed. Please try to register again.')
 
 
 @post('/login')
