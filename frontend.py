@@ -67,6 +67,13 @@ def confirm(city, token):
     return dict(error='Account creation failed. Please try to register again.')
 
 
+@get('/version')
+def version():
+    import git
+    repo = git.Repo(search_parent_directories=True)
+    return repo.head.object.hexsha
+
+
 @post('/login')
 @view('template/login.tpl')
 def login_post():
