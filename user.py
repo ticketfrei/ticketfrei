@@ -9,7 +9,7 @@ from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 class User(object):
     def __init__(self, uid):
         # set cookie
-        response.set_cookie('uid', uid, secret=db.secret, path='/')
+        response.set_cookie('uid', uid, secret=db.get_secret(), path='/')
         self.uid = uid
 
     def check_password(self, password):
@@ -55,7 +55,7 @@ class User(object):
         return jwt.encode({
             'email': email,
             'uid': self.uid
-        }, db.secret).decode('ascii')
+        }, db.get_secret()).decode('ascii')
 
     def is_appropriate(self, report):
         db.execute("SELECT patterns FROM triggerpatterns WHERE user_id=?;",
@@ -300,7 +300,7 @@ schlitz
             client_secret = row[1]
             return client_id, client_secret
         except TypeError:
-            app_name = "ticketfrei" + str(db.secret)[0:4]
+            app_name = "ticketfrei" + str(db.get_secret())[0:4]
             client_id, client_secret \
                 = Mastodon.create_app(app_name, api_base_url=instance)
             db.execute("""INSERT INTO mastodon_instances(
