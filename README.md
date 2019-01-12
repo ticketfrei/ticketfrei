@@ -32,13 +32,15 @@ Today, you can use a Twitter, Mastodon, Telegram, and Mail with the account.
 They will communicate with each other; if someone warns others via Mail,
 Telegram, Twitter and Mastodon users will also see the message. And vice versa.
 
-In version 2, this repository contains a web application. On this website,
+In version 3, this repository contains a web application. On this website,
 people can register an own bot for their city - the website manages multiple
-bots for multiple citys. This way, you do not have to host it yourself.
+bots for multiple citys, which run in parallel. This way, you do not have to
+host it yourself, if you lack the know-how. But it is easily possible to do so
+with docker: http://github.com/ticketfrei/docker-ticketfrei/
 
-In the promotion folder, you'll find some promotion material you can use to
-build up such a community in your city. Unfortunately it is in german - but
-it's editable, feel free to translate it!
+In https://github.com/ticketfrei/promotion, you'll find some promotion material
+you can use to build up such a community in your city. Unfortunately it is in
+german - but it's editable, feel free to translate it!
 
 Website (our flagship instance): https://ticketfrei.links-tech.org
 
