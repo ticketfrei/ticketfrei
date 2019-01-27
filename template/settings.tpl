@@ -7,86 +7,16 @@
     <div id="enablebutton" style="float: right; padding: 2em;" color="red">Enable</div>
 % end
 
-<a class='button' style="padding: 1.5em;" href="/login/twitter">
-    <picture>
-        <source type='image/webp' sizes='20px' srcset="/static-cb/1517673283/twitter-20.webp 20w,/static-cb/1517673283/twitter-40.webp 40w,/static-cb/1517673283/twitter-80.webp 80w,"/>
-        <source type='image/png' sizes='20px' srcset="/static-cb/1517673283/twitter-20.png 20w,/static-cb/1517673283/twitter-40.png 40w,/static-cb/1517673283/twitter-80.png 80w,"/>
-        <img src="https://patriciaannbridewell.files.wordpress.com/2014/04/official-twitter-logo-tile.png" alt="" />
-    </picture>
-    Log in with Twitter
-</a>
-
-<section>
-    <h2>Log in with Mastodon</h2>
-        <form action="/login/mastodon" method='post'>
-            <label for="email">E-Mail of your Mastodon-Account</label>
-            <input type="text" placeholder="Enter Email" name="email" id="email" required>
-
-            <label for="pass">Mastodon Password</label>
-            <input type="password" placeholder="Enter Password" name="pass" id="pass" required>
-
-            <label>Mastodon instance:
-                <input type='text' name='instance_url' list='instances' placeholder='social.example.net'/>
-            </label>
-            <datalist id='instances'>
-                <option value=''>
-                <option value='anticapitalist.party'>
-                <option value='awoo.space'>
-                <option value='cybre.space'>
-                <option value='mastodon.social'>
-                <option value='glitch.social'>
-                <option value='botsin.space'>
-                <option value='witches.town'>
-                <option value='social.wxcafe.net'>
-                <option value='monsterpit.net'>
-                <option value='mastodon.xyz'>
-                <option value='a.weirder.earth'>
-                <option value='chitter.xyz'>
-                <option value='sins.center'>
-                <option value='dev.glitch.social'>
-                <option value='computerfairi.es'>
-                <option value='niu.moe'>
-                <option value='icosahedron.website'>
-                <option value='hostux.social'>
-                <option value='hyenas.space'>
-                <option value='instance.business'>
-                <option value='mastodon.sdf.org'>
-                <option value='pawoo.net'>
-                <option value='pouet.it'>
-                <option value='scalie.business'>
-                <option value='sleeping.town'>
-                <option value='social.koyu.space'>
-                <option value='sunshinegardens.org'>
-                <option value='vcity.network'>
-                <option value='octodon.social'>
-                <option value='soc.ialis.me'>
-            </datalist>
-            <input name='csrf' value='{{csrf}}' type='hidden' />
-            <input name='confirm' value='Log in' type='submit'/>
-        </form>
-</section>
-
 <%
-# todo: hide this part, if there is already a telegram bot connected.
+
+# import all the settings templates from bots/*/settings.tpl
+import os
+bots = os.listdir('bots')
+
+for bot in bots:
+    include('/home/b3yond/git/ticketfrei/bots/' + bot + '/settings.tpl', csrf=csrf, city=city)
+
 %>
-<div>
-    <h2>Connect with Telegram</h2>
-    <p>
-        If you have a Telegram account, you can register a bot there. Just
-        write to @botfather. There are detailed instructions on
-        <a href="https://botsfortelegram.com/project/the-bot-father/" target="_blank">
-        Bots for Telegram</a>.
-    </p>
-    <p>
-        The botfather will give you an API key - with the API key, Ticketfrei
-        can use the Telegram bot. Enter it here:
-    </p>
-    <form action="/settings/telegram" method="post">
-        <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey">
-        <input name='csrf' value='{{csrf}}' type='hidden' />
-        <input name='confirm' value='Login with Telegram' type='submit'/>
-    </form>
-</div>
 
 <div>
     <h2>Edit your city page</h2>

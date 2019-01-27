@@ -1,0 +1,1 @@
+% rebase('settings.tpl')
