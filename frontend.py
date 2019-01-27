@@ -272,9 +272,6 @@ logger.addHandler(fh)
 application = bottle.default_app()
 bottle.install(SessionPlugin('/'))
 
-for bot in listdir('bots'):
-    bottle.TEMPLATE_PATH.insert(0, path.join('bots', bot, 'settings.tpl'))
-
 if __name__ == '__main__':
     bottle.run(host="0.0.0.0", port=config["web"]["port"])
 else:
