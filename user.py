@@ -4,7 +4,7 @@ from db import db
 import jwt
 from mastodon import Mastodon
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
-from random import choice
+from os import urandom
 
 
 class User(object):
@@ -17,8 +17,7 @@ class User(object):
     def get_csrf(self):
         csrf_token = request.get_cookie('csrf', secret=db.get_secret())
         if not csrf_token:
-            allchar = "0123456789"
-            csrf_token = "".join(choice(allchar) for x in range(32))
+            csrf_token = str(urandom(32))
         return csrf_token
 
     def check_password(self, password):
