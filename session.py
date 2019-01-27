@@ -22,7 +22,8 @@ class SessionPlugin(object):
                     return redirect(self.loginpage)
                 kwargs[self.keyword] = User(uid)
                 if request.method == 'POST':
-                    if request.forms['csrf'] != request.get_cookie('csrf'):
+                    if request.forms['csrf'] != request.get_cookie('csrf',
+                                                        secret=db.get_secret()):
                         abort(400)
                 return callback(*args, **kwargs)
 

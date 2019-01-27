@@ -15,10 +15,10 @@ class User(object):
         response.set_cookie('csrf', self.get_csrf(), db.get_secret(), path='/')
 
     def get_csrf(self):
-        csrf_token = request.get_cookie('csrf')
+        csrf_token = request.get_cookie('csrf', secret=db.get_secret())
         if not csrf_token:
-            allchar = "1234567890"
-            csrf_token = "".join(choice(allchar) for x in [32])
+            allchar = "0123456789"
+            csrf_token = "".join(choice(allchar) for x in range(32))
         return csrf_token
 
     def check_password(self, password):
