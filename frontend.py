@@ -144,7 +144,6 @@ def settings(user):
 
 
 @post('/settings/markdown')
-#csrf
 @view('template/settings.tpl')
 def update_markdown(user):
     user.set_markdown(request.forms['markdown'])
@@ -152,7 +151,6 @@ def update_markdown(user):
 
 
 @post('/settings/mail_md')
-#csrf
 @view('template/settings.tpl')
 def update_mail_md(user):
     user.set_mail_md(request.forms['mail_md'])
@@ -160,7 +158,6 @@ def update_mail_md(user):
 
 
 @post('/settings/goodlist')
-#csrf
 @view('template/settings.tpl')
 def update_trigger_patterns(user):
     user.set_trigger_words(request.forms['goodlist'])
@@ -168,7 +165,6 @@ def update_trigger_patterns(user):
 
 
 @post('/settings/blocklist')
-#csrf
 @view('template/settings.tpl')
 def update_badwords(user):
     user.set_badwords(request.forms['blocklist'])
@@ -176,7 +172,6 @@ def update_badwords(user):
 
 
 @post('/settings/telegram')
-#csrf
 def register_telegram(user):
     apikey = request.forms['apikey']
     user.update_telegram_key(apikey)
@@ -248,7 +243,6 @@ def twitter_callback(user):
 
 
 @post('/login/mastodon')
-#csrf
 def login_mastodon(user):
     """
     Mastodon OAuth authentication process.
