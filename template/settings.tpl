@@ -106,6 +106,7 @@
     </p>
     <form action="/settings/markdown" method="post">
         <textarea id="markdown" rows="20" cols="70" name="markdown" wrap="physical">{{markdown}}</textarea>
+        <input name='csrf' value='asdf' type='hidden' />
         <input name='confirm' value='Save' type='submit'/>
     </form>
 </div>
