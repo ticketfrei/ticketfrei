@@ -205,6 +205,7 @@ def logout():
     response.set_cookie('uid', '', expires=0, path="/")
     response.set_cookie('csrf', '', expires=0, path="/")
     # :todo show info "Logout successful."
+    response.set_cookie('csrf', '', expires=0, path="/")
     redirect('/')
 
 
