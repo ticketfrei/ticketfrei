@@ -1,9 +1,10 @@
 from config import config
-from bottle import response
+from bottle import response, request
 from db import db
 import jwt
 from mastodon import Mastodon
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
+from os import urandom
 
 
 class User(object):
@@ -11,6 +12,13 @@ class User(object):
         # set cookie
         response.set_cookie('uid', uid, secret=db.get_secret(), path='/')
         self.uid = uid
+        response.set_cookie('csrf', self.get_csrf(), db.get_secret(), path='/')
+
+    def get_csrf(self):
+        csrf_token = request.get_cookie('csrf', secret=db.get_secret())
+        if not csrf_token:
+            csrf_token = str(urandom(32))
+        return csrf_token
 
     def check_password(self, password):
         db.execute("SELECT passhash FROM user WHERE id=?;", (self.uid,))
@@ -235,6 +243,7 @@ schlitz
         # - mail_md
         # - goodlist
         # - blocklist
+        # - csrf
         # - logged in with twitter?
         # - logged in with mastodon?
         # - enabled?
@@ -244,7 +253,8 @@ schlitz
                     mail_md=citydict['mail_md'],
                     triggerwords=self.get_trigger_words(),
                     badwords=self.get_badwords(),
-                    enabled=self.enabled)
+                    enabled=self.enabled,
+                    csrf=self.get_csrf())
 
     def save_request_token(self, token):
         db.execute("""INSERT INTO

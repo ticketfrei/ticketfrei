@@ -61,6 +61,7 @@
                 <option value='octodon.social'>
                 <option value='soc.ialis.me'>
             </datalist>
+            <input name='csrf' value='{{csrf}}' type='hidden' />
             <input name='confirm' value='Log in' type='submit'/>
         </form>
 </section>
@@ -82,6 +83,7 @@
     </p>
     <form action="/settings/telegram" method="post">
         <input type="text" name="apikey" placeholder="Telegram bot API key" id="apikey">
+        <input name='csrf' value='{{csrf}}' type='hidden' />
         <input name='confirm' value='Login with Telegram' type='submit'/>
     </form>
 </div>
@@ -106,6 +108,7 @@
     </p>
     <form action="/settings/markdown" method="post">
         <textarea id="markdown" rows="20" cols="70" name="markdown" wrap="physical">{{markdown}}</textarea>
+        <input name='csrf' value='{{csrf}}' type='hidden' />
         <input name='confirm' value='Save' type='submit'/>
     </form>
 </div>
@@ -123,6 +126,7 @@
     </p>
     <form action="/settings/mail_md" method="post">
         <textarea id="mail_md" rows="20" cols="70" name="mail_md" wrap="physical">{{mail_md}}</textarea>
+        <input name='csrf' value='{{csrf}}' type='hidden' />
         <input name='confirm' value='Save' type='submit'/>
     </form>
 </div>
@@ -137,6 +141,7 @@
     </p>
     <form action="/settings/goodlist" method="post">
         <textarea id="goodlist" rows="8" cols="70" name="goodlist" wrap="physical">{{triggerwords}}</textarea>
+        <input name='csrf' value='{{csrf}}' type='hidden' />
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>
@@ -151,6 +156,7 @@
     </p>
     <form action="/settings/blocklist" method="post">
         <textarea id="blocklist" rows="8" cols="70" name="blocklist" wrap="physical">{{badwords}}</textarea>
+        <input name='csrf' value='{{csrf}}' type='hidden' />
         <input name='confirm' value='Submit' type='submit'/>
     </form>
 </div>

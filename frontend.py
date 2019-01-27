@@ -178,9 +178,10 @@ def register_telegram(user):
     return city_page(user.get_city(), info="Thanks for registering Telegram!")
 
 
-@get('/api/state')
-def api_enable(user):
-    return user.state()
+# unused afaik
+#@get('/api/state')
+#def api_enable(user):
+#    return user.state()
 
 
 @get('/static/<filename:path>')
@@ -197,6 +198,7 @@ def guides(filename):
 def logout():
     # clear auth cookie
     response.set_cookie('uid', '', expires=0, path="/")
+    response.set_cookie('csrf', '', expires=0, path="/")
     # :todo show info "Logout successful."
     redirect('/')
 
