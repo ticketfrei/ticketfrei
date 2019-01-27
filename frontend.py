@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import bottle
+from os import listdir, path
 from bottle import get, post, redirect, request, response, view
 from config import config
 from db import db
@@ -270,6 +271,9 @@ logger.addHandler(fh)
 
 application = bottle.default_app()
 bottle.install(SessionPlugin('/'))
+
+for bot in listdir('bots'):
+    bottle.TEMPLATE_PATH.insert(0, path.join('bots', bot, 'settings.tpl'))
 
 if __name__ == '__main__':
     bottle.run(host="0.0.0.0", port=config["web"]["port"])
