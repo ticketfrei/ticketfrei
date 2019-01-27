@@ -4,12 +4,16 @@ from db import db
 import jwt
 from mastodon import Mastodon
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
+from random import choice
 
 
 class User(object):
     def __init__(self, uid):
         # set cookie
         response.set_cookie('uid', uid, secret=db.get_secret(), path='/')
+        allchar = "1234567890"
+        response.set_cookie('csrf', "".join(choice(allchar) for x in [32]),
+                            db.get_secret(), path='/')
         self.uid = uid
 
     def check_password(self, password):
