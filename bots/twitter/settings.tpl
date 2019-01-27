@@ -1,4 +1,3 @@
-% rebase('settings.tpl')
 
 <a class='button' style="padding: 1.5em;" href="/login/twitter">
     <picture>

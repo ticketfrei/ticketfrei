@@ -1,4 +1,3 @@
-% rebase('settings.tpl')
 
 <%
 # todo: hide this part, if there is already a telegram bot connected.

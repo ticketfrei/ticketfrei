@@ -1,4 +1,3 @@
-% rebase('settings.tpl')
 
 <div>
     <h2>Edit your mail subscription page</h2>

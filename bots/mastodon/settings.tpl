@@ -1,4 +1,3 @@
-% rebase('settings.tpl')
 
 <section>
     <h2>Log in with Mastodon</h2>
