@@ -17,7 +17,7 @@ class SessionPlugin(object):
         if self.keyword in Signature.from_callable(route.callback).parameters:
             @wraps(callback)
             def wrapper(*args, **kwargs):
-                uid = request.get_cookie('uid', secret=db.secret)
+                uid = request.get_cookie('uid', secret=db.get_secret())
                 if uid is None:
                     return redirect(self.loginpage)
                 kwargs[self.keyword] = User(uid)
