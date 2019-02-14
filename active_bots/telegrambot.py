@@ -50,6 +50,9 @@ class TelegramBot(Bot):
                     "Send reports here to share them with other users. "
                     "Use /start and /stop to get reports or not.")
                 # TODO: /help message should be set in frontend
+            elif update.message.text.lower() == "/ping":
+                tb.send_message(
+                        update.message.sender.id, "pong")
             else:
                 # set report.author to "" to avoid mailbot crash
                 sender_name = update.message.sender.username
