@@ -1,5 +1,6 @@
 *.swp
 *.pyc
+*.egg-info/
 .idea/
 __pycache__/
 last_mention
@@ -17,4 +18,3 @@ include/
 lib/
 share/
 local/
-venv/
