@@ -14,3 +14,6 @@ mbox_user = "root"
 
 [database]
 db_path = "/var/ticketfrei/db.sqlite"
+
+[log]
+log_path = "/var/ticketfrei/error.log"

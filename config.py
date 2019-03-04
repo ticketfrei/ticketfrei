@@ -54,6 +54,12 @@ def load_env():
     except KeyError:
         pass
 
+    try:
+        if os.environ['LOG_PATH'] != "":
+            configdict['log']['log_path'] = os.environ['LOG_PATH']
+    except KeyError:
+        pass
+
     return configdict
 
 
