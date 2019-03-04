@@ -265,7 +265,7 @@ def login_mastodon(user):
 
 
 logger = logging.getLogger()
-fh = logging.FileHandler(config['log']['log_path'])
+fh = logging.FileHandler(config['log']['log_frontend'])
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 

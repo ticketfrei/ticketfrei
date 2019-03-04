@@ -55,8 +55,14 @@ def load_env():
         pass
 
     try:
-        if os.environ['LOG_PATH'] != "":
-            configdict['log']['log_path'] = os.environ['LOG_PATH']
+        if os.environ['LOG_FRONTEND'] != "":
+            configdict['log']['log_frontend'] = os.environ['LOG_FRONTEND']
+    except KeyError:
+        pass
+
+    try:
+        if os.environ['LOG_BACKEND'] != "":
+            configdict['log']['log_backend'] = os.environ['LOG_BACKEND']
     except KeyError:
         pass
 

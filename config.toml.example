@@ -16,4 +16,5 @@ mbox_user = "root"
 db_path = "/var/ticketfrei/db.sqlite"
 
 [log]
-log_path = "/var/ticketfrei/error.log"
+log_frontend = "/var/ticketfrei/frontend.log"
+log_backend = "/var/log/ticketfrei/backend.log"

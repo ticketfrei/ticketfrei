@@ -17,7 +17,7 @@ def shutdown():
 
 if __name__ == '__main__':
     logger = logging.getLogger()
-    fh = logging.FileHandler('/var/log/ticketfrei/backend.log')
+    fh = logging.FileHandler(config["log"]["log_backend"])
     fh.setLevel(logging.DEBUG)
     logger.addHandler(fh)
 
