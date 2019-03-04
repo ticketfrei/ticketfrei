@@ -1,0 +1,20 @@
+[twitter]
+# You get those keys when you follow these steps:
+# https://developer.twitter.com/en/docs/basics/authentication/guides/access-tokens
+consumer_key = "your_consumer_key"
+consumer_secret = "your_consumer_secret"
+
+[web]
+host = "0.0.0.0"  # will be used by bottle as a host.
+port = 80
+contact = "b3yond@riseup.net"
+
+[mail]
+mbox_user = "root"
+
+[database]
+db_path = "/var/ticketfrei/db.sqlite"
+
+[log]
+log_frontend = "/var/ticketfrei/frontend.log"
+log_backend = "/var/log/ticketfrei/backend.log"
