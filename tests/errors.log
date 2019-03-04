@@ -1,0 +1,77 @@
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
+Could not send confirmation mail to foo@abc.de
+Traceback (most recent call last):
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/frontend.py", line 42, in register_post
+    link = url('confirm/' + city + '/%s' % db.user_token(email, password))
+  File "/home/kaese/Projekte/ticketfrei/ticketfrei/db.py", line 186, in user_token
+    return jwt.encode({
+AttributeError: module 'jwt' has no attribute 'encode'
