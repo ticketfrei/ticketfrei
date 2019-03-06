@@ -1,4 +1,4 @@
-% rebase('template/wrapper.tpl')
+% rebase('wrapper.tpl')
 <a href="/logout/"><button>Logout</button></a>
 
 % if enabled:

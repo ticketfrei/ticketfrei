@@ -1,6 +1,9 @@
 import pytoml as toml
 import os
 
+ROOT_DIR = os.path.dirname(os.path.realpath(__file__))
+TEMPLATE_DIR = os.path.join(ROOT_DIR, 'template', '')
+STATIC_DIR = os.path.join(ROOT_DIR, 'static', '')
 
 def load_env():
     """
@@ -9,7 +12,7 @@ def load_env():
 
     :return: config dictionary of dictionaries.
     """
-    with open('config.toml.example') as defaultconf:
+    with open(os.path.join(ROOT_DIR, 'config.toml.example')) as defaultconf:
         configdict = toml.load(defaultconf)
 
     try:
@@ -71,7 +74,7 @@ def load_env():
 
 # read config in TOML format (https://github.com/toml-lang/toml#toml)
 try:
-    with open('config.toml') as configfile:
+    with open(os.path.join(ROOT_DIR, 'config.toml')) as configfile:
         config = toml.load(configfile)
 except FileNotFoundError:
     config = load_env()

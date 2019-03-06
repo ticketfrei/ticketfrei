@@ -1,2 +1,2 @@
-% rebase('template/wrapper.tpl', title='Login')
-% include('template/login-plain.tpl')
+% rebase('wrapper.tpl', title='Login')
+% include('login-plain.tpl')

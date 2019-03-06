@@ -2,7 +2,7 @@
 import bottle
 from os import listdir, path
 from bottle import get, post, redirect, request, response, view
-from config import config
+from config import config, STATIC_DIR, TEMPLATE_DIR
 from db import db
 import logging
 import tweepy
@@ -19,13 +19,13 @@ def url(route):
 
 
 @get('/')
-@view('template/propaganda.tpl')
+@view('propaganda.tpl')
 def propaganda():
     pass
 
 
 @post('/register')
-@view('template/register.tpl')
+@view('register.tpl')
 def register_post():
     try:
         email = request.forms['email']
@@ -55,7 +55,7 @@ def register_post():
 
 
 @get('/confirm/<city>/<token>')
-@view('template/propaganda.tpl')
+@view('propaganda.tpl')
 def confirm(city, token):
     # check whether city already exists
     if db.by_city(city):
@@ -76,7 +76,7 @@ def version():
 
 
 @post('/login')
-@view('template/login.tpl')
+@view('login.tpl')
 def login_post():
     # check login
     try:
@@ -102,7 +102,7 @@ def city_page(city, info=None):
 
 
 @get('/city/mail/<city>')
-@view('template/mail.tpl')
+@view('mail.tpl')
 def display_mail_page(city):
     user = db.by_city(city)
     return user.state()
@@ -139,34 +139,34 @@ def unsubscribe(token):
 
 
 @get('/settings')
-@view('template/settings.tpl')
+@view('settings.tpl')
 def settings(user):
     return user.state()
 
 
 @post('/settings/markdown')
-@view('template/settings.tpl')
+@view('settings.tpl')
 def update_markdown(user):
     user.set_markdown(request.forms['markdown'])
     return user.state()
 
 
 @post('/settings/mail_md')
-@view('template/settings.tpl')
+@view('settings.tpl')
 def update_mail_md(user):
     user.set_mail_md(request.forms['mail_md'])
     return user.state()
 
 
 @post('/settings/goodlist')
-@view('template/settings.tpl')
+@view('settings.tpl')
 def update_trigger_patterns(user):
     user.set_trigger_words(request.forms['goodlist'])
     return user.state()
 
 
 @post('/settings/blocklist')
-@view('template/settings.tpl')
+@view('settings.tpl')
 def update_badwords(user):
     user.set_badwords(request.forms['blocklist'])
     return user.state()
@@ -187,12 +187,12 @@ def register_telegram(user):
 
 @get('/static/<filename:path>')
 def static(filename):
-    return bottle.static_file(filename, root='static')
+    return bottle.static_file(filename, root=STATIC_DIR)
 
-
-@get('/guides/<filename:path>')
-def guides(filename):
-    return bottle.static_file(filename, root='guides')
+# IS THIS USED?
+#@get('/guides/<filename:path>')
+#def guides(filename):
+#    return bottle.static_file(filename, root='guides')
 
 
 @get('/logout/')
@@ -269,6 +269,8 @@ fh = logging.FileHandler(config['log']['log_frontend'])
 fh.setLevel(logging.DEBUG)
 logger.addHandler(fh)
 
+# TODO change TEMPLATE_PATH to BOTS_DIR after refactoring
+bottle.TEMPLATE_PATH.insert(0, TEMPLATE_DIR)
 application = bottle.default_app()
 bottle.install(SessionPlugin('/'))
 
