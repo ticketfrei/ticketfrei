@@ -11,6 +11,11 @@ contact = "b3yond@riseup.net"
 
 [mail]
 mbox_user = "root"
+aliases_path = "/etc/aliases"
 
 [database]
 db_path = "/var/ticketfrei/db.sqlite"
+
+[log]
+log_frontend = "/var/ticketfrei/frontend.log"
+log_backend = "/var/log/ticketfrei/backend.log"

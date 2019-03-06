@@ -1,4 +1,4 @@
-% rebase('template/wrapper.tpl')
+% rebase('wrapper.tpl')
 
 <%
 import markdown as md

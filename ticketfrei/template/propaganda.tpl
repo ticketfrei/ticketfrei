@@ -1,4 +1,4 @@
-% rebase('template/wrapper.tpl')
+% rebase('wrapper.tpl')
 % if defined('info'):
 <div class="ui-widget">
     <div class="ui-state-highlight ui-corner-all" style="padding: 0.7em;">
@@ -7,7 +7,7 @@
 </div>
 <br>
 % end
-% include('template/login-plain.tpl')
+% include('login-plain.tpl')
 <h1>Features</h1>
 <p>
     Don't pay for public transport. Instead, warn each other
@@ -45,7 +45,7 @@
         share it with us, so others can use it, too!</li>
     </ul></li>
 </ul>
-% include('template/register-plain.tpl')
+% include('register-plain.tpl')
 <h2>Our Mission</h2>
 <p>
     Public transportation is meant to provide an easy and

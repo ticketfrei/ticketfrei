@@ -1,4 +1,4 @@
-% rebase('template/wrapper.tpl', title='Register')
+% rebase('wrapper.tpl', title='Register')
 % if defined('info'):
 <div class="ui-widget">
     <div class="ui-state-highlight ui-corner-all" style="padding: 0.7em;">
@@ -6,5 +6,5 @@
     </div>
 </div>
 % else:
-% include('template/register-plain.tpl')
+% include('register-plain.tpl')
 % end
