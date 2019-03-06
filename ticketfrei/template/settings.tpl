@@ -9,11 +9,12 @@
 
 <%
 # import all the settings templates from bots/*/settings.tpl
+from config import BOT_DIR
 import os
-bots = os.listdir('bots')
+bots = os.listdir(BOT_DIR)
 
 for bot in bots:
-    include('bots/' + bot + '/settings.tpl', csrf=csrf, city=city)
+    include(os.path.join(BOT_DIR, bot, 'settings.tpl'), csrf=csrf, city=city)
 end
 %>
 

@@ -95,8 +95,8 @@ def city_page(city, info=None):
     citydict = db.user_facing_properties(city)
     if citydict is not None:
         citydict['info'] = info
-        return bottle.template('template/city.tpl', **citydict)
-    return bottle.template('template/propaganda.tpl',
+        return bottle.template('city.tpl', **citydict)
+    return bottle.template('propaganda.tpl',
                            **dict(info='There is no Ticketfrei bot in your city'
                                        ' yet. Create one yourself!'))
 
