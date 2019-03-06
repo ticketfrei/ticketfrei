@@ -1,6 +1,7 @@
 *.swp
 *.pyc
 *.egg-info/
+*.eggs
 .idea/
 __pycache__/
 last_mention
