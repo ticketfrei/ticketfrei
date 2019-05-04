@@ -73,7 +73,7 @@ class TwitterBot(Bot):
     def post(self, user, report):
         try:
             api = self.get_api(user)
-        except IndexError:
+        except TypeError:
             return  # no twitter account for this user.
         try:
             if report.source == self:

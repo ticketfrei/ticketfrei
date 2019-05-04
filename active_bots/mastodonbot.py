@@ -2,7 +2,7 @@
 
 from bot import Bot
 import logging
-from mastodon import Mastodon
+from mastodon import Mastodon, MastodonServerError
 import re
 from report import Report
 
@@ -25,8 +25,8 @@ class MastodonBot(Bot):
             return mentions
         try:
             notifications = m.notifications()
-        except Exception:
-            logger.error("Unknown Mastodon API Error.", exc_info=True)
+        except MastodonServerError:
+            logger.error("Unknown Mastodon API Error: 502")
             return mentions
         for status in notifications:
             if (status['type'] == 'mention' and
