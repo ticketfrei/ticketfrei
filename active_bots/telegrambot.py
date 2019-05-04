@@ -32,6 +32,12 @@ class TelegramBot(Bot):
                     logger.error("Unknown Telegram error code: " + str(update))
                 return reports
             user.save_seen_tg(update.update_id)
+            if update.message.photo:
+                tb.send_message(
+                    update.message.sender.id,
+                    "Sending Photos is not supported for privacy reasons. Can "
+                    "you describe it as text instead?")
+                continue
             if update.message.text.lower() == "/start":
                 user.add_telegram_subscribers(update.message.sender.id)
                 tb.send_message(
