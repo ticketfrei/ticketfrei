@@ -36,7 +36,7 @@ class TelegramBot(Bot):
                 tb.send_message(
                     update.message.sender.id,
                     "Sending Photos is not supported for privacy reasons. Can "
-                    "you describe it in a report instead?")
+                    "you describe it as text instead?")
                 continue
             if update.message.text.lower() == "/start":
                 user.add_telegram_subscribers(update.message.sender.id)
