@@ -2,7 +2,7 @@
 
 from bot import Bot
 import logging
-from mastodon import Mastodon, MastodonServerError
+import mastodon
 import re
 from report import Report
 
@@ -19,13 +19,13 @@ class MastodonBot(Bot):
         """
         mentions = []
         try:
-            m = Mastodon(*user.get_masto_credentials())
+            m = mastodon.Mastodon(*user.get_masto_credentials())
         except TypeError:
             # logger.error("No Mastodon Credentials in database.", exc_info=True)
             return mentions
         try:
             notifications = m.notifications()
-        except MastodonServerError:
+        except mastodon.MastodonServerError:
             logger.error("Unknown Mastodon API Error: 502")
             return mentions
         for status in notifications:
@@ -54,7 +54,7 @@ class MastodonBot(Bot):
 
     def post(self, user, report):
         try:
-            m = Mastodon(*user.get_masto_credentials())
+            m = mastodon.Mastodon(*user.get_masto_credentials())
         except TypeError:
             return  # no mastodon account for this user.
         if report.source == self:
