@@ -178,6 +178,17 @@ sudo systemctl daemon-reload
 sudo systemctl start ticketfrei-backend.service
 ```
 
+### Backup
+
+For automated backups, you need to backup these files:
+
+* `/var/ticketfrei/db.sqlite`
+* `/srv/ticketfrei/config.toml`
+* `/etc/aliases`
+
+You can find an example how to do this with borgbackup in the deployment
+folder. Adjust it to your needs.
+
 ### Logs
 
 There are several logfiles which you can look at:
