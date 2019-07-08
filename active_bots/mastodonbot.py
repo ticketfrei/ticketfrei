@@ -25,8 +25,21 @@ class MastodonBot(Bot):
             return mentions
         try:
             notifications = m.notifications()
-        except mastodon.MastodonServerError:
+            logger.error(m.instance()['urls']['streaming_api'])
+        except mastodon.MastodonInternalServerError:
+            logger.error("Unknown Mastodon API Error: 500. Server: " + m.instance()['urls'])
+            return mentions
+        except mastodon.MastodonBadGatewayError:
             logger.error("Unknown Mastodon API Error: 502")
+            return mentions
+        except mastodon.MastodonServiceUnavailableError:
+            logger.error("Unknown Mastodon API Error: 503")
+            return mentions
+        except mastodon.MastodonGatewayTimeoutError:
+            logger.error("Unknown Mastodon API Error: 504")
+            return mentions
+        except mastodon.MastodonServerError:
+            logger.error("Unknown Mastodon Server Error")
             return mentions
         for status in notifications:
             if (status['type'] == 'mention' and
