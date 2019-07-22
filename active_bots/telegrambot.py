@@ -38,7 +38,7 @@ class TelegramBot(Bot):
                     "Sending Photos is not supported for privacy reasons. Can "
                     "you describe it as text instead?")
                 continue
-            if "text" in update.message:
+            if hasattr(update.message, 'text'):
                 tb.send_message(
                     update.message.sender.id,
                     "We only support text only reporting for privacy reasons."
