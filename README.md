@@ -152,9 +152,18 @@ echo "Enter your domain name into the following prompt:" && read DOMAIN
 # configure nginx
 sudo sed -r "s/example.org/$DOMAIN/g" deployment/example.org.conf > /etc/nginx/sites-enabled/$DOMAIN.conf
 
-# create folder for socket & database
+# create folder for database
 sudo mkdir /var/ticketfrei
 sudo chown www-data:www-data -R /var/ticketfrei
+
+# create folder for socket
+sudo mkdir /var/run/ticketfrei
+sudo chown -R www-data:www-data /var/run/ticketfrei
+sudo -s
+echo "mkdir /var/run/ticketfrei" >> /etc/rc.local
+echo "chown -R www-data:www-data /var/run/ticketfrei" >> /etc/rc.local
+echo "service ticketfrei-web restart" >> /etc/rc.local
+exit
 
 # change /etc/aliases permissions to be able to receive reports per mail
 sudo chown root:www-data /etc/aliases
@@ -177,6 +186,17 @@ sudo cp deployment/ticketfrei-backend.service /etc/systemd/system
 sudo systemctl daemon-reload
 sudo systemctl start ticketfrei-backend.service
 ```
+
+### Backup
+
+For automated backups, you need to backup these files:
+
+* `/var/ticketfrei/db.sqlite`
+* `/srv/ticketfrei/config.toml`
+* `/etc/aliases`
+
+You can find an example how to do this with borgbackup in the deployment
+folder. Adjust it to your needs.
 
 ### Logs
 
