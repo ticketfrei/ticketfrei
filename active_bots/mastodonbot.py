@@ -26,16 +26,16 @@ class MastodonBot(Bot):
         try:
             notifications = m.notifications()
         except mastodon.MastodonInternalServerError:
-            logger.error("Unknown Mastodon API Error: 500. Server: " + m.instance()['urls']['streaming_api'])
+            logger.error("Mastodon Error: 500. Server: " + m.instance()['urls']['streaming_api'])
             return mentions
         except mastodon.MastodonBadGatewayError:
-            logger.error("Unknown Mastodon API Error: 502. Server: " + m.instance()['urls']['streaming_api'])
+            logger.error("Mastodon Error: 502. Server: " + m.instance()['urls']['streaming_api'])
             return mentions
         except mastodon.MastodonServiceUnavailableError:
-            logger.error("Unknown Mastodon API Error: 503. Server: " + m.instance()['urls']['streaming_api'])
+            logger.error("Mastodon Error: 503. Server: " + m.instance()['urls']['streaming_api'])
             return mentions
         except mastodon.MastodonGatewayTimeoutError:
-            logger.error("Unknown Mastodon API Error: 504. Server: " + m.instance()['urls']['streaming_api'])
+            logger.error("Mastodon Error: 504. Server: " + m.instance()['urls']['streaming_api'])
             return mentions
         except mastodon.MastodonServerError:
             logger.error("Unknown Mastodon Server Error. Server: " + m.instance()['urls']['streaming_api'], exc_info=True)
