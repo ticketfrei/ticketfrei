@@ -23,6 +23,7 @@ class TelegramBot(Bot):
             # return when telegram returns an error code
             if update in [303, 404, 420, 500, 502]:
                 return reports
+            # log unusual telegram error messages
             if isinstance(update, int):
                 try:
                     logger.error("City " + str(user.uid) +
@@ -31,18 +32,21 @@ class TelegramBot(Bot):
                 except TypeError:
                     logger.error("Unknown Telegram error code: " + str(update))
                 return reports
+            # save the last message, so it doesn't get crawled again
             user.save_seen_tg(update.update_id)
+            # complain if message is a photo
             if update.message.photo:
                 tb.send_message(
                     update.message.sender.id,
                     "Sending Photos is not supported for privacy reasons. Can "
                     "you describe it as text instead?")
                 continue
-            if hasattr(update.message, 'text'):
+            # complain if message is a media file
+            if update.message.text is None:
                 tb.send_message(
                     update.message.sender.id,
-                    "We only support text only reporting for privacy reasons."
-                    "Can you describe it as text instead?")
+                    "We only support text reporting for privacy reasons. Can "
+                    "you describe it as text instead?")
                 continue
             if update.message.text.lower() == "/start":
                 user.add_telegram_subscribers(update.message.sender.id)
