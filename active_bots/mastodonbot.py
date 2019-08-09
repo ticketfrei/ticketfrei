@@ -21,7 +21,7 @@ class MastodonBot(Bot):
         try:
             m = mastodon.Mastodon(*user.get_masto_credentials())
         except TypeError:
-            # logger.error("No Mastodon Credentials in database.", exc_info=True)
+            # No Mastodon Credentials in database.
             return mentions
         try:
             notifications = m.notifications()
@@ -38,7 +38,7 @@ class MastodonBot(Bot):
             logger.error("Unknown Mastodon API Error: 504. Server: " + m.instance()['urls']['streaming_api'])
             return mentions
         except mastodon.MastodonServerError:
-            logger.error("Unknown Mastodon Server Error. Server: " + m.instance()['urls']['streaming_api'])
+            logger.error("Unknown Mastodon Server Error. Server: " + m.instance()['urls']['streaming_api'], exc_info=True)
             return mentions
         for status in notifications:
             if (status['type'] == 'mention' and
