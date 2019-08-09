@@ -32,20 +32,22 @@ class TelegramBot(Bot):
                 except TypeError:
                     logger.error("Unknown Telegram error code: " + str(update))
                 return reports
+            # save the last message, so it doesn't get crawled again
             user.save_seen_tg(update.update_id)
+            # complain if message is a photo
             if update.message.photo:
                 tb.send_message(
                     update.message.sender.id,
                     "Sending Photos is not supported for privacy reasons. Can "
                     "you describe it as text instead?")
                 continue
-            if not hasattr(update.message, 'text'):
+            # complain if message is a media file
+            if update.message.text is None:
                 tb.send_message(
                     update.message.sender.id,
                     "We only support text reporting for privacy reasons. Can "
                     "you describe it as text instead?")
                 continue
-            logger.error("TG Message has Text attribute: " + update.message.text)
             if update.message.text.lower() == "/start":
                 user.add_telegram_subscribers(update.message.sender.id)
                 tb.send_message(
