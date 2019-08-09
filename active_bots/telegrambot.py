@@ -23,6 +23,7 @@ class TelegramBot(Bot):
             # return when telegram returns an error code
             if update in [303, 404, 420, 500, 502]:
                 return reports
+            # log unusual telegram error messages
             if isinstance(update, int):
                 try:
                     logger.error("City " + str(user.uid) +
@@ -44,6 +45,7 @@ class TelegramBot(Bot):
                     "We only support text reporting for privacy reasons. Can "
                     "you describe it as text instead?")
                 continue
+            logger.error("TG Message has Text attribute: " + update.message.text)
             if update.message.text.lower() == "/start":
                 user.add_telegram_subscribers(update.message.sender.id)
                 tb.send_message(
