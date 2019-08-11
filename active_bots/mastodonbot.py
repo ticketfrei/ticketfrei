@@ -21,12 +21,24 @@ class MastodonBot(Bot):
         try:
             m = mastodon.Mastodon(*user.get_masto_credentials())
         except TypeError:
-            # logger.error("No Mastodon Credentials in database.", exc_info=True)
+            # No Mastodon Credentials in database.
             return mentions
         try:
             notifications = m.notifications()
+        except mastodon.MastodonInternalServerError:
+            logger.error("Mastodon Error: 500. Server: " + m.instance()['urls']['streaming_api'])
+            return mentions
+        except mastodon.MastodonBadGatewayError:
+            logger.error("Mastodon Error: 502. Server: " + m.instance()['urls']['streaming_api'])
+            return mentions
+        except mastodon.MastodonServiceUnavailableError:
+            logger.error("Mastodon Error: 503. Server: " + m.instance()['urls']['streaming_api'])
+            return mentions
+        except mastodon.MastodonGatewayTimeoutError:
+            logger.error("Mastodon Error: 504. Server: " + m.instance()['urls']['streaming_api'])
+            return mentions
         except mastodon.MastodonServerError:
-            logger.error("Unknown Mastodon API Error: 502")
+            logger.error("Unknown Mastodon Server Error. Server: " + m.instance()['urls']['streaming_api'], exc_info=True)
             return mentions
         for status in notifications:
             if (status['type'] == 'mention' and
