@@ -26,19 +26,34 @@ class MastodonBot(Bot):
         try:
             notifications = m.notifications()
         except mastodon.MastodonInternalServerError:
-            logger.error("Mastodon Error: 500. Server: " + m.instance()['urls']['streaming_api'])
+            try:
+                logger.error("Mastodon Error: 500. Server: " + m.instance()['urls']['streaming_api'])
+            except mastodon.MastodonServerError:
+                logger.error("Mastodon Server Error 500, can't get instance.")
             return mentions
         except mastodon.MastodonBadGatewayError:
-            logger.error("Mastodon Error: 502. Server: " + m.instance()['urls']['streaming_api'])
+            try:
+                logger.error("Mastodon Error: 502. Server: " + m.instance()['urls']['streaming_api'])
+            except mastodon.MastodonServerError:
+                logger.error("Mastodon Server Error 502, can't get instance.")
             return mentions
         except mastodon.MastodonServiceUnavailableError:
-            logger.error("Mastodon Error: 503. Server: " + m.instance()['urls']['streaming_api'])
+            try:
+                logger.error("Mastodon Error: 503. Server: " + m.instance()['urls']['streaming_api'])
+            except mastodon.MastodonServerError:
+                logger.error("Mastodon Server Error 503, can't get instance.")
             return mentions
         except mastodon.MastodonGatewayTimeoutError:
-            logger.error("Mastodon Error: 504. Server: " + m.instance()['urls']['streaming_api'])
+            try:
+                logger.error("Mastodon Error: 504. Server: " + m.instance()['urls']['streaming_api'])
+            except mastodon.MastodonServerError:
+                logger.error("Mastodon Server Error 504, can't get instance.")
             return mentions
         except mastodon.MastodonServerError:
-            logger.error("Unknown Mastodon Server Error. Server: " + m.instance()['urls']['streaming_api'], exc_info=True)
+            try:
+                logger.error("Unknown Mastodon Server Error. Server: " + m.instance()['urls']['streaming_api'], exc_info=True)
+            except mastodon.MastodonServerError:
+                logger.error("Unknown Mastodon Server Error.", exc_info=True)
             return mentions
         for status in notifications:
             if (status['type'] == 'mention' and
