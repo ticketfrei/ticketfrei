@@ -25,6 +25,8 @@ class MastodonBot(Bot):
             return mentions
         try:
             notifications = m.notifications()
+        except mastodon.MastodonNetworkError:
+            return mentions
         except mastodon.MastodonInternalServerError:
             try:
                 logger.error("Mastodon Error: 500. Server: " + m.instance()['urls']['streaming_api'])
