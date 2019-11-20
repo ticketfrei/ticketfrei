@@ -75,6 +75,14 @@ def make_report(msg, user):
                     else:
                         logger.error("unknown MIMEtype: " +
                                      p.get_content_type())
+            elif part.get_content_type() == "multipart/alternative":
+                for p in part:
+                    if p.get_content_type() == "text":
+                        text.append(part.get_payload())
+                        break
+                    else:
+                        logger.error("unknown MIMEtype: " +
+                                     p.get_content_type())
             else:
                 logger.error("unknown MIMEtype: " +
                              part.get_content_type())
