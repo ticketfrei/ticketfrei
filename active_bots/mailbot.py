@@ -62,7 +62,7 @@ def make_report(msg, user):
     if msg.is_multipart():
         text = []
         for part in msg.get_payload():
-            if part.get_content_type() == "text":
+            if "text" in part.get_content_type():
                 text.append(part.get_payload())
             elif part.get_content_type() == "application/pgp-signature":
                 pass  # ignore PGP signatures
@@ -70,11 +70,19 @@ def make_report(msg, user):
                 for p in part:
                     if isinstance(p, str):
                         text.append(p)
-                    elif p.get_content_type() == "text":
+                    elif "text" in p.get_content_type():
                         text.append(part.get_payload())
                     else:
                         logger.error("unknown MIMEtype: " +
                                      p.get_content_type())
+            elif part.get_content_type() == "multipart/alternative":
+                for p in part:
+                    if "text" in p.get_content_type():
+                        text.append(part.get_payload())
+                        break
+                else:
+                    logger.error("multipart/alternative with unknown "
+                                  "MIMEtype: " + p.get_content_type())
             else:
                 logger.error("unknown MIMEtype: " +
                              part.get_content_type())
