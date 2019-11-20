@@ -58,29 +58,12 @@ def make_report(msg, user):
     date = get_date_from_header(msg['Date'])
 
     author = msg['From']  # get mail author from email header
-
-    if msg.is_multipart():
-        text = []
-        for part in msg.get_payload():
-            if part.get_content_type() == "text":
-                text.append(part.get_payload())
-            elif part.get_content_type() == "application/pgp-signature":
-                pass  # ignore PGP signatures
-            elif part.get_content_type() == "multipart/mixed":
-                for p in part:
-                    if isinstance(p, str):
-                        text.append(p)
-                    elif p.get_content_type() == "text":
-                        text.append(part.get_payload())
-                    else:
-                        logger.error("unknown MIMEtype: " +
-                                     p.get_content_type())
-            else:
-                logger.error("unknown MIMEtype: " +
-                             part.get_content_type())
-        text = '\n'.join(text)
-    else:
-        text = msg.get_payload()
+    text = msg.get_body(('plain',))
+    if not text:
+        text = re.sub(r'<[^>]*>', '', msg.get_body(('html',)))
+    if not text:
+        logger.error('No suitable message body')
+        return
     post = report.Report(author, "mail", text, None, date)
     user.save_seen_mail(date)
     return post
