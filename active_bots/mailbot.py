@@ -80,9 +80,9 @@ def make_report(msg, user):
                     if p.get_content_type() == "text":
                         text.append(part.get_payload())
                         break
-                    else:
-                        logger.error("unknown MIMEtype: " +
-                                     p.get_content_type())
+                else:
+                    logger.error("multipart/alternative with unknown "
+                                  "MIMEtype: " + p.get_content_type())
             else:
                 logger.error("unknown MIMEtype: " +
                              part.get_content_type())
