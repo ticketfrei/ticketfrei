@@ -1,0 +1,20 @@
+[Unit]
+Description=Ticketfrei Backend
+After=syslog.target network.target
+StartLimitIntervalSec=300
+StartLimitBurst=3
+
+[Service]
+WorkingDirectory=/srv/ticketfrei
+ExecStart=/srv/ticketfrei/bin/python3 backend.py
+# Requires systemd version 211 or newer
+#RuntimeDirectory=uwsgi
+Restart=always
+RestartSec=60
+KillSignal=SIGQUIT
+Type=simple
+StandardError=syslog
+NotifyAccess=all
+
+[Install]
+WantedBy=multi-user.target
