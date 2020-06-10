@@ -267,3 +267,113 @@ sudo chown $USER:$USER -R /var/log/ticketfrei
 ./frontend.py & ./backend.py &
 ```
 
+# Project History
+
+## Version 1
+
+- more of less hacked together during a mate-fueled weekend
+- backend-only, twitter & mastodon
+- just a script, which crawled & retweeted tweets, if they match a whitelist & blocklist
+- whitelist & blocklist were just 2 files
+
+## Version 2
+
+Reasons for the rewrite:
+- user management: Users should be able to run a Ticketfrei bot in their city
+  - without needing a server, without needing command line skills
+- more networks; not only Twitter & Mastodon, also Email & Telegram
+
+2 processes: backend & frontend.  
+The two Processes talk via a database.
+The two Processes have separate log files.
+Both processes take some config values from config.toml.
+
+### Backend
+
+The Backend takes care of crawling & spreading the reports.
+
+backend.py:
+- main loop which does the crawling & posting. 
+- loops through all cities in the database
+  - per city it tries all of the networks/bots:
+    - per network/bot it runs the crawl()-function to ask the social network for new reports
+    - then it checks whether the report is appropriate
+    - if yes, it posts the report via all networks/bots, which belong to the city.
+
+config.py: imports config values
+- Imports values from config.toml
+- If there is no config file it tries to use environment variables,
+- Apart from that it uses the default values.
+
+bot.py: bot parent Class
+- just the absolute minimum what a bot needs to be able to do: crawl + post
+- is never instantiated, only inherited from
+
+report.py: report Class
+- defines how reports are supposed to look like
+
+active_bots/mailbot.py as an example for how a network/bot works
+- crawl():
+  - mails arrive at an mbox file through exim4
+  - the bot checks whether they are new
+  - the bot generates a report object from the mail and returns it to the backend.py-loop
+- post():
+  - asks the database for the list of mails which want to receive reports for this city
+  - sends the report.text to those mail addresses
+
+
+### Frontend
+
+the architecture of the frontend is loosely oriented off [Model View
+Controller](https://blog.codinghorror.com/understanding-model-view-controller/).
+
+user.py (Model)
+- high-level interface to talk to the database
+- database calls; almost all values in the database are specific to a city/user
+- user.py is also a Class for frontend web authentication
+- user.py keeps the user-id, through which the frontend tracks authentication
+
+db.py (Model)
+- DB-Layout; creates the database if it doesn't exist yet.
+- holds some database calls which are not city-specific.
+
+frontend.py (Controller): bottle web application
+- handles POST/GET requests
+- talks to the database through user.py
+- everyone can look at the pages, and register
+- but only authenticated users can login and change settings
+
+session.py: User Authentication
+- takes care of session cookies and "403 unauthenticated" error messages
+
+sendmail.py: helper script to send mails
+- sends all mails the frontend, backend, and bots need to send
+
+static/
+- css, images, javascript for the login form etc.
+
+template/ (view)
+- base for the HTML generation, uses the bottle-template-framework
+- wrapper.tpl is the base template for every other template
+
+
+### active_bots: how to implement a new network
+
+If you want to write a new bot, e.g. a Wire-Bot, you have to take these steps:
+
+- look for a python-library which can talk to Wire
+- the city/users have to provide authentication details; this needs a form in
+  the settings
+  - depending on the network either a password, a token, or an implementation
+    of the OAuth login flow
+- the backend needs to crawl messages from the network, & post reports to the
+  network
+
+Files you need to change:
+
+1. active_bots/wire.py - crawl & post functions
+2. settings.tpl - form to authenticate to the network & possible network specific settings.
+3. frontend.py - routes for the forms you added to settings.tpl
+4. db.py - database layout, to store the account credentials/tokens, and to save which message you have last seen
+5. user.py - database calls to get or set values
+
