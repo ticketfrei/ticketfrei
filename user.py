@@ -96,8 +96,8 @@ schlitz
         for word in report.text.lower().splitlines():
             if word in badwords:
                 return False
-        for word in default_badwords.splitlines():
-            if word in badwords:
+        for word in report.text.lower().splitlines():
+            if word in default_badwords.splitlines():
                 return False
         return True
 
