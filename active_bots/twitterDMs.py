@@ -29,6 +29,7 @@ class TwitterDMListener(Bot):
         :return: reports: (list of report.Report objects)
         """
         reports = []
+        return reports  # TwitterDMs are broken atm
         try:
             if user.get_last_twitter_request() + 60 > time():
                 return reports
