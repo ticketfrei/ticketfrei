@@ -5,6 +5,7 @@ import jwt
 from mastodon import Mastodon
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 from os import urandom
+import logging
 
 
 class User(object):
@@ -95,9 +96,11 @@ schlitz
         badwords = db.cur.fetchone()
         for word in report.text.lower().splitlines():
             if word in badwords:
+                logger.error("Word " + word + " triggered the spam filter on message: " + report.text)
                 return False
         for word in report.text.lower().splitlines():
             if word in default_badwords.splitlines():
+                logger.error("Word " + word + " triggered the spam filter on message: " + report.text)
                 return False
         return True
 
