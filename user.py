@@ -75,6 +75,7 @@ class User(object):
                 break
         else:
             # no pattern matched
+            logger.error("Message didn't trigger goodlist: " + report.text)
             return False
         default_badwords = """
 bitch
