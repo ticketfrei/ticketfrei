@@ -26,6 +26,7 @@ class MastodonBot(Bot):
         try:
             notifications = m.notifications()
         except mastodon.MastodonNetworkError:
+            logger.error("Mastodon Network Error.")
             return mentions
         except mastodon.MastodonInternalServerError:
             try:
