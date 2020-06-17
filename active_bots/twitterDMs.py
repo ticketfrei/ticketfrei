@@ -41,9 +41,13 @@ class TwitterDMListener(Bot):
         last_dm = user.get_seen_dm()
         try:
             if last_dm is None:
-                mentions = api.direct_messages()
+                mentions = api.list_direct_messages()
+                logger.error("list_direct_messages() returns:\n" + type(mentions) + "\n" + str(mentions) + "\n")
+                logger.error("its first object is a " + type(mentions[0]) + ":\n" + str(mentions) + "\n")
             else:
-                mentions = api.direct_messages(since_id=last_dm[0])
+                mentions = api.list_direct_messages()
+                logger.error("list_direct_messages() returns:\n" + type(mentions) + "\n" + str(mentions) + "\n")
+                logger.error("its first object is a " + type(mentions[0]) + ":\n" + str(mentions) + "\n")
             user.set_last_twitter_request(time())
             for status in mentions:
                 text = re.sub(
