@@ -5,7 +5,9 @@ import jwt
 from mastodon import Mastodon
 from pylibscrypt import scrypt_mcf, scrypt_mcf_check
 from os import urandom
+import logging
 
+logger = logging.getLogger(__name__)
 
 class User(object):
     def __init__(self, uid):
@@ -74,6 +76,7 @@ class User(object):
                 break
         else:
             # no pattern matched
+            logger.error("Message didn't trigger goodlist: " + report.text)
             return False
         default_badwords = """
 bitch
@@ -93,11 +96,13 @@ schlitz
         db.execute("SELECT words FROM badwords WHERE user_id=?;",
                    (self.uid, ))
         badwords = db.cur.fetchone()
-        for word in report.text.lower().splitlines():
-            if word in badwords:
+        for word in report.text.lower().split():
+            if word in badwords[0].splitlines():
+                logger.error("Word " + word + " triggered the spam filter on message: " + report.text)
                 return False
-        for word in default_badwords.splitlines():
-            if word in badwords:
+        for word in report.text.lower().split():
+            if word in default_badwords.splitlines():
+                logger.error("Word " + word + " triggered the spam filter on message: " + report.text)
                 return False
         return True
 
