@@ -1,0 +1,9 @@
+tweepy
+pytoml
+Mastodon.py
+bottle
+pyjwt
+pylibscrypt
+Markdown
+twx
+gitpython
