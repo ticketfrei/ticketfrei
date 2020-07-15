@@ -245,6 +245,10 @@ u\d\d?"""
             uid = json['uid']
         with open("/etc/aliases", "a+") as f:
             f.write(city + ": " + config["mail"]["mbox_user"] + "\n")
+            try:
+                os.system("newaliases")
+            except:
+                logger.exception()
         self.execute("INSERT INTO email (user_id, email) VALUES(?, ?);",
                      (uid, json['email']))
         self.execute("""INSERT INTO telegram_accounts (user_id, apikey,
