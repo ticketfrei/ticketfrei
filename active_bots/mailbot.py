@@ -58,13 +58,16 @@ def make_report(msg, user):
     date = get_date_from_header(msg['Date'])
 
     author = msg['From']  # get mail author from email header
-    text = msg.get_body(('plain',))
-    if not text:
-        text = re.sub(r'<[^>]*>', '', msg.get_body(('html',)))
-    if not text:
+    for part in msg.walk():
+        if part.get_content_type() == 'text/plain':
+            text = part.get_payload()
+        elif part.get_content_type() == 'text/html':
+            text = re.sub(r'<[^>]*>', '', msg.get_payload())
+    try:
+        post = report.Report(author, "mail", text, None, date)
+    except UnboundLocalError:
         logger.error('No suitable message body')
         return
-    post = report.Report(author, "mail", text, None, date)
     user.save_seen_mail(date)
     return post
 
