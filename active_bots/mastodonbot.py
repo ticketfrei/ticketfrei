@@ -28,11 +28,19 @@ class MastodonBot(Bot):
         except mastodon.MastodonNetworkError:
             logger.error("Mastodon Network Error.")
             return mentions
+        except mastodon.MastodonAPIError:
+            try:
+                logger.error("Mastodon API Error: " + m.instance()['urls']['streaming_api'] + ", city: " + str(user.uid))
+            except mastodon.MastodonServerError:
+                logger.error("Mastodon Server Error 500, can't get instance.")
+            return mentions
         except mastodon.MastodonInternalServerError:
             try:
                 logger.error("Mastodon Error: 500. Server: " + m.instance()['urls']['streaming_api'])
             except mastodon.MastodonServerError:
                 logger.error("Mastodon Server Error 500, can't get instance.")
+            except mastodon.MastodonVersionError:
+                logger.error("Mastodon Server Error 500, server version too low.")
             return mentions
         except mastodon.MastodonBadGatewayError:
             try:
@@ -59,27 +67,30 @@ class MastodonBot(Bot):
                 logger.error("Unknown Mastodon Server Error.", exc_info=True)
             return mentions
         for status in notifications:
-            if (status['type'] == 'mention' and
+            try:
+                if (status['type'] == 'mention' and
                     not user.toot_is_seen(status['status']['uri'])):
-                # save state
-                user.toot_witness(status['status']['uri'])
-                # add mention to mentions
-                text = re.sub(r'<[^>]*>', '', status['status']['content'])
-                text = re.sub(
-                    "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
-                    "", text)
-                if status['status']['visibility'] == 'public':
-                    mentions.append(Report(status['account']['acct'],
-                                           self,
-                                           text,
-                                           status['status']['id'],
-                                           status['status']['created_at']))
-                else:
-                    mentions.append(Report(status['account']['acct'],
-                                           'mastodonPrivate',
-                                           text,
-                                           status['status']['id'],
-                                           status['status']['created_at']))
+                    # save state
+                    user.toot_witness(status['status']['uri'])
+                    # add mention to mentions
+                    text = re.sub(r'<[^>]*>', '', status['status']['content'])
+                    text = re.sub(
+                        "(?<=^|(?<=[^a-zA-Z0-9-_.]))@([A-Za-z]+[A-Za-z0-9-_]+)",
+                        "", text)
+                    if status['status']['visibility'] == 'public':
+                        mentions.append(Report(status['account']['acct'],
+                                               self,
+                                               text,
+                                               status['status']['id'],
+                                               status['status']['created_at']))
+                    else:
+                        mentions.append(Report(status['account']['acct'],
+                                               'mastodonPrivate',
+                                               text,
+                                               status['status']['id'],
+                                               status['status']['created_at']))
+            except TypeError:
+                pass
         return mentions
 
     def post(self, user, report):

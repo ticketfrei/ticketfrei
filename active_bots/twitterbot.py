@@ -67,7 +67,7 @@ class TwitterBot(Bot):
         except requests.exceptions.ConnectionError:
             logger.error("Twitter API Error: Bad Connection", exc_info=True)
         except tweepy.TweepError:
-            logger.error("Twitter API Error: General Error", exc_info=True)
+            logger.error("Twitter API Error: General Error. User: " + str(user.uid), exc_info=True)
         return []
 
     def post(self, user, report):

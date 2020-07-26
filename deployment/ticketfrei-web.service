@@ -12,6 +12,8 @@ KillSignal=SIGQUIT
 Type=notify
 StandardError=syslog
 NotifyAccess=all
+User=tech
+Group=www-data
 
 [Install]
 WantedBy=multi-user.target
