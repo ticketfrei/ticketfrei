@@ -286,6 +286,8 @@ schlitz
                            user_id, client_id, client_secret
                            ) VALUES(?, ?, ?);""",
                    (self.uid, access_token, access_token_secret))
+        db.execute("""INSERT INTO seen_tweets(user_id, tweet_id) VALUES (?, ?);""",
+                   (self.uid, 0))
         db.commit()
 
     def get_twitter_token(self):
