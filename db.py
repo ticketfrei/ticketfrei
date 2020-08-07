@@ -1,7 +1,7 @@
 from config import config
 import jwt
 import logging
-from os import urandom
+from os import urandom, sleep, system
 from pylibscrypt import scrypt_mcf
 import sqlite3
 
@@ -19,7 +19,11 @@ class DB(object):
         return self.cur.execute(*args, **kwargs)
 
     def commit(self):
-        self.conn.commit()
+        try:
+            self.conn.commit()
+        except sqlite3.sqlite3.OperationalError:
+            system("rcctl restart frontend_daemon")
+            self.conn.commit()
 
     def close(self):
         self.conn.close()
