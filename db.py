@@ -1,9 +1,10 @@
 from config import config
 import jwt
 import logging
-from os import urandom, sleep, system
+from os import urandom, system
 from pylibscrypt import scrypt_mcf
 import sqlite3
+from time import sleep
 
 
 logger = logging.getLogger(__name__)
