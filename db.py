@@ -4,7 +4,7 @@ import logging
 from os import urandom, system
 from pylibscrypt import scrypt_mcf
 import sqlite3
-from time import sleep
+from time import sleep, time
 
 
 logger = logging.getLogger(__name__)
@@ -20,11 +20,18 @@ class DB(object):
         return self.cur.execute(*args, **kwargs)
 
     def commit(self):
-        try:
-            self.conn.commit()
-        except sqlite3.sqlite3.OperationalError:
-            system("rcctl restart frontend_daemon")
-            self.conn.commit()
+        start_time = time()
+        while 1:
+            try:
+                self.conn.commit()
+                break
+            except sqlite3.OperationalError:
+                # another thread may be writing, give it a chance to finish
+                sleep(0.1)
+                if time() - start_time > 5:
+                    # if it takes this long, something is wrong
+                    system("rcctl restart frontend_daemon")
+                    self.conn.commit()
 
     def close(self):
         self.conn.close()
