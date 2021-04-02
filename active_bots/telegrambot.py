@@ -35,7 +35,7 @@ class TelegramBot(Bot):
             # save the last message, so it doesn't get crawled again
             user.save_seen_tg(update.update_id)
             # complain if message is a photo
-            if update.message.photo:
+            if update.message.photo is not None:
                 tb.send_message(
                     update.message.sender.id,
                     "Sending Photos is not supported for privacy reasons. Can "
